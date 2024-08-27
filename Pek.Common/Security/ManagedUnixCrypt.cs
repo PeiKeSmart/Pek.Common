@@ -189,9 +189,9 @@ public static class ManagedUnixCrypt
         key.SourceArray.CopyTo(temp, 0);
         key = new ArrayPointer<byte>(temp) { Address = key.Address };
 
-        temp = new byte[salt.SourceArray.Length];
-        salt.SourceArray.CopyTo(temp, 0);
-        salt = new ArrayPointer<byte>(temp) { Address = salt.Address };
+        var temp1 = new byte[salt.SourceArray.Length];  // 使用不同的名称是因为wasm下会有问题
+        salt.SourceArray.CopyTo(temp1, 0);
+        salt = new ArrayPointer<byte>(temp1) { Address = salt.Address };
 
         // Prepare for the real work.
         using (var ctx = new MemoryStream())
