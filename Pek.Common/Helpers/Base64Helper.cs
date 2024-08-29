@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace Pek.Common.Helpers;
+namespace Pek.Helpers;
 
 /// <summary>
 /// Base64帮助类

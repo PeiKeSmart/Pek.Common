@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace Pek.Common.Security;
+namespace Pek.Security;
 
 /// <summary>
 /// A managed implementation of the Unix C library crypt function. It supports the MD5, SHA-256

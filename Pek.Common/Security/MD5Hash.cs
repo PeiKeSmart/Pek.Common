@@ -1,4 +1,4 @@
-﻿namespace Pek.Common.Security;
+﻿namespace Pek.Security;
 
 /// <summary>
 /// 原生实现的MD5哈希算法,等同于官方的MD5CryptoServiceProvider

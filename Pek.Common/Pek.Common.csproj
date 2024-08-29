@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.1;netstandard2.0;net461</TargetFrameworks>
+    <RootNamespace>Pek</RootNamespace>
     <AssemblyTitle>基类核心库</AssemblyTitle>
     <Description>DH框架基类核心库</Description>
     <Company>湖北登灏科技有限公司</Company>

@@ -4,7 +4,7 @@ using System.Collections.Concurrent;
 using NewLife;
 using NewLife.Threading;
 
-namespace Pek.Common.Collections;
+namespace Pek.Collections;
 
 /// <summary>字典缓存。当指定键的缓存项不存在时，调用委托获取值，并写入缓存。</summary>
 /// <remarks>
