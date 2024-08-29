@@ -52,7 +52,7 @@ public class DHLZW
     /// <param name="key"></param>
     /// <returns></returns>
     /// <exception cref="ArgumentException"></exception>
-    public static string Decompress(IList<int> compressed, int key)
+    public static string Decompress(List<int> compressed, int key)
     {
         var dictionary = new Dictionary<int, string>();
         for (var i = 0; i < 256; i++)
