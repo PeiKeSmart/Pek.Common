@@ -4,7 +4,7 @@ using NewLife.Configuration;
 
 namespace Pek.Configs;
 
-/// <summary>工具配置</summary>
+/// <summary>Redis配置</summary>
 [DisplayName("Redis配置")]
 //[XmlConfigFile("Config/DHUtil.config", 10_000)]
 [Config("RedisSetting")]
