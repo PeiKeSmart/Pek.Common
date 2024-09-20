@@ -1,3 +1,3 @@
-﻿# DH.NFuji - 富士PLC
+﻿# Pek.Common - 基类核心库
 
-富士PLC协议实现  
+基类核心库 
