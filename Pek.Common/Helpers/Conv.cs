@@ -536,7 +536,7 @@ public static partial class Conv
     /// <returns></returns>
     public static long ConvertIPToLong(this string ip)
     {
-        if (!ip.Contains("."))
+        if (!ip.Contains('.'))
         {
             ip = "127.0.0.1";
         }
@@ -544,8 +544,8 @@ public static partial class Conv
         {
             ip = "127.0.0.1";
         }
-        string[] ips = ip.Split('.');
-        long number = 16777216L * long.Parse(ips[0]) + 65536L * long.Parse(ips[1]) + 256 * long.Parse(ips[2]) + long.Parse(ips[3]);
+        var ips = ip.Split('.');
+        var number = 16777216L * long.Parse(ips[0]) + 65536L * long.Parse(ips[1]) + 256 * long.Parse(ips[2]) + long.Parse(ips[3]);
         return number;
     }
 
