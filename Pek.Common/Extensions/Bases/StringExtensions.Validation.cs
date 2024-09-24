@@ -19,12 +19,12 @@ public static partial class StringExtensions
             return false;
         }
 
-        byte[] filedata = File.ReadAllBytes(fileName);
+        var filedata = File.ReadAllBytes(fileName);
         if (filedata.Length == 0)
         {
             return false;
         }
-        ushort code = BitConverter.ToUInt16(filedata, 0);
+        var code = BitConverter.ToUInt16(filedata, 0);
         switch (code)
         {
             case 0x4D42://bmp
@@ -54,7 +54,7 @@ public static partial class StringExtensions
             return false;
         }
 
-        ushort code = BitConverter.ToUInt16(fileData, 0);
+        var code = BitConverter.ToUInt16(fileData, 0);
         switch (code)
         {
             case 0x4D42://bmp
