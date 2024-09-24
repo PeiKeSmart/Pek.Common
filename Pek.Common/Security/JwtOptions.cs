@@ -13,12 +13,12 @@ public class JwtOptions
     /// <summary>
     /// 发行方
     /// </summary>
-    public string Issuer { get; set; } = "bing_identity";
+    public string Issuer { get; set; } = "pek_identity";
 
     /// <summary>
     /// 订阅方
     /// </summary>
-    public string Audience { get; set; } = "bing_client";
+    public string Audience { get; set; } = "pek_client";
 
     /// <summary>
     /// 访问令牌有效期分钟数
