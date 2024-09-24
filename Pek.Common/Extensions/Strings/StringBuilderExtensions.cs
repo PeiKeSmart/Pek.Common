@@ -169,8 +169,8 @@ public static partial class StringBuilderExtensions
             throw new ArgumentNullException(nameof(sb));
         if (start + length > sb.Length)
             throw new IndexOutOfRangeException("超出字符串索引长度");
-        char[] chars = new char[length];
-        for (int i = 0; i < length; i++)
+        var chars = new char[length];
+        for (var i = 0; i < length; i++)
             chars[i] = sb[start + i];
         return new string(chars);
     }
