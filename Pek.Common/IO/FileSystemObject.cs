@@ -450,7 +450,7 @@ public abstract class FileSystemObject
         using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
         {
             var encoding = Encoding.GetEncoding(936);
-            StreamReader reader = new StreamReader(System.IO.File.OpenRead(filePath), encoding, true, 0x400);
+            var reader = new StreamReader(System.IO.File.OpenRead(filePath), encoding, true, 0x400);
             content = reader.ReadToEnd();
             reader.Dispose();
             if (encoding != Encoding.UTF8)
@@ -465,16 +465,16 @@ public abstract class FileSystemObject
     {
         if (!string.IsNullOrEmpty(originalContent))
         {
-            DirectoryInfo info = new DirectoryInfo(dir);
+            var info = new DirectoryInfo(dir);
             foreach (var info2 in info.GetFiles("*.*", SearchOption.AllDirectories))
             {
-                StreamReader reader = info2.OpenText();
-                string str = reader.ReadToEnd();
+                var reader = info2.OpenText();
+                var str = reader.ReadToEnd();
                 reader.Dispose();
                 if (str.Contains(originalContent))
                 {
                     str = str.Replace(originalContent, newContent);
-                    StreamWriter writer = new StreamWriter(System.IO.File.OpenWrite(info2.FullName));
+                    var writer = new StreamWriter(System.IO.File.OpenWrite(info2.FullName));
                     writer.Write(str);
                     writer.Dispose();
                 }
@@ -485,12 +485,12 @@ public abstract class FileSystemObject
     public static List<DirectoryInfos> SearchFileContent(string dir, string searchPattern, string searchKeyword)
     {
         var list = new List<DirectoryInfos>();
-        DirectoryInfo info = new DirectoryInfo(dir);
+        var info = new DirectoryInfo(dir);
         foreach (var info2 in info.GetFiles(searchPattern, SearchOption.AllDirectories))
         {
             var model = new DirectoryInfos();
-            StreamReader reader = info2.OpenText();
-            string str = reader.ReadToEnd();
+            var reader = info2.OpenText();
+            var str = reader.ReadToEnd();
             reader.Dispose();
             if (str.Contains(searchKeyword))
             {
@@ -509,7 +509,7 @@ public abstract class FileSystemObject
     public static List<DirectoryInfos> SearchFiles(string dir, string searchPattern)
     {
         var list = new List<DirectoryInfos>();
-        DirectoryInfo info = new DirectoryInfo(dir);
+        var info = new DirectoryInfo(dir);
         foreach (var info2 in info.GetFiles(searchPattern, SearchOption.AllDirectories))
         {
             var model = new DirectoryInfos();
@@ -527,10 +527,10 @@ public abstract class FileSystemObject
     public static List<DirectoryInfos> SearchTemplateFiles(string dir, string searchPattern)
     {
         var list = new List<DirectoryInfos>();
-        DirectoryInfo info = new DirectoryInfo(dir);
-        string str = searchPattern;
-        string str2 = searchPattern.ToLower(CultureInfo.CurrentCulture);
-        int length = searchPattern.Length;
+        var info = new DirectoryInfo(dir);
+        var str = searchPattern;
+        var str2 = searchPattern.ToLower(CultureInfo.CurrentCulture);
+        var length = searchPattern.Length;
         if (length < 4)
         {
             str = "*" + str + "*.html";
@@ -567,8 +567,8 @@ public abstract class FileSystemObject
         {
             Directory.CreateDirectory(info.DirectoryName);
         }
-        FileStream stream = new FileStream(file, FileMode.Append, FileAccess.Write);
-        StreamWriter writer = new StreamWriter(stream, Encoding.UTF8);
+        var stream = new FileStream(file, FileMode.Append, FileAccess.Write);
+        var writer = new StreamWriter(stream, Encoding.UTF8);
         try
         {
             writer.Write(fileContent);
@@ -596,8 +596,8 @@ public abstract class FileSystemObject
         {
             Directory.CreateDirectory(info.DirectoryName);
         }
-        FileStream stream = new FileStream(file, FileMode.Create, FileAccess.Write);
-        StreamWriter writer = new StreamWriter(stream, new UTF8Encoding(false));
+        var stream = new FileStream(file, FileMode.Create, FileAccess.Write);
+        var writer = new StreamWriter(stream, new UTF8Encoding(false));
         try
         {
             writer.Write(fileContent);
@@ -625,12 +625,12 @@ public abstract class FileSystemObject
     public static Byte[] ReadFile1(string fileName)
     {
         FileStream pFileStream = null;
-        byte[] pReadByte = new byte[0];
+        var pReadByte = new byte[0];
 
         try
         {
             pFileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-            BinaryReader r = new BinaryReader(pFileStream);
+            var r = new BinaryReader(pFileStream);
             r.BaseStream.Seek(0, SeekOrigin.Begin);    //将文件指针设置到文件开
             pReadByte = r.ReadBytes((int)r.BaseStream.Length);
             return pReadByte;
