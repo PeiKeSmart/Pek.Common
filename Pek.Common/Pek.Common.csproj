@@ -40,7 +40,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DH.NCore" Version="3.91.2024.1011-beta0123" />
+    <PackageReference Include="DH.NCore" Version="3.91.2024.1013-beta0805" />
     <PackageReference Include="Microsoft.Extensions.FileProviders.Composite" Version="8.0.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
