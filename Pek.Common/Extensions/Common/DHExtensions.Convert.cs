@@ -9,7 +9,6 @@ public static partial class DHExtensions
 {
 
     #region ToDate(转换为日期)
-
     /// <summary>
     /// 转换为日期
     /// </summary>
@@ -21,7 +20,6 @@ public static partial class DHExtensions
     /// </summary>
     /// <param name="obj">数据</param>
     public static DateTime? ToDateOrNull(this string obj) => Conv.ToDGDateOrNull(obj);
-
     #endregion
 
 }
