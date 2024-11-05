@@ -7,7 +7,7 @@ namespace Pek.Configs;
 /// <summary>Redis配置</summary>
 [DisplayName("Redis配置")]
 //[XmlConfigFile("Config/DHUtil.config", 10_000)]
-[Config("RedisSetting")]
+[Config("Redis")]
 public class RedisSetting : Config<RedisSetting>
 {
     /// <summary>
