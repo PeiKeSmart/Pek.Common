@@ -150,6 +150,28 @@ public static partial class Encrypt
         return bytes3.Aggregate("", (current, b) => current + b.ToString("x2"));
     }
 
+    /// <summary>
+    /// 获取大写的MD5签名结果
+    /// </summary>
+    /// <param name="encypStr"></param>
+    /// <returns></returns>
+    public static string Md5Upper(string encypStr)
+    {
+        var md5 = MD5.Create();
+        var bs = Encoding.GetEncoding("utf-8").GetBytes(encypStr);
+        bs = md5.ComputeHash(bs);
+        return BytesToHexString(bs);
+    }
+
+    private static string BytesToHexString(byte[] bytes)
+    {
+        var s = new StringBuilder();
+        foreach (var b in bytes)
+        {
+            s.Append(b.ToString("x2").ToUpper());
+        }
+        return s.ToString();
+    }
     #endregion
 
     #region DES加密
