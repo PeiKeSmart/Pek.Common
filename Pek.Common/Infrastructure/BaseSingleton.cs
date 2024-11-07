@@ -7,11 +7,11 @@ public partial class BaseSingleton
 {
     static BaseSingleton()
     {
-        AllSingletons = new Dictionary<Type, object>();
+        AllSingletons = new Dictionary<Type, object?>();
     }
 
     /// <summary>
     /// 单例实例的类型字典。
     /// </summary>
-    public static IDictionary<Type, object> AllSingletons { get; }
+    public static IDictionary<Type, object?> AllSingletons { get; }
 }
