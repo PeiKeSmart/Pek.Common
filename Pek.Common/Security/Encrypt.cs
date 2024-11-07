@@ -150,6 +150,28 @@ public static partial class Encrypt
         return bytes3.Aggregate("", (current, b) => current + b.ToString("x2"));
     }
 
+    /// <summary>
+    /// 获取大写的MD5签名结果
+    /// </summary>
+    /// <param name="encypStr"></param>
+    /// <returns></returns>
+    public static string Md5Upper(string encypStr)
+    {
+        var md5 = MD5.Create();
+        var bs = Encoding.GetEncoding("utf-8").GetBytes(encypStr);
+        bs = md5.ComputeHash(bs);
+        return BytesToHexString(bs);
+    }
+
+    private static string BytesToHexString(byte[] bytes)
+    {
+        var s = new StringBuilder();
+        foreach (var b in bytes)
+        {
+            s.Append(b.ToString("x2").ToUpper());
+        }
+        return s.ToString();
+    }
     #endregion
 
     #region DES加密
@@ -619,6 +641,24 @@ public static partial class Encrypt
             var hash = sha1.ComputeHash(encoding.GetBytes(value));
             return string.Join("", hash.ToList().Select(x => x.ToString("x2")).ToArray());
         }
+    }
+
+    /// <summary>
+    /// 采用SHA-1算法加密字符串（小写）
+    /// </summary>
+    /// <param name="encypStr">需要加密的字符串</param>
+    /// <returns></returns>
+    public static string GetSha1(string encypStr)
+    {
+        var sha1 = SHA1.Create();
+        var sha1Arr = sha1.ComputeHash(Encoding.UTF8.GetBytes(encypStr));
+        var enText = new StringBuilder();
+        foreach (var b in sha1Arr)
+        {
+            enText.AppendFormat("{0:x2}", b);
+        }
+
+        return enText.ToString();
     }
 
     #endregion
