@@ -43,6 +43,11 @@ public class JsonWebToken
     /// <summary>
     /// 是否刷新令牌已过期
     /// </summary>
+    public bool IsRefreshExpired() => Conv.To<long>(DateTime.UtcNow.ToJsGetTime()) > RefreshUtcExpires;
+
+    /// <summary>
+    /// 是否刷新令牌已过期
+    /// </summary>
     /// <param name="Min">提前分钟数</param>
     public bool IsRefreshExpired(Int32 Min) => Conv.To<long>(DateTime.UtcNow.AddMinutes(Min).ToJsGetTime()) > RefreshUtcExpires;
 }
