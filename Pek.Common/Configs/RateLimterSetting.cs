@@ -7,7 +7,7 @@ namespace Pek.Configs;
 /// <summary>限流配置</summary>
 [DisplayName("限流配置")]
 //[XmlConfigFile("Config/DHUtil.config", 10_000)]
-[Config("RateLimterSetting")]
+[Config("RateLimter")]
 public class RateLimterSetting : Config<RateLimterSetting>
 {
     /// <summary>
