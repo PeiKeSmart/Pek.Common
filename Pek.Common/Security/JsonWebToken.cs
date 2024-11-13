@@ -35,7 +35,14 @@ public class JsonWebToken
     public bool IsExpired() => Conv.To<long>(DateTime.UtcNow.ToJsGetTime()) > AccessTokenUtcExpires;
 
     /// <summary>
+    /// 是否已过期
+    /// </summary>
+    /// <param name="Min">提前分钟数</param>
+    public bool IsExpired(Int32 Min) => Conv.To<long>(DateTime.UtcNow.AddMinutes(Min).ToJsGetTime()) > AccessTokenUtcExpires;
+
+    /// <summary>
     /// 是否刷新令牌已过期
     /// </summary>
-    public bool IsRefreshExpired() => Conv.To<long>(DateTime.UtcNow.ToJsGetTime()) > RefreshUtcExpires;
+    /// <param name="Min">提前分钟数</param>
+    public bool IsRefreshExpired(Int32 Min) => Conv.To<long>(DateTime.UtcNow.AddMinutes(Min).ToJsGetTime()) > RefreshUtcExpires;
 }
