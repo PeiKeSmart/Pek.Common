@@ -1,6 +1,9 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
 
+using NewLife;
+using NewLife.Log;
+
 namespace Pek.Helpers;
 
 public static class ApplicationHelper
@@ -35,5 +38,27 @@ public static class ApplicationHelper
 
             return false;
         }
+    }
+
+    /// <summary>
+    /// 命令参数写入环境变量
+    /// </summary>
+    /// <param name="args"></param>
+    public static void SetEnvironment(String[] args)
+    {
+        foreach (var item in args)
+        {
+            var arr = item.SplitAsDictionary();
+            foreach (var kv in arr)
+            {
+                if (!kv.Value.IsNullOrWhiteSpace())
+                {
+                    Environment.SetEnvironmentVariable(kv.Key, kv.Value);
+                }
+            }
+        }
+
+        var processId = Process.GetCurrentProcess().Id;
+        XTrace.WriteLine($"获取PID：{processId}");
     }
 }
