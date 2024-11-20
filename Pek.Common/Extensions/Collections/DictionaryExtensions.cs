@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace Pek;
@@ -19,8 +20,8 @@ public static class DictionaryExtensions
     /// <param name="dictionary">字典</param>
     /// <param name="key">键</param>
     /// <param name="defaultValue">默认值</param>
-    public static TValue GetOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key,
-        TValue defaultValue = default) =>
+    public static TValue? GetOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key,
+        TValue? defaultValue = default) =>
         dictionary.TryGetValue(key, out var obj) ? obj : defaultValue;
 
     #endregion
@@ -167,9 +168,9 @@ public static class DictionaryExtensions
     /// <typeparam name="TValue">值类型</typeparam>
     /// <param name="dictionary">字典</param>
     /// <param name="value">值</param>
-    public static TKey GetKey<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TValue value)
+    public static TKey? GetKey<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TValue value)
     {
-        foreach (var item in dictionary.Where(x => x.Value.Equals(value)))
+        foreach (var item in dictionary.Where(x => x.Value?.Equals(value) == true))
             return item.Key;
         return default;
     }
@@ -308,4 +309,27 @@ public static class DictionaryExtensions
     }
 
     #endregion
+
+    /// <summary>
+    /// 使用指定的函数，在 IDictionary&lt;TKey, TValue&gt;中如果键不存在，则添加键/值对；如果键已存在，则更新键/值对。
+    /// </summary>
+    /// <typeparam name="TKey">键的类型。</typeparam>
+    /// <typeparam name="TValue">值的类型。</typeparam>
+    /// <param name="this">要操作的对象 @this。</param>
+    /// <param name="key">要添加或更新值的键。</param>
+    /// <param name="value">要添加或更新的值。</param>
+    /// <returns>键的新值。</returns>
+    public static TValue AddOrUpdate<TKey, TValue>([NotNull] this IDictionary<TKey, TValue> @this, TKey key, TValue value)
+    {
+        if (!@this.ContainsKey(key))
+        {
+            @this.Add(new KeyValuePair<TKey, TValue>(key, value));
+        }
+        else
+        {
+            @this[key] = value;
+        }
+
+        return @this[key];
+    }
 }
