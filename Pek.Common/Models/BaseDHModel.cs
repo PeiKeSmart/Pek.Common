@@ -3,7 +3,7 @@
 namespace Pek;
 
 /// <summary>
-/// 代表基本的模型
+/// 代表非数据库基本的模型
 /// </summary>
 public partial record BaseDHModel
 {
