@@ -1179,10 +1179,10 @@ public static class DateTimeUtil
         if (ts.TotalSeconds > Int32.MaxValue)
             return Int32.MaxValue;
 
-        else if (ts.TotalSeconds < int.MinValue)
-            return int.MinValue;
+        else if (ts.TotalSeconds < Int32.MinValue)
+            return Int32.MinValue;
 
-        return (int)ts.TotalSeconds;
+        return (Int32)ts.TotalSeconds;
     }
 
     /// <summary>
@@ -1191,16 +1191,16 @@ public static class DateTimeUtil
     /// <param name="Time"></param>
     /// <param name="Sec"></param>
     /// <returns></returns>
-    public static int StrDateDiffSeconds(DateTime Time, int Sec)
+    public static Int32 StrDateDiffSeconds(DateTime Time, Int32 Sec)
     {
         var ts = Time.AddSeconds(Sec) - DateTime.Now;
-        if (ts.TotalSeconds > int.MaxValue)
-            return int.MaxValue;
+        if (ts.TotalSeconds > Int32.MaxValue)
+            return Int32.MaxValue;
 
-        else if (ts.TotalSeconds < int.MinValue)
-            return int.MinValue;
+        else if (ts.TotalSeconds < Int32.MinValue)
+            return Int32.MinValue;
 
-        return (int)ts.TotalSeconds;
+        return (Int32)ts.TotalSeconds;
     }
     #endregion
 
@@ -1211,18 +1211,18 @@ public static class DateTimeUtil
     /// <param name="time"></param>
     /// <param name="minutes"></param>
     /// <returns></returns>
-    public static int StrDateDiffMinutes(String time, int minutes)
+    public static Int32 StrDateDiffMinutes(String time, Int32 minutes)
     {
         if (String.IsNullOrEmpty(time))
             return 1;
 
         var ts = DateTime.Now - DateTime.Parse(time).AddMinutes(minutes);
-        if (ts.TotalMinutes > int.MaxValue)
-            return int.MaxValue;
-        else if (ts.TotalMinutes < int.MinValue)
-            return int.MinValue;
+        if (ts.TotalMinutes > Int32.MaxValue)
+            return Int32.MaxValue;
+        else if (ts.TotalMinutes < Int32.MinValue)
+            return Int32.MinValue;
 
-        return (int)ts.TotalMinutes;
+        return (Int32)ts.TotalMinutes;
     }
 
     /// <summary>
@@ -1231,15 +1231,15 @@ public static class DateTimeUtil
     /// <param name="time"></param>
     /// <param name="minutes"></param>
     /// <returns></returns>
-    public static int StrDateDiffMinutes(DateTime time, int minutes)
+    public static Int32 StrDateDiffMinutes(DateTime time, Int32 minutes)
     {
         var ts = DateTime.Now - time.AddMinutes(minutes);
-        if (ts.TotalMinutes > int.MaxValue)
-            return int.MaxValue;
-        else if (ts.TotalMinutes < int.MinValue)
-            return int.MinValue;
+        if (ts.TotalMinutes > Int32.MaxValue)
+            return Int32.MaxValue;
+        else if (ts.TotalMinutes < Int32.MinValue)
+            return Int32.MinValue;
 
-        return (int)ts.TotalMinutes;
+        return (Int32)ts.TotalMinutes;
     }
     #endregion
 
@@ -1250,18 +1250,18 @@ public static class DateTimeUtil
     /// <param name="time"></param>
     /// <param name="hours"></param>
     /// <returns></returns>
-    public static int StrDateDiffHours(String time, int hours)
+    public static Int32 StrDateDiffHours(String time, Int32 hours)
     {
         if (String.IsNullOrEmpty(time))
             return 1;
 
         var ts = DateTime.Now - DateTime.Parse(time).AddHours(hours);
-        if (ts.TotalHours > int.MaxValue)
-            return int.MaxValue;
-        else if (ts.TotalHours < int.MinValue)
-            return int.MinValue;
+        if (ts.TotalHours > Int32.MaxValue)
+            return Int32.MaxValue;
+        else if (ts.TotalHours < Int32.MinValue)
+            return Int32.MinValue;
 
-        return (int)ts.TotalHours;
+        return (Int32)ts.TotalHours;
     }
 
     /// <summary>
@@ -1270,15 +1270,15 @@ public static class DateTimeUtil
     /// <param name="time"></param>
     /// <param name="hours"></param>
     /// <returns></returns>
-    public static int StrDateDiffHours(DateTime time, Int32 hours)
+    public static Int32 StrDateDiffHours(DateTime time, Int32 hours)
     {
         var ts = DateTime.Now - time.AddHours(hours);
-        if (ts.TotalHours > int.MaxValue)
-            return int.MaxValue;
-        else if (ts.TotalHours < int.MinValue)
-            return int.MinValue;
+        if (ts.TotalHours > Int32.MaxValue)
+            return Int32.MaxValue;
+        else if (ts.TotalHours < Int32.MinValue)
+            return Int32.MinValue;
 
-        return (int)ts.TotalHours;
+        return (Int32)ts.TotalHours;
     }
     #endregion
 
@@ -1294,8 +1294,7 @@ public static class DateTimeUtil
         if (String.IsNullOrEmpty(date))
             return "";
 
-        DateTime time;
-        if (!DateTime.TryParse(date, out time))
+        if (!DateTime.TryParse(date, out var time))
             return "";
 
         var result = "";
@@ -1312,21 +1311,13 @@ public static class DateTimeUtil
         }
         else
         {
-            switch (currentDateTime.Day - time.Day)
+            result = (currentDateTime.Day - time.Day) switch
             {
-                case 0:
-                    result = "今天 " + time.ToString("HH") + ":" + time.ToString("mm");
-                    break;
-                case 1:
-                    result = "昨天 " + time.ToString("HH") + ":" + time.ToString("mm");
-                    break;
-                case 2:
-                    result = "前天 " + time.ToString("HH") + ":" + time.ToString("mm");
-                    break;
-                default:
-                    result = time.ToString("yyyy-MM-dd HH:mm");
-                    break;
-            }
+                0 => "今天 " + time.ToString("HH") + ":" + time.ToString("mm"),
+                1 => "昨天 " + time.ToString("HH") + ":" + time.ToString("mm"),
+                2 => "前天 " + time.ToString("HH") + ":" + time.ToString("mm"),
+                _ => time.ToString("yyyy-MM-dd HH:mm"),
+            };
         }
         return result;
     }
