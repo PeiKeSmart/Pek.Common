@@ -10,22 +10,22 @@ public static partial class DateTimeExtensions
     /// <summary>
     /// 1970年1月1日
     /// </summary>
-    public static readonly DateTime Date1970 = new DateTime(1970, 1, 1);
+    public static readonly DateTime Date1970 = new(1970, 1, 1);
 
     /// <summary>
     /// 最小日期
     /// </summary>
-    public static readonly DateTime MinDate = new DateTime(1900, 1, 1);
+    public static readonly DateTime MinDate = new(1900, 1, 1);
 
     /// <summary>
     /// 最大日期
     /// </summary>
-    public static readonly DateTime MaxDate = new DateTime(9999, 12, 31, 23, 59, 59, 999);
+    public static readonly DateTime MaxDate = new(9999, 12, 31, 23, 59, 59, 999);
 
     /// <summary>
     /// 初始化js日期时间戳
     /// </summary>
-    public static long InitialJavaScriptDateTicks = (new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).Ticks;
+    public static Int64 InitialJavaScriptDateTicks = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).Ticks;
 
     #endregion
 
@@ -35,9 +35,9 @@ public static partial class DateTimeExtensions
     /// 当前时间是否周末
     /// </summary>
     /// <param name="dateTime">时间点</param>
-    public static bool IsWeekend(this DateTime dateTime)
+    public static Boolean IsWeekend(this DateTime dateTime)
     {
-        DayOfWeek[] weeks = { DayOfWeek.Saturday, DayOfWeek.Sunday };
+        DayOfWeek[] weeks = [DayOfWeek.Saturday, DayOfWeek.Sunday];
         return weeks.Contains(dateTime.DayOfWeek);
     }
 
@@ -48,10 +48,10 @@ public static partial class DateTimeExtensions
     /// 当前时间是否工作日
     /// </summary>
     /// <param name="dateTime">时间点</param>
-    public static bool IsWeekday(this DateTime dateTime)
+    public static Boolean IsWeekday(this DateTime dateTime)
     {
         DayOfWeek[] weeks =
-            {DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday};
+            [DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday];
         return weeks.Contains(dateTime.DayOfWeek);
     }
 
@@ -64,10 +64,10 @@ public static partial class DateTimeExtensions
     /// <param name="dateTime">时间点</param>
     /// <param name="milsec">是否使用毫秒</param>
     /// <returns></returns>
-    public static string ToUniqueString(this DateTime dateTime, bool milsec = false)
+    public static String ToUniqueString(this DateTime dateTime, Boolean milsec = false)
     {
-        int sedonds = dateTime.Hour * 3600 + dateTime.Minute * 60 + dateTime.Second;
-        string value = string.Format("{0}{1}{2}", dateTime.ToString("yy"), dateTime.DayOfWeek, sedonds);
+        var sedonds = dateTime.Hour * 3600 + dateTime.Minute * 60 + dateTime.Second;
+        var value = String.Format("{0}{1}{2}", dateTime.ToString("yy"), dateTime.DayOfWeek, sedonds);
         return milsec ? value + dateTime.ToString("fff") : value;
     }
 
@@ -79,10 +79,10 @@ public static partial class DateTimeExtensions
     /// </summary>
     /// <param name="dateTime">时间点</param>
     /// <param name="milsec"></param>
-    public static string ToJsGetTime(this DateTime dateTime, bool milsec = true)
+    public static String ToJsGetTime(this DateTime dateTime, Boolean milsec = true)
     {
-        DateTime utc = dateTime.ToUniversalTime();
-        TimeSpan span = utc.Subtract(new DateTime(1970, 1, 1));
+        var utc = dateTime.ToUniversalTime();
+        var span = utc.Subtract(new DateTime(1970, 1, 1));
         return Math.Round(milsec ? span.TotalMilliseconds : span.TotalSeconds).ToString();
     }
 
@@ -97,10 +97,8 @@ public static partial class DateTimeExtensions
     /// <param name="minutes">分钟</param>
     /// <param name="seconds">秒</param>
     /// <returns>返回设置后的时间</returns>
-    public static DateTime SetTime(this DateTime date, int hours, int minutes, int seconds)
-    {
-        return date.SetTime(new TimeSpan(hours, minutes, seconds));
-    }
+    public static DateTime SetTime(this DateTime date, Int32 hours, Int32 minutes, Int32 seconds) => date.SetTime(new TimeSpan(hours, minutes, seconds));
+
     /// <summary>
     /// 设置时间，设置时分秒毫秒
     /// </summary>
@@ -110,20 +108,15 @@ public static partial class DateTimeExtensions
     /// <param name="seconds">秒</param>
     /// <param name="milliseconds">毫秒</param>
     /// <returns>返回设置后的时间</returns>
-    public static DateTime SetTime(this DateTime date, int hours, int minutes, int seconds, int milliseconds)
-    {
-        return date.SetTime(new TimeSpan(0, hours, minutes, seconds, milliseconds));
-    }
+    public static DateTime SetTime(this DateTime date, Int32 hours, Int32 minutes, Int32 seconds, Int32 milliseconds) => date.SetTime(new TimeSpan(0, hours, minutes, seconds, milliseconds));
+
     /// <summary>
     /// 设置时间，设置时间间隔
     /// </summary>
     /// <param name="date">时间</param>
     /// <param name="time">时间间隔</param>
     /// <returns>返回设置后的时间</returns>
-    public static DateTime SetTime(this DateTime date, TimeSpan time)
-    {
-        return date.Date.Add(time);
-    }
+    public static DateTime SetTime(this DateTime date, TimeSpan time) => date.Date.Add(time);
     #endregion
 
     #region EndOfDay(设置指定时间为当天的结束时间)
@@ -132,10 +125,7 @@ public static partial class DateTimeExtensions
     /// </summary>
     /// <param name="date">指定时间</param>
     /// <returns>当天的结束时间</returns>
-    public static DateTime EndOfDay(this DateTime date)
-    {
-        return date.SetTime(23, 59, 59, 999);
-    }
+    public static DateTime EndOfDay(this DateTime date) => date.SetTime(23, 59, 59, 999);
     #endregion
 
     #region BeginOfDay(设置指定时间为当天的开始时间)
@@ -144,10 +134,7 @@ public static partial class DateTimeExtensions
     /// </summary>
     /// <param name="time">指定时间</param>
     /// <returns>当天的开始时间</returns>
-    public static DateTime BeginOfDay(this DateTime time)
-    {
-        return time.SetTime(0, 0, 0, 0);
-    }
+    public static DateTime BeginOfDay(this DateTime time) => time.SetTime(0, 0, 0, 0);
     #endregion
 
     #region EndOfMonth(设置指定时间为当月的结束时间)
@@ -157,10 +144,7 @@ public static partial class DateTimeExtensions
     /// </summary>
     /// <param name="date">时间</param>
     /// <returns>当月的结束时间</returns>
-    public static DateTime EndOfMonth(this DateTime date)
-    {
-        return new DateTime(date.Year, date.Month, DateTime.DaysInMonth(date.Year, date.Month), 23, 59, 59, 999);
-    }
+    public static DateTime EndOfMonth(this DateTime date) => new(date.Year, date.Month, DateTime.DaysInMonth(date.Year, date.Month), 23, 59, 59, 999);
 
     #endregion
 
@@ -171,10 +155,7 @@ public static partial class DateTimeExtensions
     /// </summary>
     /// <param name="date">时间</param>
     /// <returns>当月的开始时间</returns>
-    public static DateTime BeginOfMonth(this DateTime date)
-    {
-        return new DateTime(date.Year, date.Month, 1, 0, 0, 0, 0);
-    }
+    public static DateTime BeginOfMonth(this DateTime date) => new(date.Year, date.Month, 1, 0, 0, 0, 0);
 
     #endregion
 
@@ -184,10 +165,7 @@ public static partial class DateTimeExtensions
     /// </summary>
     /// <param name="date">日期</param>
     /// <returns>月份第一天</returns>
-    public static DateTime GetFirstDayOfMonth(this DateTime date)
-    {
-        return new DateTime(date.Year, date.Month, 1);
-    }
+    public static DateTime GetFirstDayOfMonth(this DateTime date) => new(date.Year, date.Month, 1);
     /// <summary>
     /// 获取指定日期的月份第一天，指定星期几
     /// </summary>
@@ -209,10 +187,7 @@ public static partial class DateTimeExtensions
     /// </summary>
     /// <param name="date">日期</param>
     /// <returns>最后一天</returns>
-    public static DateTime GetLastDayOfMonth(this DateTime date)
-    {
-        return new DateTime(date.Year, date.Month, GetCountDaysOfMonth(date));
-    }
+    public static DateTime GetLastDayOfMonth(this DateTime date) => new(date.Year, date.Month, GetCountDaysOfMonth(date));
     /// <summary>
     /// 获取指定日期的月份最后一天，指定星期几
     /// </summary>
@@ -234,7 +209,7 @@ public static partial class DateTimeExtensions
     /// </summary>
     /// <param name="date">日期</param>
     /// <returns>月总天数</returns>
-    public static int GetCountDaysOfMonth(this DateTime date)
+    public static Int32 GetCountDaysOfMonth(this DateTime date)
     {
         var nextMonth = date.AddMonths(1);
         return new DateTime(nextMonth.Year, nextMonth.Month, 1).AddDays(-1).Day;
@@ -247,10 +222,10 @@ public static partial class DateTimeExtensions
     /// </summary>
     /// <param name="datetime">当前时间</param>
     /// <returns>毫秒数</returns>
-    public static long GetMillisecondsSince1970(this DateTime datetime)
+    public static Int64 GetMillisecondsSince1970(this DateTime datetime)
     {
         var ts = datetime.Subtract(Date1970);
-        return (long)ts.TotalMilliseconds;
+        return (Int64)ts.TotalMilliseconds;
     }
     #endregion
 
@@ -263,9 +238,9 @@ public static partial class DateTimeExtensions
     /// <param name="end">结束时间</param>
     /// <param name="dateFormat">间隔格式(y:年,M:月,d:天,h:小时,m:分钟,s:秒,fff:毫秒)</param>
     /// <returns></returns>
-    public static long CompareInterval(this DateTime begin, DateTime end, string dateFormat)
+    public static Int64 CompareInterval(this DateTime begin, DateTime end, String dateFormat)
     {
-        long interval = begin.Ticks - end.Ticks;
+        var interval = begin.Ticks - end.Ticks;
         DateTime dt1;
         DateTime dt2;
         switch (dateFormat)
@@ -323,7 +298,7 @@ public static partial class DateTimeExtensions
     /// <param name="beginTime">开始时间</param>
     /// <param name="endTime">结束时间</param>
     /// <returns></returns>
-    public static bool IsBetweenTime(this DateTime currentTime, DateTime beginTime, DateTime endTime)
+    public static Boolean IsBetweenTime(this DateTime currentTime, DateTime beginTime, DateTime endTime)
     {
         var am = beginTime.TimeOfDay;
         var pm = endTime.TimeOfDay;
@@ -356,7 +331,7 @@ public static partial class DateTimeExtensions
     /// <param name="beginDate">开始日期</param>
     /// <param name="endDate">结束日期</param>
     /// <returns></returns>
-    public static bool IsBetweenDate(this DateTime currentDate, DateTime beginDate, DateTime endDate)
+    public static Boolean IsBetweenDate(this DateTime currentDate, DateTime beginDate, DateTime endDate)
     {
         var begin = beginDate.Date;
         var end = endDate.Date;
@@ -376,7 +351,7 @@ public static partial class DateTimeExtensions
     /// <param name="begin">开始时间</param>
     /// <param name="end">结束时间</param>
     /// <returns></returns>
-    public static bool IsBetween(this DateTime current, DateTime begin, DateTime end)
+    public static Boolean IsBetween(this DateTime current, DateTime begin, DateTime end)
     {
         var ticks = current.Ticks;
         return ticks >= begin.Ticks && ticks <= end.Ticks;
@@ -391,10 +366,7 @@ public static partial class DateTimeExtensions
     /// </summary>
     /// <param name="value">值</param>
     /// <returns></returns>
-    public static bool IsValid(this DateTime value)
-    {
-        return (value >= MinDate) && (value <= MaxDate);
-    }
+    public static Boolean IsValid(this DateTime value) => (value >= MinDate) && (value <= MaxDate);
 
     #endregion
 
@@ -405,10 +377,7 @@ public static partial class DateTimeExtensions
     /// </summary>
     /// <param name="time">时间</param>
     /// <returns></returns>
-    public static int ToTimeStamp(this DateTime time)
-    {
-        return (int)(time.ToUniversalTime().Ticks / 10000000 - 62135596800);
-    }
+    public static Int32 ToTimeStamp(this DateTime time) => (Int32)(time.ToUniversalTime().Ticks / 10000000 - 62135596800);
 
     #endregion
 
@@ -419,10 +388,7 @@ public static partial class DateTimeExtensions
     /// </summary>
     /// <param name="dateTime">时间</param>
     /// <returns></returns>
-    public static long CsharpTime2JavascriptTime(this DateTime dateTime)
-    {
-        return (long)new TimeSpan(dateTime.Ticks - Date1970.Ticks).TotalMilliseconds;
-    }
+    public static Int64 CsharpTime2JavascriptTime(this DateTime dateTime) => (Int64)new TimeSpan(dateTime.Ticks - Date1970.Ticks).TotalMilliseconds;
 
     #endregion
 
@@ -431,12 +397,11 @@ public static partial class DateTimeExtensions
     /// <summary>
     /// 将PHP时间转换为C#时间
     /// </summary>
-    /// <param name="dateTime">时间</param>
     /// <param name="time">PHP的时间</param>
     /// <returns></returns>
-    public static DateTime PhpTime2CsharpTime(this DateTime dateTime, long time)
+    public static DateTime PhpTime2CsharpTime(Int64 time)
     {
-        long t = (time + 8 * 60 * 60) * 10000000 + Date1970.Ticks;
+        var t = (time + 8 * 60 * 60) * 10000000 + Date1970.Ticks;
         return new DateTime(t);
     }
 
@@ -447,12 +412,8 @@ public static partial class DateTimeExtensions
     /// <summary>
     /// 将C#时间转换为PHP时间
     /// </summary>
-    /// <param name="dateTime">时间</param>
     /// <returns></returns>
-    public static long CsharpTime2PhpTime(this DateTime dateTime)
-    {
-        return (DateTime.UtcNow.Ticks - Date1970.Ticks) / 10000000;
-    }
+    public static Int64 CsharpTime2PhpTime() => (DateTime.UtcNow.Ticks - Date1970.Ticks) / 10000000;
 
     #endregion
 
@@ -464,10 +425,7 @@ public static partial class DateTimeExtensions
     /// <param name="dateTime">时间</param>
     /// <param name="weeks">周</param>
     /// <returns></returns>
-    public static DateTime AddWeeks(this DateTime dateTime, int weeks)
-    {
-        return dateTime.AddDays(weeks * 7);
-    }
+    public static DateTime AddWeeks(this DateTime dateTime, Int32 weeks) => dateTime.AddDays(weeks * 7);
 
     #endregion
 
