@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Pek.Extensions;
+namespace Pek;
 
 /// <summary>
 /// 对象(<see cref="Object"/>) 扩展

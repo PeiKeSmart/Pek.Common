@@ -1,4 +1,4 @@
-﻿namespace Pek.Extensions;
+﻿namespace Pek;
 
 /// <summary>
 /// 对象(<see cref="Object"/>) 扩展

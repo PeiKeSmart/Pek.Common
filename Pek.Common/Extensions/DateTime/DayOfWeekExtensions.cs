@@ -1,4 +1,4 @@
-﻿namespace Pek.Extensions;
+﻿namespace Pek;
 
 /// <summary>
 /// 星期(<see cref="DayOfWeek"/>) 扩展方法

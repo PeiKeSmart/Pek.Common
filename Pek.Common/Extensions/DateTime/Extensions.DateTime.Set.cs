@@ -1,6 +1,6 @@
 ﻿using Pek.Timing;
 
-namespace Pek.Extensions;
+namespace Pek;
 
 /// <summary>
 /// 日期时间(<see cref="DateTime"/>) 扩展方法
