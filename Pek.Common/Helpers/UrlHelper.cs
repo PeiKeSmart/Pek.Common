@@ -8,7 +8,7 @@ public static partial class UrlHelper
     #region Combine(合并Url)
 
     /// <summary>
-    /// 合并Url
+    /// 合并Url，内容中不要包含"/"符号，否则数据会转换错误
     /// </summary>
     /// <param name="urls">url片段，范例：Url.Combine( "http://a.com","b" ),返回 "http://a.com/b"</param>
     public static String Combine(params String[] urls) => Path.Combine(urls).Replace(@"\", "/");
