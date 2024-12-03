@@ -42,6 +42,7 @@
 
   <ItemGroup>
     <PackageReference Include="DH.NCore" Version="4.0.2024.1201-beta0217" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
