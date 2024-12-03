@@ -10,7 +10,8 @@ public static class CloneHelper {
     private static readonly JsonSerializerOptions _jsonSerializerOptions = new()
     {
         ReferenceHandler = ReferenceHandler.Preserve,  // 选项会保留对象的引用信息，以便在反序列化时能够正确处理循环引用
-        Converters = { new ObjectToInferredTypesConverter() }
+        Converters = { new ObjectToInferredTypesConverter() },
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull // 忽略 null 值
     };
 
     /// <summary>
