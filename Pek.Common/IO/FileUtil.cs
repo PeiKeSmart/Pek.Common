@@ -360,7 +360,7 @@ public static partial class FileUtil
             memoryStream.Seek(0, SeekOrigin.Begin);
         }
 
-        var result = await reader.ReadToEndAsync();
+        var result = await reader.ReadToEndAsync().ConfigureAwait(false);
         if (stream.CanSeek)
         {
             stream.Seek(0, SeekOrigin.Begin);

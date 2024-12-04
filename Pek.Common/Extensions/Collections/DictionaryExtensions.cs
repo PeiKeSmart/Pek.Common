@@ -287,10 +287,10 @@ public static class DictionaryExtensions
     /// </summary>
     /// <param name="formData">表单数据</param>
     /// <param name="stream">流</param>
-    public static void FillFormDataStream(this IDictionary<string, string> formData, Stream stream)
+    public static void FillFormDataStream(this IDictionary<String, String> formData, Stream stream)
     {
         var dataStr = ToQueryString(formData);
-        var formDataBytes = formData == null ? new byte[0] : Encoding.UTF8.GetBytes(dataStr);
+        var formDataBytes = formData == null ? [] : Encoding.UTF8.GetBytes(dataStr);
         stream.Write(formDataBytes, 0, formDataBytes.Length);
         stream.Seek(0, SeekOrigin.Begin);// 设置指针读取位置
     }
@@ -300,11 +300,11 @@ public static class DictionaryExtensions
     /// </summary>
     /// <param name="formData">表单数据</param>
     /// <param name="stream">流</param>
-    public static async Task FillFormDataStreamAsync(this IDictionary<string, string> formData, Stream stream)
+    public static async Task FillFormDataStreamAsync(this IDictionary<String, String> formData, Stream stream)
     {
         var dataStr = ToQueryString(formData);
-        var formDataBytes = formData == null ? new byte[0] : Encoding.UTF8.GetBytes(dataStr);
-        await stream.WriteAsync(formDataBytes, 0, formDataBytes.Length);
+        var formDataBytes = formData == null ? [] : Encoding.UTF8.GetBytes(dataStr);
+        await stream.WriteAsync(formDataBytes, 0, formDataBytes.Length).ConfigureAwait(false);
         stream.Seek(0, SeekOrigin.Begin);// 设置指针读取位置
     }
 

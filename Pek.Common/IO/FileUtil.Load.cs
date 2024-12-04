@@ -16,7 +16,7 @@ public static partial class FileUtil
         if (filePath == null) throw new ArgumentNullException(nameof(filePath));
 
         using var reader = File.OpenText(filePath);
-        return await reader.ReadToEndAsync();
+        return await reader.ReadToEndAsync().ConfigureAwait(false);
     }
 
     #endregion
@@ -32,7 +32,7 @@ public static partial class FileUtil
         if (filePath == null) throw new ArgumentNullException(nameof(filePath));
         using var stream = File.Open(filePath, FileMode.Open);
         var result = new Byte[stream.Length];
-        _ = await stream.ReadAsync(result, 0, (Int32)stream.Length);
+        _ = await stream.ReadAsync(result, 0, (Int32)stream.Length).ConfigureAwait(false);
         return result;
     }
 

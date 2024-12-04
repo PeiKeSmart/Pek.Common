@@ -95,7 +95,7 @@ public static partial class FileUtil
             stream.Seek(0, SeekOrigin.Begin);
         }
 
-        var result = await reader.ReadToEndAsync();
+        var result = await reader.ReadToEndAsync().ConfigureAwait(false);
         if (stream.CanSeek)
         {
             stream.Seek(0, SeekOrigin.Begin);
@@ -170,7 +170,7 @@ public static partial class FileUtil
     {
         stream.Seek(0, SeekOrigin.Begin);
         var buffer = new Byte[stream.Length];
-        _ = await stream.ReadAsync(buffer, 0, buffer.Length);
+        _ = await stream.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
         return buffer;
     }
 
