@@ -1,4 +1,6 @@
-﻿namespace Pek;
+﻿using NewLife.Collections;
+
+namespace Pek;
 
 /// <summary>
 /// Url操作
@@ -8,10 +10,25 @@ public static partial class UrlHelper
     #region Combine(合并Url)
 
     /// <summary>
-    /// 合并Url，内容中不要包含"/"符号，否则数据会转换错误
+    /// 合并Url，支持包含"/"符号
     /// </summary>
     /// <param name="urls">url片段，范例：Url.Combine( "http://a.com","b" ),返回 "http://a.com/b"</param>
-    public static String Combine(params String[] urls) => Path.Combine(urls).Replace(@"\", "/");
+    public static String Combine(params String[] urls)
+    {
+        if (urls == null || urls.Length == 0) return String.Empty;
+
+        var result = Pool.StringBuilder.Get();
+        foreach (var url in urls)
+        {
+            if (result.Length > 0 && !result.ToString().EndsWith("/"))
+            {
+                result.Append('/');
+            }
+            result.Append(url.Trim('/'));
+        }
+
+        return result.Return(true);
+    }
 
     #endregion
 
