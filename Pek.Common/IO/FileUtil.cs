@@ -333,7 +333,7 @@ public static partial class FileUtil
     /// </summary>
     /// <param name="stream">流</param>
     /// <param name="encoding">字符编码</param>
-    public static async Task<String> CopyToStringAsync(Stream stream, Encoding? encoding = null)
+    public static async Task<String> CopyToStringAsync(Stream? stream, Encoding? encoding = null)
     {
         if (stream == null)
         {
@@ -424,10 +424,7 @@ public static partial class FileUtil
     /// <param name="suffix">后缀名</param>
     /// <param name="size">分割大小。单位：KB</param>
     /// <param name="delete">分割后是否删除源文件</param>
-    /// <param name="encrypt">是否加密</param>
-    /// <param name="sign">签名</param>
-    public static void Split(String file, String dirPath, String suffix = "bin", Int32 size = 2048, Boolean delete = false, Boolean encrypt = false,
-        Int32 sign = 0)
+    public static void Split(String file, String dirPath, String suffix = "bin", Int32 size = 2048, Boolean delete = false)
     {
         if (String.IsNullOrWhiteSpace(file) || !File.Exists(file))
         {
