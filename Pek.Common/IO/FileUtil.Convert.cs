@@ -35,7 +35,7 @@ public static partial class FileUtil
     /// <param name="bufferSize">缓冲区大小</param>
     /// <param name="isCloseStream">读取完成是否释放流，默认为true</param>
     /// <returns></returns>
-    public static String ToString(Stream stream, Encoding? encoding = null, Int32 bufferSize = 1024 * 2,
+    public static String ToString(Stream? stream, Encoding? encoding = null, Int32 bufferSize = 1024 * 2,
         Boolean isCloseStream = true)
     {
         if (stream == null)
