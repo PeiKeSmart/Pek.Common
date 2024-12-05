@@ -73,7 +73,7 @@ public static partial class FileUtil
     /// <param name="bufferSize">缓冲区大小</param>
     /// <param name="isCloseStream">读取完成是否释放流，默认为true</param>
     /// <returns></returns>
-    public static async Task<String> ToStringAsync(Stream stream, Encoding? encoding = null,
+    public static async Task<String> ToStringAsync(Stream? stream, Encoding? encoding = null,
         Int32 bufferSize = 1024 * 2,
         Boolean isCloseStream = true)
     {
