@@ -497,20 +497,6 @@ public static class CoreExtension
     public static Boolean IsControl(this Char c) => Char.IsControl(c);
 
     /// <summary>
-    ///     Indicates whether the specified Unicode character is categorized as a decimal digit.
-    /// </summary>
-    /// <param name="c">The Unicode character to evaluate.</param>
-    /// <returns>true if  is a decimal digit; otherwise, false.</returns>
-    public static Boolean IsDigit(this Char c) => Char.IsDigit(c);
-
-    /// <summary>
-    ///     Indicates whether the specified Unicode character is categorized as a Unicode letter.
-    /// </summary>
-    /// <param name="c">The Unicode character to evaluate.</param>
-    /// <returns>true if  is a letter; otherwise, false.</returns>
-    public static Boolean IsLetter(this Char c) => Char.IsLetter(c);
-
-    /// <summary>
     ///     Indicates whether the specified Unicode character is categorized as a letter or a decimal digit.
     /// </summary>
     /// <param name="c">The Unicode character to evaluate.</param>
@@ -814,13 +800,6 @@ public static class CoreExtension
     public static Boolean InRange(this Decimal @this, Decimal minValue, Decimal maxValue) => @this.CompareTo(minValue) >= 0 && @this.CompareTo(maxValue) <= 0;
 
     /// <summary>
-    ///     Returns the absolute value of a  number.
-    /// </summary>
-    /// <param name="value">A number that is greater than or equal to , but less than or equal to .</param>
-    /// <returns>A decimal number, x, such that 0 ? x ?.</returns>
-    public static Decimal Abs(this Decimal value) => Math.Abs(value);
-
-    /// <summary>
     ///     Returns the smallest integral value that is greater than or equal to the specified decimal number.
     /// </summary>
     /// <param name="d">A decimal number.</param>
@@ -970,15 +949,6 @@ public static class CoreExtension
     #endregion Delegate
 
     #region Double
-
-    /// <summary>
-    /// A T extension method that check if the value is between inclusively the minValue and maxValue.
-    /// </summary>
-    /// <param name="this">The @this to act on.</param>
-    /// <param name="minValue">The minimum value.</param>
-    /// <param name="maxValue">The maximum value.</param>
-    /// <returns>true if the value is between inclusively the minValue and maxValue, otherwise false.</returns>
-    public static Boolean InRange(this Double @this, Double minValue, Double maxValue) => @this.CompareTo(minValue) >= 0 && @this.CompareTo(maxValue) <= 0;
 
     /// <summary>
     ///     Returns the absolute value of a double-precision floating-point number.
