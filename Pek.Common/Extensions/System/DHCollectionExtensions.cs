@@ -1,25 +1,12 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace Pek;
+namespace System;
 
 /// <summary>
-/// 系统扩展 - 类型转换扩展
+/// 集合的扩展方法。
 /// </summary>
-public static partial class DHExtensions
+public static class DHCollectionExtensions
 {
-    #region SafeString(安全转换为字符串)
-
-    /// <summary>
-    /// 安全转换为字符串，去除两端空格，当值为null时返回""
-    /// </summary>
-    /// <param name="input">输入值</param>
-    public static String SafeString(this Object? input)
-    {
-       return input == null ? String.Empty : (input.ToString()?.Trim() ?? String.Empty);
-    }
-
-    #endregion
-
     /// <summary>
     /// 检查任何给定的集合对象为空或没有项。
     /// </summary>
