@@ -1,4 +1,4 @@
-﻿namespace Pek.Helpers;
+﻿namespace Pek.Iot;
 
 public class IotHelper
 {
@@ -16,7 +16,7 @@ public class IotHelper
         arry[0] = (Byte)(m & 0xFF);
         arry[1] = (Byte)((m & 0xFF00) >> 8);
         arry[2] = (Byte)((m & 0xFF0000) >> 16);
-        arry[3] = (Byte)((m >> 24) & 0xFF);
+        arry[3] = (Byte)(m >> 24 & 0xFF);
 
         return true;
     }
