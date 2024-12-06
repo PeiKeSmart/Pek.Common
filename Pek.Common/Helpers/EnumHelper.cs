@@ -6,7 +6,7 @@ namespace Pek.Helpers;
 /// <summary>
 /// 枚举 操作
 /// </summary>
-public static partial class Enum
+public static partial class EnumHelper
 {
     /// <summary>
     /// 枚举值字段

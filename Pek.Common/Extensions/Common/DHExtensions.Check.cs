@@ -23,14 +23,6 @@ public static partial class DHExtensions
     #endregion
 
     /// <summary>
-    /// 检查任何给定的集合对象为空或没有项。
-    /// </summary>
-    public static bool IsNullOrEmpty<T>(this ICollection<T> source)
-    {
-        return source == null || source.Count <= 0;
-    }
-
-    /// <summary>
     /// 从集合中删除满足给定<paramref name="predicate"/>的所有项。
     /// </summary>
     /// <typeparam name="T">集合中项目的类型</typeparam>

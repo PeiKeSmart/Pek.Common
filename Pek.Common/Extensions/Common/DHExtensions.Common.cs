@@ -13,7 +13,7 @@ public static partial class DHExtensions
     /// 获取枚举值
     /// </summary>
     /// <param name="instance">枚举实例</param>
-    public static int Value(this Enum instance) => Helpers.Enum.GetValue(instance.GetType(), instance);
+    public static int Value(this Enum instance) => Helpers.EnumHelper.GetValue(instance.GetType(), instance);
 
     /// <summary>
     /// 获取枚举值
@@ -38,7 +38,7 @@ public static partial class DHExtensions
     /// 获取枚举描述，使用<see cref="DescriptionAttribute"/>特性设置描述
     /// </summary>
     /// <param name="instance">枚举实例</param>
-    public static string Description(this Enum instance) => Helpers.Enum.GetDescription(instance.GetType(), instance);
+    public static string Description(this Enum instance) => Helpers.EnumHelper.GetDescription(instance.GetType(), instance);
 
     #endregion
 

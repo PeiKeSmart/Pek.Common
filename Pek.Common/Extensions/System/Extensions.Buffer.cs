@@ -1,4 +1,4 @@
-﻿namespace System;
+﻿namespace Pek;
 
 /// <summary>
 /// 基础类型扩展

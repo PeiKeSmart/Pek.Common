@@ -1,4 +1,4 @@
-﻿namespace System;
+﻿namespace Pek;
 
 public static partial class BaseTypeExtensions
 {

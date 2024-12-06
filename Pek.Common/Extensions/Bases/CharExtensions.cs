@@ -296,14 +296,6 @@ public static class CharExtensions
     public static Boolean IsNonPrintable(this Char c) => (c >= 0x0 && c <= 0x8) || (c >= 0xe && c <= 0x1f) || (c >= 0x7f && c <= 0x9f);
 
     /// <summary>
-    /// Gets if the character is actually a (A-Z,a-z) letter.
-    /// </summary>
-    /// <param name="c">The character to examine.</param>
-    /// <returns>The result of the test.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Boolean IsLetter(this Char c) => IsUppercaseAscii(c) || IsLowercaseAscii(c);
-
-    /// <summary>
     /// Gets if the character is actually a name character.
     /// </summary>
     /// <param name="c">The character to examine.</param>
@@ -353,16 +345,6 @@ public static class CharExtensions
         c.IsInRange(0x0009, 0x000d) || c == 0x0020 || c == 0x0085 || c == 0x00a0 ||
         c == 0x1680 || c == 0x180e || c.IsInRange(0x2000, 0x200a) || c == 0x2028 ||
         c == 0x2029 || c == 0x202f || c == 0x205f || c == 0x3000;
-
-    /// <summary>
-    /// Determines if the given character is a digit (0-9) as specified
-    /// here:
-    /// http://www.whatwg.org/specs/web-apps/current-work/multipage/common-microsyntaxes.html#ascii-digits
-    /// </summary>
-    /// <param name="c">The character to examine.</param>
-    /// <returns>The result of the test.</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Boolean IsDigit(this Char c) => c >= 0x30 && c <= 0x39;
 
     /// <summary>
     /// Determines if the given character is a valid url code point as specified here:

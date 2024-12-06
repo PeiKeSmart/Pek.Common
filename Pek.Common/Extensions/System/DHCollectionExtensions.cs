@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace System;
+namespace Pek;
 
 /// <summary>
 /// 集合的扩展方法。

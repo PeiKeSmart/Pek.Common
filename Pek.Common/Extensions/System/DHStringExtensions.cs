@@ -1,15 +1,15 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Security.Cryptography;
-using System.Text.RegularExpressions;
 using System.Text;
+using System.Text.RegularExpressions;
 
 using NewLife;
 
 using Pek;
 using Pek.Helpers;
 
-namespace System;
+namespace Pek;
 
 /// <summary>
 /// 字符串(<see cref="string"/>) 扩展
