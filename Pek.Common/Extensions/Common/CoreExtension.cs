@@ -1239,18 +1239,6 @@ public static class CoreExtension
     /// <returns>true if the values list contains the object, else false.</returns>
     public static Boolean In([NotNull] this Enum @this, params Enum[] values) => Array.IndexOf(values, @this) >= 0;
 
-    /// <summary>
-    /// An object extension method that gets description attribute.
-    /// </summary>
-    /// <param name="value">The value to act on.</param>
-    /// <returns>The description attribute.</returns>
-    public static String? GetDescription([NotNull] this Enum value)
-    {
-        var attr = value.GetType().GetField(value.ToString())?
-            .GetCustomAttribute<DescriptionAttribute>();
-        return attr?.Description;
-    }
-
     #endregion Enum
 
     #region EventHandler
