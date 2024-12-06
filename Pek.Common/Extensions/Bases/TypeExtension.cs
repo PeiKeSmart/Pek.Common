@@ -40,13 +40,6 @@ public static class TypeExtension
         };
 
     /// <summary>
-    /// get TypeCode for specific type
-    /// </summary>
-    /// <param name="type">type</param>
-    /// <returns></returns>
-    public static TypeCode GetTypeCode(this Type type) => Type.GetTypeCode(type);
-
-    /// <summary>
     /// 是否是 ValueTuple
     /// </summary>
     /// <param name="type">type</param>
