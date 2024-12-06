@@ -902,10 +902,7 @@ public static partial class StringExtensions
     /// </summary>
     /// <param name="value">值</param>
     /// <returns></returns>
-    public static string ToTitleCase(this string value)
-    {
-        return value.ToTitleCase(CultureInfo.CurrentCulture);
-    }
+    public static String ToTitleCase(this string value) => value.ToTitleCase(CultureInfo.CurrentCulture);
 
     /// <summary>
     /// 将指定字符串转为词首字母大写
@@ -913,7 +910,7 @@ public static partial class StringExtensions
     /// <param name="value">值</param>
     /// <param name="culture">区域性信息</param>
     /// <returns></returns>
-    public static string ToTitleCase(this string value, CultureInfo culture)
+    public static String ToTitleCase(this String value, CultureInfo culture)
     {
         return culture.TextInfo.ToTitleCase(value);
     }

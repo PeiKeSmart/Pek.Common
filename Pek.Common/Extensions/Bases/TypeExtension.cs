@@ -2,6 +2,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
+using Pek.Helpers;
+
 namespace Pek;
 
 public static class TypeExtension
@@ -89,7 +91,7 @@ public static class TypeExtension
     /// <param name="type">type</param>
     /// <param name="parameterTypes"></param>
     /// <returns>Matching constructor or default one</returns>
-    public static ConstructorInfo GetConstructor(this Type type, params Type[] parameterTypes)
+    public static ConstructorInfo? GetConstructor(this Type type, params Type[] parameterTypes)
     {
         if (parameterTypes == null || parameterTypes.Length == 0)
             return GetEmptyConstructor(type);
@@ -98,7 +100,7 @@ public static class TypeExtension
         return ctor;
     }
 
-    public static ConstructorInfo GetEmptyConstructor(this Type type)
+    public static ConstructorInfo? GetEmptyConstructor(this Type type)
     {
         var constructors = type.GetConstructors();
 
@@ -115,15 +117,7 @@ public static class TypeExtension
     /// <param name="this">The type to test.</param>
     /// <returns>True if this type is assignable to references of type
     /// <typeparamref name="T"/>; otherwise, False.</returns>
-    public static bool IsAssignableTo<T>(this Type @this)
-    {
-        if (@this == null)
-        {
-            throw new ArgumentNullException(nameof(@this));
-        }
-
-        return typeof(T).IsAssignableFrom(@this);
-    }
+    public static Boolean IsAssignableTo<T>(this Type @this) => @this == null ? throw new ArgumentNullException(nameof(@this)) : typeof(T).IsAssignableFrom(@this);
 
     /// <summary>
     /// Finds a constructor with the matching type parameters.
@@ -131,8 +125,7 @@ public static class TypeExtension
     /// <param name="type">The type being tested.</param>
     /// <param name="constructorParameterTypes">The types of the contractor to find.</param>
     /// <returns>The <see cref="ConstructorInfo"/> is a match is found; otherwise, <c>null</c>.</returns>
-    [CanBeNull]
-    public static ConstructorInfo GetMatchingConstructor(this Type type, Type[] constructorParameterTypes)
+    public static ConstructorInfo? GetMatchingConstructor(this Type type, Type[] constructorParameterTypes)
     {
         if (constructorParameterTypes == null || constructorParameterTypes.Length == 0)
             return GetEmptyConstructor(type);
@@ -149,8 +142,5 @@ public static class TypeExtension
     /// </summary>
     /// <param name="type">type</param>
     /// <returns></returns>
-    public static IEnumerable<Type> GetImplementedInterfaces([NotNull] this Type type)
-    {
-        return type.GetTypeInfo().ImplementedInterfaces;
-    }
+    public static IEnumerable<Type> GetImplementedInterfaces([NotNull] this Type type) => type.GetTypeInfo().ImplementedInterfaces;
 }

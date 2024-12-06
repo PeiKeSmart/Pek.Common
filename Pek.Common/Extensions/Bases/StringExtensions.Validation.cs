@@ -1,7 +1,7 @@
 ﻿namespace Pek;
 
 /// <summary>
-/// 字符串(<see cref="string"/>) 扩展 - 验证
+/// 字符串(<see cref="String"/>) 扩展 - 验证
 /// </summary>
 public static partial class StringExtensions
 {
@@ -12,7 +12,7 @@ public static partial class StringExtensions
     /// </summary>
     /// <param name="fileName">文件名</param>
     /// <returns>结果</returns>
-    public static bool IsImageFile(this string fileName)
+    public static Boolean IsImageFile(this String fileName)
     {
         if (!File.Exists(fileName))
         {
@@ -100,10 +100,7 @@ public static partial class StringExtensions
     /// <param name="value">值</param>
     /// <param name="patterns">模式</param>
     /// <returns></returns>
-    public static bool IsLikeAny(this string value, params string[] patterns)
-    {
-        return patterns.Any(value.IsLike);
-    }
+    public static Boolean IsLikeAny(this String value, params String[] patterns) => patterns.Any(value.IsLike);
 
     /// <summary>
     /// 通配符比较
@@ -111,7 +108,7 @@ public static partial class StringExtensions
     /// <param name="value">值</param>
     /// <param name="pattern">模式</param>
     /// <returns></returns>
-    public static bool IsLike(this string value, string pattern)
+    public static Boolean IsLike(this String value, String pattern)
     {
         if (value == pattern)
         {
@@ -119,7 +116,7 @@ public static partial class StringExtensions
         }
         if (pattern[0] == '*' && pattern.Length > 1)
         {
-            return value.Where((t, index) => value.Substring(index).IsLike(pattern.Substring(1))).Any();
+            return value.Where((t, index) => value[index..].IsLike(pattern[1..])).Any();
         }
 
         if (pattern[0] == '*')
@@ -129,7 +126,7 @@ public static partial class StringExtensions
 
         if (pattern[0] == value[0])
         {
-            return value.Substring(1).IsLike(pattern.Substring(1));
+            return value[1..].IsLike(pattern[1..]);
         }
         return false;
     }
@@ -144,10 +141,7 @@ public static partial class StringExtensions
     /// <typeparam name="TEnum">泛型枚举</typeparam>
     /// <param name="value">匹配的枚举</param>
     /// <returns>匿名方法条件</returns>
-    public static Func<bool> IsItemInEnum<TEnum>(this string value) where TEnum : struct
-    {
-        return () => string.IsNullOrEmpty(value) || !Enum.IsDefined(typeof(TEnum), value);
-    }
+    public static Func<Boolean> IsItemInEnum<TEnum>(this String value) where TEnum : struct => () => String.IsNullOrEmpty(value) || !Enum.IsDefined(typeof(TEnum), value);
 
     #endregion
 
@@ -160,10 +154,7 @@ public static partial class StringExtensions
     /// <param name="minLength">最小长度</param>
     /// <param name="maxLength">最大长度</param>
     /// <returns></returns>
-    public static bool IsRangeLength(this string source, int minLength, int maxLength)
-    {
-        return source.Length >= minLength && source.Length <= maxLength;
-    }
+    public static Boolean IsRangeLength(this String source, Int32 minLength, Int32 maxLength) => source.Length >= minLength && source.Length <= maxLength;
 
     #endregion
 
@@ -176,10 +167,7 @@ public static partial class StringExtensions
     /// <param name="comparisonType">区域性比较</param>
     /// <param name="values">提供的值</param>
     /// <returns></returns>
-    public static bool EqualsAny(this string value, StringComparison comparisonType, params string[] values)
-    {
-        return values.Any(v => value.Equals(v, comparisonType));
-    }
+    public static Boolean EqualsAny(this String value, StringComparison comparisonType, params String[] values) => values.Any(v => value.Equals(v, comparisonType));
 
     #endregion
 
@@ -192,10 +180,7 @@ public static partial class StringExtensions
     /// <param name="whateverCaseString">比较字符串</param>
     /// <param name="comparison">区域性</param>
     /// <returns></returns>
-    public static bool EquivalentTo(this string value, string whateverCaseString, StringComparison comparison = StringComparison.InvariantCultureIgnoreCase)
-    {
-        return string.Equals(value, whateverCaseString, comparison);
-    }
+    public static Boolean EquivalentTo(this String value, String whateverCaseString, StringComparison comparison = StringComparison.InvariantCultureIgnoreCase) => String.Equals(value, whateverCaseString, comparison);
 
     #endregion
 
@@ -208,10 +193,7 @@ public static partial class StringExtensions
     /// <param name="comparisonValue">包含字符串</param>
     /// <param name="comparisonType">区域</param>
     /// <returns></returns>
-    public static bool Contains(this string inputValue, string comparisonValue, StringComparison comparisonType)
-    {
-        return (inputValue.IndexOf(comparisonValue, comparisonType) != -1);
-    }
+    public static Boolean Contains(this String inputValue, String comparisonValue, StringComparison comparisonType) => (inputValue.IndexOf(comparisonValue, comparisonType) != -1);
 
     /// <summary>
     /// 确定输入字符串是否包含指定字符串，且字符串不为空
@@ -219,7 +201,7 @@ public static partial class StringExtensions
     /// <param name="inputValue">输入字符串</param>
     /// <param name="comparisonValue">指定字符串</param>
     /// <returns></returns>
-    public static bool ContainsEquivalenceTo(this string inputValue, string comparisonValue)
+    public static Boolean ContainsEquivalenceTo(this String inputValue, String comparisonValue)
     {
         return BothStringsAreEmpty(inputValue, comparisonValue) ||
                StringContainsEquivalence(inputValue, comparisonValue);
@@ -231,7 +213,7 @@ public static partial class StringExtensions
     /// <param name="inputValue">字符串1</param>
     /// <param name="comparisonValue">字符串2</param>
     /// <returns></returns>
-    private static bool BothStringsAreEmpty(string inputValue, string comparisonValue)
+    private static Boolean BothStringsAreEmpty(string inputValue, string comparisonValue)
     {
         return (inputValue.IsEmpty() && comparisonValue.IsEmpty());
     }
@@ -242,10 +224,7 @@ public static partial class StringExtensions
     /// <param name="inputValue">输入字符串</param>
     /// <param name="comparisonValue">指定字符串</param>
     /// <returns></returns>
-    private static bool StringContainsEquivalence(string inputValue, string comparisonValue)
-    {
-        return ((!inputValue.IsEmpty()) && inputValue.Contains(comparisonValue, StringComparison.InvariantCultureIgnoreCase));
-    }
+    private static Boolean StringContainsEquivalence(String inputValue, String comparisonValue) => ((!inputValue.IsEmpty()) && inputValue.Contains(comparisonValue, StringComparison.InvariantCultureIgnoreCase));
 
     /// <summary>
     /// 确定字符串是否包含所提供的值
@@ -253,10 +232,7 @@ public static partial class StringExtensions
     /// <param name="value">值</param>
     /// <param name="values">提供的值</param>
     /// <returns></returns>
-    public static bool ContainsAny(this string value, params string[] values)
-    {
-        return value.ContainsAny(StringComparison.CurrentCulture, values);
-    }
+    public static Boolean ContainsAny(this String value, params String[] values) => value.ContainsAny(StringComparison.CurrentCulture, values);
 
     /// <summary>
     /// 确定字符串是否包含所提供的值
@@ -265,10 +241,7 @@ public static partial class StringExtensions
     /// <param name="comparisonType">区域性比较</param>
     /// <param name="values">提供的值</param>
     /// <returns></returns>
-    public static bool ContainsAny(this string value, StringComparison comparisonType, params string[] values)
-    {
-        return values.Any(v => value.IndexOf(v, comparisonType) > -1);
-    }
+    public static Boolean ContainsAny(this String value, StringComparison comparisonType, params String[] values) => values.Any(v => value.IndexOf(v, comparisonType) > -1);
 
     /// <summary>
     /// 确定字符串是否包含所有提供的值
@@ -276,10 +249,7 @@ public static partial class StringExtensions
     /// <param name="value">值</param>
     /// <param name="values">提供的值</param>
     /// <returns></returns>
-    public static bool ContainsAll(this string value, params string[] values)
-    {
-        return value.ContainsAll(StringComparison.CurrentCulture, values);
-    }
+    public static Boolean ContainsAll(this String value, params String[] values) => value.ContainsAll(StringComparison.CurrentCulture, values);
 
     /// <summary>
     /// 确定字符串是否包含所有提供的值
@@ -288,10 +258,7 @@ public static partial class StringExtensions
     /// <param name="comparisonType">区域性比较</param>
     /// <param name="values">提供的值</param>
     /// <returns></returns>
-    public static bool ContainsAll(this string value, StringComparison comparisonType, params string[] values)
-    {
-        return values.All(v => value.IndexOf(v, comparisonType) > -1);
-    }
+    public static Boolean ContainsAll(this String value, StringComparison comparisonType, params String[] values) => values.All(v => value.IndexOf(v, comparisonType) > -1);
 
     #endregion
 }

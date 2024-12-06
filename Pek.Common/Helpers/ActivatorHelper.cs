@@ -71,7 +71,7 @@ internal class ParameterDefaultValue
 public static class ActivatorHelper
 {
     private static readonly MethodInfo _getServiceInfo =
-        GetMethodInfo<Func<IServiceProvider, Type, Type, Boolean, Object>>((sp, t, r, c) => GetService(sp, t, r, c));
+        GetMethodInfo<Func<IServiceProvider, Type, Type, Boolean, Object>>((sp, t, r, c) => GetService(sp, t, r, c)!);
 
     /// <summary>
     /// create instance of Type T with parameters
@@ -88,10 +88,7 @@ public static class ActivatorHelper
     /// <param name="instanceType">The type to activate</param>
     /// <param name="parameters">Constructor arguments not provided by the <paramref name="provider"/>.</param>
     /// <returns>An activated object of type instanceType</returns>
-    public static object CreateInstance(this IServiceProvider provider, Type instanceType, params object[] parameters)
-    {
-        return MatchConstructor(instanceType, parameters).CreateInstance(provider);
-    }
+    public static Object CreateInstance(this IServiceProvider provider, Type instanceType, params Object[] parameters) => MatchConstructor(instanceType, parameters).CreateInstance(provider);
 
     /// <summary>
     /// Match Best Constructor
@@ -99,9 +96,9 @@ public static class ActivatorHelper
     /// <param name="instanceType">instance type to new</param>
     /// <param name="parameters">Constructor arguments not provided by di sys</param>
     /// <returns>Best Constructor Matched</returns>
-    private static ConstructorMatcher MatchConstructor(Type instanceType, params object[] parameters)
+    private static ConstructorMatcher MatchConstructor(Type instanceType, params Object[] parameters)
     {
-        parameters ??= ArrayHelper.Empty<object>();
+        parameters ??= [];
 
         var bestLength = -1;
 
@@ -142,15 +139,9 @@ public static class ActivatorHelper
     /// <param name="instanceType">instance type to new</param>
     /// <param name="parameters">Constructor arguments not provided by di sys</param>
     /// <returns>Best Constructor Matched</returns>
-    public static ConstructorInfo MatchBestConstructor(Type instanceType, params object[] parameters)
-    {
-        return MatchConstructor(instanceType, parameters).Constructor;
-    }
+    public static ConstructorInfo MatchBestConstructor(Type instanceType, params Object[] parameters) => MatchConstructor(instanceType, parameters).Constructor;
 
-    public static object[] GetBestConstructorArguments(IServiceProvider serviceProvider, Type instanceType, params object[] parameters)
-    {
-        return MatchConstructor(instanceType, parameters).GetConstructorArguments(serviceProvider);
-    }
+    public static Object?[] GetBestConstructorArguments(IServiceProvider serviceProvider, Type instanceType, params Object[] parameters) => MatchConstructor(instanceType, parameters).GetConstructorArguments(serviceProvider);
 
     /// <summary>
     /// Create a delegate that will instantiate a type with constructor arguments provided directly
@@ -166,13 +157,13 @@ public static class ActivatorHelper
     /// </returns>
     public static ObjectFactory CreateFactory(Type instanceType, Type[] argumentTypes)
     {
-        FindApplicableConstructor(instanceType, argumentTypes, out ConstructorInfo constructor, out int?[] parameterMap);
+        FindApplicableConstructor(instanceType, argumentTypes, out var constructor, out var parameterMap);
 
         var provider = Expression.Parameter(typeof(IServiceProvider), "provider");
-        var argumentArray = Expression.Parameter(typeof(object[]), "argumentArray");
-        var factoryExpressionBody = BuildFactoryExpression(constructor, parameterMap, provider, argumentArray);
+        var argumentArray = Expression.Parameter(typeof(Object[]), "argumentArray");
+        var factoryExpressionBody = BuildFactoryExpression(constructor!, parameterMap!, provider, argumentArray);
 
-        var factoryLambda = Expression.Lambda<Func<IServiceProvider, object[], object>>(
+        var factoryLambda = Expression.Lambda<Func<IServiceProvider, Object[], Object>>(
             factoryExpressionBody, provider, argumentArray);
 
         var result = factoryLambda.Compile();
@@ -186,10 +177,7 @@ public static class ActivatorHelper
     /// <param name="provider">The service provider used to resolve dependencies</param>
     /// <param name="parameters">Constructor arguments not provided by the <paramref name="provider"/>.</param>
     /// <returns>An activated object of type T</returns>
-    public static T CreateInstance<T>(this IServiceProvider provider, params object[] parameters)
-    {
-        return (T)CreateInstance(provider, typeof(T), parameters);
-    }
+    public static T CreateInstance<T>(this IServiceProvider provider, params Object[] parameters) => (T)CreateInstance(provider, typeof(T), parameters);
 
     /// <summary>
     /// Retrieve an instance of the given type from the service provider. If one is not found then instantiate it directly.
@@ -197,10 +185,7 @@ public static class ActivatorHelper
     /// <typeparam name="T">The type of the service</typeparam>
     /// <param name="provider">The service provider used to resolve dependencies</param>
     /// <returns>The resolved service or created instance</returns>
-    public static T GetServiceOrCreateInstance<T>(this IServiceProvider provider)
-    {
-        return (T)GetServiceOrCreateInstance(provider, typeof(T));
-    }
+    public static T GetServiceOrCreateInstance<T>(this IServiceProvider provider) => (T)GetServiceOrCreateInstance(provider, typeof(T));
 
     /// <summary>
     /// Retrieve an instance of the given type from the service provider. If one is not found then instantiate it directly.
@@ -208,10 +193,7 @@ public static class ActivatorHelper
     /// <param name="provider">The service provider</param>
     /// <param name="type">The type of the service</param>
     /// <returns>The resolved service or created instance</returns>
-    public static object GetServiceOrCreateInstance(this IServiceProvider provider, Type type)
-    {
-        return provider.GetService(type) ?? CreateInstance(provider, type);
-    }
+    public static Object GetServiceOrCreateInstance(this IServiceProvider provider, Type type) => provider.GetService(type) ?? CreateInstance(provider, type);
 
     private static MethodInfo GetMethodInfo<T>(Expression<T> expr)
     {
@@ -219,7 +201,7 @@ public static class ActivatorHelper
         return mc.Method;
     }
 
-    private static object GetService(IServiceProvider sp, Type type, Type requiredBy, bool isDefaultParameterRequired)
+    private static Object? GetService(IServiceProvider sp, Type type, Type requiredBy, Boolean isDefaultParameterRequired)
     {
         var service = sp.GetService(type);
         if (service == null && !isDefaultParameterRequired)
@@ -232,7 +214,7 @@ public static class ActivatorHelper
 
     private static Expression BuildFactoryExpression(
         ConstructorInfo constructor,
-        int?[] parameterMap,
+        Int32?[] parameterMap,
         Expression serviceProvider,
         Expression factoryArgumentArray)
     {
@@ -275,8 +257,8 @@ public static class ActivatorHelper
     public static void FindApplicableConstructor(
         Type instanceType,
         Type[] argumentTypes,
-        out ConstructorInfo matchingConstructor,
-        out int?[] parameterMap)
+        out ConstructorInfo? matchingConstructor,
+        out Int32?[]? parameterMap)
     {
         matchingConstructor = null;
         parameterMap = null;
@@ -289,11 +271,11 @@ public static class ActivatorHelper
     }
 
     // Tries to find constructor based on provided argument types
-    private static bool TryFindMatchingConstructor(
+    private static Boolean TryFindMatchingConstructor(
         Type instanceType,
         Type[] argumentTypes,
-        ref ConstructorInfo matchingConstructor,
-        ref int?[] parameterMap)
+        ref ConstructorInfo? matchingConstructor,
+        ref Int32?[]? parameterMap)
     {
         foreach (var constructor in instanceType.GetTypeInfo().DeclaredConstructors)
         {
@@ -302,7 +284,7 @@ public static class ActivatorHelper
                 continue;
             }
 
-            if (TryCreateParameterMap(constructor.GetParameters(), argumentTypes, out int?[] tempParameterMap))
+            if (TryCreateParameterMap(constructor.GetParameters(), argumentTypes, out var tempParameterMap))
             {
                 if (matchingConstructor != null)
                 {
@@ -319,9 +301,9 @@ public static class ActivatorHelper
 
     // Creates an injective parameterMap from givenParameterTypes to assignable constructorParameters.
     // Returns true if each given parameter type is assignable to a unique; otherwise, false.
-    private static bool TryCreateParameterMap(ParameterInfo[] constructorParameters, Type[] argumentTypes, out int?[] parameterMap)
+    private static Boolean TryCreateParameterMap(ParameterInfo[] constructorParameters, Type[] argumentTypes, out Int32?[] parameterMap)
     {
-        parameterMap = new int?[constructorParameters.Length];
+        parameterMap = new Int32?[constructorParameters.Length];
 
         for (var i = 0; i < argumentTypes.Length; i++)
         {
@@ -357,16 +339,16 @@ public static class ActivatorHelper
     {
         private readonly ConstructorInfo _constructor;
         private readonly ParameterInfo[] _parameters;
-        private readonly object[] _parameterValues;
+        private readonly Object?[] _parameterValues;
 
         public ConstructorMatcher(ConstructorInfo constructor)
         {
             _constructor = constructor;
             _parameters = _constructor.GetParameters();
-            _parameterValues = new object[_parameters.Length];
+            _parameterValues = new Object[_parameters.Length];
         }
 
-        public int Match(object[] givenParameters)
+        public Int32 Match(Object[] givenParameters)
         {
             var applyIndexStart = 0;
             var applyExactLength = 0;
@@ -401,7 +383,7 @@ public static class ActivatorHelper
             return applyExactLength;
         }
 
-        public object CreateInstance(IServiceProvider provider)
+        public Object CreateInstance(IServiceProvider provider)
         {
             for (var index = 0; index != _parameters.Length; index++)
             {
@@ -438,7 +420,7 @@ public static class ActivatorHelper
             }
         }
 
-        public object[] GetConstructorArguments(IServiceProvider provider)
+        public Object?[] GetConstructorArguments(IServiceProvider provider)
         {
             for (var index = 0; index != _parameters.Length; index++)
             {

@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System.Collections;
+using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -17,10 +18,7 @@ public static class CoreExtension
     ///     An Array extension method that clears the array.
     /// </summary>
     /// <param name="this">The @this to act on.</param>
-    public static void ClearAll([NotNull] this Array @this)
-    {
-        Array.Clear(@this, 0, @this.Length);
-    }
+    public static void ClearAll([NotNull] this Array @this) => Array.Clear(@this, 0, @this.Length);
 
     /// <summary>
     ///     Searches an entire one-dimensional sorted  for a specific element, using the  interface implemented by each
@@ -34,10 +32,7 @@ public static class CoreExtension
     ///     larger than . If  is not found and  is greater than any of the elements in , a negative number which is the
     ///     bitwise complement of (the index of the last element plus 1).
     /// </returns>
-    public static int BinarySearch([NotNull] this Array array, object value)
-    {
-        return Array.BinarySearch(array, value);
-    }
+    public static Int32 BinarySearch([NotNull] this Array array, Object value) => Array.BinarySearch(array, value);
 
     /// <summary>
     ///     Searches a range of elements in a one-dimensional sorted  for a value, using the  interface implemented by
@@ -53,10 +48,7 @@ public static class CoreExtension
     ///     larger than . If  is not found and  is greater than any of the elements in , a negative number which is the
     ///     bitwise complement of (the index of the last element plus 1).
     /// </returns>
-    public static int BinarySearch([NotNull] this Array array, int index, int length, object value)
-    {
-        return Array.BinarySearch(array, index, length, value);
-    }
+    public static Int32 BinarySearch([NotNull] this Array array, Int32 index, Int32 length, Object value) => Array.BinarySearch(array, index, length, value);
 
     /// <summary>
     ///     Searches an entire one-dimensional sorted  for a value using the specified  interface.
@@ -73,10 +65,7 @@ public static class CoreExtension
     ///     larger than . If  is not found and  is greater than any of the elements in , a negative number which is the
     ///     bitwise complement of (the index of the last element plus 1).
     /// </returns>
-    public static int BinarySearch([NotNull] this Array array, object value, IComparer comparer)
-    {
-        return Array.BinarySearch(array, value, comparer);
-    }
+    public static Int32 BinarySearch([NotNull] this Array array, Object value, IComparer comparer) => Array.BinarySearch(array, value, comparer);
 
     /// <summary>
     ///     Searches a range of elements in a one-dimensional sorted  for a value, using the specified  interface.
@@ -95,10 +84,7 @@ public static class CoreExtension
     ///     larger than . If  is not found and  is greater than any of the elements in , a negative number which is the
     ///     bitwise complement of (the index of the last element plus 1).
     /// </returns>
-    public static int BinarySearch([NotNull] this Array array, int index, int length, object value, IComparer comparer)
-    {
-        return Array.BinarySearch(array, index, length, value, comparer);
-    }
+    public static Int32 BinarySearch([NotNull] this Array array, Int32 index, Int32 length, Object value, IComparer comparer) => Array.BinarySearch(array, index, length, value, comparer);
 
     /// <summary>
     ///     Sets a range of elements in the  to zero, to false, or to null, depending on the element type.
@@ -106,10 +92,7 @@ public static class CoreExtension
     /// <param name="array">The  whose elements need to be cleared.</param>
     /// <param name="index">The starting index of the range of elements to clear.</param>
     /// <param name="length">The number of elements to clear.</param>
-    public static void Clear([NotNull] this Array array, int index, int length)
-    {
-        Array.Clear(array, index, length);
-    }
+    public static void Clear([NotNull] this Array array, Int32 index, Int32 length) => Array.Clear(array, index, length);
 
     /// <summary>
     ///     Copies a range of elements from an  starting at the first element and pastes them into another  starting at
@@ -118,10 +101,7 @@ public static class CoreExtension
     /// <param name="sourceArray">The  that contains the data to copy.</param>
     /// <param name="destinationArray">The  that receives the data.</param>
     /// <param name="length">A 32-bit integer that represents the number of elements to copy.</param>
-    public static void Copy([NotNull] this Array sourceArray, Array destinationArray, int length)
-    {
-        Array.Copy(sourceArray, destinationArray, length);
-    }
+    public static void Copy([NotNull] this Array sourceArray, Array destinationArray, Int32 length) => Array.Copy(sourceArray, destinationArray, length);
 
     /// <summary>
     ///     Copies a range of elements from an  starting at the specified source index and pastes them to another
@@ -132,10 +112,7 @@ public static class CoreExtension
     /// <param name="destinationArray">The  that receives the data.</param>
     /// <param name="destinationIndex">A 32-bit integer that represents the index in the  at which storing begins.</param>
     /// <param name="length">A 32-bit integer that represents the number of elements to copy.</param>
-    public static void Copy([NotNull] this Array sourceArray, int sourceIndex, Array destinationArray, int destinationIndex, int length)
-    {
-        Array.Copy(sourceArray, sourceIndex, destinationArray, destinationIndex, length);
-    }
+    public static void Copy([NotNull] this Array sourceArray, Int32 sourceIndex, Array destinationArray, Int32 destinationIndex, Int32 length) => Array.Copy(sourceArray, sourceIndex, destinationArray, destinationIndex, length);
 
     /// <summary>
     ///     Copies a range of elements from an  starting at the first element and pastes them into another  starting at
@@ -147,10 +124,7 @@ public static class CoreExtension
     ///     A 64-bit integer that represents the number of elements to copy. The integer must be between
     ///     zero and , inclusive.
     /// </param>
-    public static void Copy([NotNull] this Array sourceArray, Array destinationArray, long length)
-    {
-        Array.Copy(sourceArray, destinationArray, length);
-    }
+    public static void Copy([NotNull] this Array sourceArray, Array destinationArray, Int64 length) => Array.Copy(sourceArray, destinationArray, length);
 
     /// <summary>
     ///     Copies a range of elements from an  starting at the specified source index and pastes them to another
@@ -164,10 +138,7 @@ public static class CoreExtension
     ///     A 64-bit integer that represents the number of elements to copy. The integer must be between
     ///     zero and , inclusive.
     /// </param>
-    public static void Copy([NotNull] this Array sourceArray, long sourceIndex, Array destinationArray, long destinationIndex, long length)
-    {
-        Array.Copy(sourceArray, sourceIndex, destinationArray, destinationIndex, length);
-    }
+    public static void Copy([NotNull] this Array sourceArray, Int64 sourceIndex, Array destinationArray, Int64 destinationIndex, Int64 length) => Array.Copy(sourceArray, sourceIndex, destinationArray, destinationIndex, length);
 
     /// <summary>
     ///     Searches for the specified object and returns the index of the first occurrence within the entire one-
@@ -179,10 +150,7 @@ public static class CoreExtension
     ///     The index of the first occurrence of  within the entire , if found; otherwise, the lower bound of the array
     ///     minus 1.
     /// </returns>
-    public static int IndexOf([NotNull] this Array array, object value)
-    {
-        return Array.IndexOf(array, value);
-    }
+    public static Int32 IndexOf([NotNull] this Array array, Object value) => Array.IndexOf(array, value);
 
     /// <summary>
     ///     Searches for the specified object and returns the index of the first occurrence within the range of elements
@@ -195,10 +163,7 @@ public static class CoreExtension
     ///     The index of the first occurrence of  within the range of elements in  that extends from  to the last element,
     ///     if found; otherwise, the lower bound of the array minus 1.
     /// </returns>
-    public static int IndexOf([NotNull] this Array array, object value, int startIndex)
-    {
-        return Array.IndexOf(array, value, startIndex);
-    }
+    public static Int32 IndexOf([NotNull] this Array array, Object value, Int32 startIndex) => Array.IndexOf(array, value, startIndex);
 
     /// <summary>
     ///     Searches for the specified object and returns the index of the first occurrence within the range of elements
@@ -212,10 +177,7 @@ public static class CoreExtension
     ///     The index of the first occurrence of  within the range of elements in  that starts at  and contains the
     ///     number of elements specified in , if found; otherwise, the lower bound of the array minus 1.
     /// </returns>
-    public static int IndexOf([NotNull] this Array array, object value, int startIndex, int count)
-    {
-        return Array.IndexOf(array, value, startIndex, count);
-    }
+    public static Int32 IndexOf([NotNull] this Array array, Object value, Int32 startIndex, Int32 count) => Array.IndexOf(array, value, startIndex, count);
 
     /// <summary>
     ///     Searches for the specified object and returns the index of the last occurrence within the entire one-
@@ -227,10 +189,7 @@ public static class CoreExtension
     ///     The index of the last occurrence of  within the entire , if found; otherwise, the lower bound of the array
     ///     minus 1.
     /// </returns>
-    public static int LastIndexOf([NotNull] this Array array, object value)
-    {
-        return Array.LastIndexOf(array, value);
-    }
+    public static Int32 LastIndexOf([NotNull] this Array array, Object value) => Array.LastIndexOf(array, value);
 
     /// <summary>
     ///     Searches for the specified object and returns the index of the last occurrence within the range of elements
@@ -243,10 +202,7 @@ public static class CoreExtension
     ///     The index of the last occurrence of  within the range of elements in  that extends from the first element to ,
     ///     if found; otherwise, the lower bound of the array minus 1.
     /// </returns>
-    public static int LastIndexOf([NotNull] this Array array, object value, int startIndex)
-    {
-        return Array.LastIndexOf(array, value, startIndex);
-    }
+    public static Int32 LastIndexOf([NotNull] this Array array, Object value, Int32 startIndex) => Array.LastIndexOf(array, value, startIndex);
 
     /// <summary>
     ///     Searches for the specified object and returns the index of the last occurrence within the range of elements
@@ -260,19 +216,13 @@ public static class CoreExtension
     ///     The index of the last occurrence of  within the range of elements in  that contains the number of elements
     ///     specified in  and ends at , if found; otherwise, the lower bound of the array minus 1.
     /// </returns>
-    public static int LastIndexOf([NotNull] this Array array, object value, int startIndex, int count)
-    {
-        return Array.LastIndexOf(array, value, startIndex, count);
-    }
+    public static Int32 LastIndexOf([NotNull] this Array array, Object value, Int32 startIndex, Int32 count) => Array.LastIndexOf(array, value, startIndex, count);
 
     /// <summary>
     ///     Reverses the sequence of the elements in the entire one-dimensional .
     /// </summary>
     /// <param name="array">The one-dimensional  to reverse.</param>
-    public static void Reverse([NotNull] this Array array)
-    {
-        Array.Reverse(array);
-    }
+    public static void Reverse([NotNull] this Array array) => Array.Reverse(array);
 
     /// <summary>
     ///     Reverses the sequence of the elements in a range of elements in the one-dimensional .
@@ -280,19 +230,13 @@ public static class CoreExtension
     /// <param name="array">The one-dimensional  to reverse.</param>
     /// <param name="index">The starting index of the section to reverse.</param>
     /// <param name="length">The number of elements in the section to reverse.</param>
-    public static void Reverse([NotNull] this Array array, int index, int length)
-    {
-        Array.Reverse(array, index, length);
-    }
+    public static void Reverse([NotNull] this Array array, Int32 index, Int32 length) => Array.Reverse(array, index, length);
 
     /// <summary>
     ///     Sorts the elements in an entire one-dimensional  using the  implementation of each element of the .
     /// </summary>
     /// <param name="array">The one-dimensional  to sort.</param>
-    public static void Sort([NotNull] this Array array)
-    {
-        Array.Sort(array);
-    }
+    public static void Sort([NotNull] this Array array) => Array.Sort(array);
 
     /// <summary>
     ///     Sorts a pair of one-dimensional  objects (one contains the keys and the other contains the corresponding
@@ -303,10 +247,7 @@ public static class CoreExtension
     ///     The one-dimensional  that contains the items that correspond to each of the keys in the .-or-
     ///     null to sort only the .
     /// </param>
-    public static void Sort([NotNull] this Array array, Array items)
-    {
-        Array.Sort(array, items);
-    }
+    public static void Sort([NotNull] this Array array, Array items) => Array.Sort(array, items);
 
     /// <summary>
     ///     Sorts the elements in a range of elements in a one-dimensional  using the  implementation of each element of
@@ -315,10 +256,7 @@ public static class CoreExtension
     /// <param name="array">The one-dimensional  to sort.</param>
     /// <param name="index">The starting index of the range to sort.</param>
     /// <param name="length">The number of elements in the range to sort.</param>
-    public static void Sort([NotNull] this Array array, int index, int length)
-    {
-        Array.Sort(array, index, length);
-    }
+    public static void Sort([NotNull] this Array array, Int32 index, Int32 length) => Array.Sort(array, index, length);
 
     /// <summary>
     ///     Sorts a range of elements in a pair of one-dimensional  objects (one contains the keys and the other contains
@@ -331,10 +269,7 @@ public static class CoreExtension
     /// </param>
     /// <param name="index">The starting index of the range to sort.</param>
     /// <param name="length">The number of elements in the range to sort.</param>
-    public static void Sort([NotNull] this Array array, Array items, int index, int length)
-    {
-        Array.Sort(array, items, index, length);
-    }
+    public static void Sort([NotNull] this Array array, Array items, Int32 index, Int32 length) => Array.Sort(array, items, index, length);
 
     /// <summary>
     ///     Sorts the elements in a one-dimensional  using the specified .
@@ -344,10 +279,7 @@ public static class CoreExtension
     ///     The  implementation to use when comparing elements.-or-null to use the  implementation of
     ///     each element.
     /// </param>
-    public static void Sort([NotNull] this Array array, IComparer comparer)
-    {
-        Array.Sort(array, comparer);
-    }
+    public static void Sort([NotNull] this Array array, IComparer comparer) => Array.Sort(array, comparer);
 
     /// <summary>
     ///     Sorts a pair of one-dimensional  objects (one contains the keys and the other contains the corresponding
@@ -362,10 +294,7 @@ public static class CoreExtension
     ///     The  implementation to use when comparing elements.-or-null to use the  implementation of
     ///     each element.
     /// </param>
-    public static void Sort([NotNull] this Array array, Array items, IComparer comparer)
-    {
-        Array.Sort(array, items, comparer);
-    }
+    public static void Sort([NotNull] this Array array, Array items, IComparer comparer) => Array.Sort(array, items, comparer);
 
     /// <summary>
     ///     Sorts the elements in a range of elements in a one-dimensional  using the specified .
@@ -377,10 +306,7 @@ public static class CoreExtension
     ///     The  implementation to use when comparing elements.-or-null to use the  implementation of
     ///     each element.
     /// </param>
-    public static void Sort([NotNull] this Array array, int index, int length, IComparer comparer)
-    {
-        Array.Sort(array, index, length, comparer);
-    }
+    public static void Sort([NotNull] this Array array, Int32 index, Int32 length, IComparer comparer) => Array.Sort(array, index, length, comparer);
 
     /// <summary>
     ///     Sorts a range of elements in a pair of one-dimensional  objects (one contains the keys and the other contains
@@ -397,10 +323,7 @@ public static class CoreExtension
     ///     The  implementation to use when comparing elements.-or-null to use the  implementation of
     ///     each element.
     /// </param>
-    public static void Sort([NotNull] this Array array, Array items, int index, int length, IComparer comparer)
-    {
-        Array.Sort(array, items, index, length, comparer);
-    }
+    public static void Sort([NotNull] this Array array, Array items, Int32 index, Int32 length, IComparer comparer) => Array.Sort(array, items, index, length, comparer);
 
     /// <summary>
     ///     Copies a specified number of bytes from a source array starting at a particular offset to a destination array
@@ -411,10 +334,7 @@ public static class CoreExtension
     /// <param name="dst">The destination buffer.</param>
     /// <param name="dstOffset">The zero-based byte offset into .</param>
     /// <param name="count">The number of bytes to copy.</param>
-    public static void BlockCopy([NotNull] this Array src, int srcOffset, Array dst, int dstOffset, int count)
-    {
-        Buffer.BlockCopy(src, srcOffset, dst, dstOffset, count);
-    }
+    public static void BlockCopy([NotNull] this Array src, Int32 srcOffset, Array dst, Int32 dstOffset, Int32 count) => Buffer.BlockCopy(src, srcOffset, dst, dstOffset, count);
 
     #endregion Array
 
@@ -425,7 +345,7 @@ public static class CoreExtension
     /// </summary>
     /// <param name="this">The @this to act on.</param>
     /// <param name="action">The action to execute.</param>
-    public static void IfTrue(this bool @this, Action action)
+    public static void IfTrue(this Boolean @this, Action action)
     {
         if (@this)
         {
@@ -438,7 +358,7 @@ public static class CoreExtension
     /// </summary>
     /// <param name="this">The @this to act on.</param>
     /// <param name="action">The action to execute.</param>
-    public static void IfFalse(this bool @this, Action action)
+    public static void IfFalse(this Boolean @this, Action action)
     {
         if (!@this)
         {
@@ -453,10 +373,7 @@ public static class CoreExtension
     /// <param name="trueValue">The true value to be returned if the @this value is true.</param>
     /// <param name="falseValue">The false value to be returned if the @this value is false.</param>
     /// <returns>A string that represents of the current boolean value.</returns>
-    public static string ToString(this bool @this, string trueValue, string falseValue)
-    {
-        return @this ? trueValue : falseValue;
-    }
+    public static String ToString(this Boolean @this, String trueValue, String falseValue) => @this ? trueValue : falseValue;
 
     #endregion Boolean
 
@@ -468,10 +385,7 @@ public static class CoreExtension
     /// <param name="val1">The first of two 8-bit unsigned integers to compare.</param>
     /// <param name="val2">The second of two 8-bit unsigned integers to compare.</param>
     /// <returns>Parameter  or , whichever is larger.</returns>
-    public static byte Max(this byte val1, byte val2)
-    {
-        return Math.Max(val1, val2);
-    }
+    public static Byte Max(this Byte val1, Byte val2) => Math.Max(val1, val2);
 
     /// <summary>
     ///     Returns the smaller of two 8-bit unsigned integers.
@@ -479,10 +393,7 @@ public static class CoreExtension
     /// <param name="val1">The first of two 8-bit unsigned integers to compare.</param>
     /// <param name="val2">The second of two 8-bit unsigned integers to compare.</param>
     /// <returns>Parameter  or , whichever is smaller.</returns>
-    public static byte Min(this byte val1, byte val2)
-    {
-        return Math.Min(val1, val2);
-    }
+    public static Byte Min(this Byte val1, Byte val2) => Math.Min(val1, val2);
 
     #endregion Byte
 
@@ -494,10 +405,7 @@ public static class CoreExtension
     /// </summary>
     /// <param name="inArray">An array of 8-bit unsigned integers.</param>
     /// <returns>The string representation, in base 64, of the contents of .</returns>
-    public static string ToBase64String([NotNull] this byte[] inArray)
-    {
-        return Convert.ToBase64String(inArray);
-    }
+    public static String ToBase64String([NotNull] this Byte[] inArray) => Convert.ToBase64String(inArray);
 
     /// <summary>
     ///     Converts an array of 8-bit unsigned integers to its equivalent string representation that is encoded with
@@ -506,10 +414,7 @@ public static class CoreExtension
     /// <param name="inArray">An array of 8-bit unsigned integers.</param>
     /// <param name="options">to insert a line break every 76 characters, or  to not insert line breaks.</param>
     /// <returns>The string representation in base 64 of the elements in .</returns>
-    public static string ToBase64String([NotNull] this byte[] inArray, Base64FormattingOptions options)
-    {
-        return Convert.ToBase64String(inArray, options);
-    }
+    public static String ToBase64String([NotNull] this Byte[] inArray, Base64FormattingOptions options) => Convert.ToBase64String(inArray, options);
 
     /// <summary>
     ///     Converts a subset of an array of 8-bit unsigned integers to its equivalent string representation that is
@@ -520,10 +425,7 @@ public static class CoreExtension
     /// <param name="offset">An offset in .</param>
     /// <param name="length">The number of elements of  to convert.</param>
     /// <returns>The string representation in base 64 of  elements of , starting at position .</returns>
-    public static string ToBase64String([NotNull] this byte[] inArray, int offset, int length)
-    {
-        return Convert.ToBase64String(inArray, offset, length);
-    }
+    public static String ToBase64String([NotNull] this Byte[] inArray, Int32 offset, Int32 length) => Convert.ToBase64String(inArray, offset, length);
 
     /// <summary>
     ///     Converts a subset of an array of 8-bit unsigned integers to its equivalent string representation that is
@@ -535,10 +437,7 @@ public static class CoreExtension
     /// <param name="length">The number of elements of  to convert.</param>
     /// <param name="options">to insert a line break every 76 characters, or  to not insert line breaks.</param>
     /// <returns>The string representation in base 64 of  elements of , starting at position .</returns>
-    public static string ToBase64String([NotNull] this byte[] inArray, int offset, int length, Base64FormattingOptions options)
-    {
-        return Convert.ToBase64String(inArray, offset, length, options);
-    }
+    public static String ToBase64String([NotNull] this Byte[] inArray, Int32 offset, Int32 length, Base64FormattingOptions options) => Convert.ToBase64String(inArray, offset, length, options);
 
     /// <summary>
     ///     A byte[] extension method that resizes the byte[].
@@ -546,7 +445,7 @@ public static class CoreExtension
     /// <param name="this">The @this to act on.</param>
     /// <param name="newSize">Size of the new.</param>
     /// <returns>A byte[].</returns>
-    public static byte[] Resize([NotNull] this byte[] @this, int newSize)
+    public static Byte[] Resize([NotNull] this Byte[] @this, Int32 newSize)
     {
         Array.Resize(ref @this, newSize);
         return @this;
@@ -557,15 +456,12 @@ public static class CoreExtension
     /// </summary>
     /// <param name="byteArray">The byetArray to act on</param>
     /// <returns>@this as a MemoryStream.</returns>
-    public static MemoryStream ToMemoryStream([NotNull] this byte[] byteArray)
-    {
-        return new MemoryStream(byteArray);
-    }
+    public static MemoryStream ToMemoryStream([NotNull] this Byte[] byteArray) => new(byteArray);
 
-    public static string GetString([NotNull] this byte[] byteArray)
+    public static String GetString([NotNull] this Byte[] byteArray)
         => byteArray.GetString(Encoding.UTF8);
 
-    public static string GetString([NotNull] this byte[] byteArray, Encoding encoding) => encoding.GetString(byteArray);
+    public static String GetString([NotNull] this Byte[] byteArray, Encoding encoding) => encoding.GetString(byteArray);
 
     #endregion ByteArray
 
@@ -577,130 +473,91 @@ public static class CoreExtension
     /// <param name="this">The @this to act on.</param>
     /// <param name="repeatCount">Number of repeats.</param>
     /// <returns>The repeated char.</returns>
-    public static string Repeat(this char @this, int repeatCount)
-    {
-        return new string(@this, repeatCount);
-    }
+    public static String Repeat(this Char @this, Int32 repeatCount) => new(@this, repeatCount);
 
     /// <summary>
     ///     Converts the specified numeric Unicode character to a double-precision floating point number.
     /// </summary>
     /// <param name="c">The Unicode character to convert.</param>
     /// <returns>The numeric value of  if that character represents a number; otherwise, -1.0.</returns>
-    public static double GetNumericValue(this char c)
-    {
-        return char.GetNumericValue(c);
-    }
+    public static Double GetNumericValue(this Char c) => Char.GetNumericValue(c);
 
     /// <summary>
     ///     Categorizes a specified Unicode character into a group identified by one of the  values.
     /// </summary>
     /// <param name="c">The Unicode character to categorize.</param>
     /// <returns>A  value that identifies the group that contains .</returns>
-    public static UnicodeCategory GetUnicodeCategory(this char c)
-    {
-        return char.GetUnicodeCategory(c);
-    }
+    public static UnicodeCategory GetUnicodeCategory(this Char c) => Char.GetUnicodeCategory(c);
 
     /// <summary>
     ///     Indicates whether the specified Unicode character is categorized as a control character.
     /// </summary>
     /// <param name="c">The Unicode character to evaluate.</param>
     /// <returns>true if  is a control character; otherwise, false.</returns>
-    public static bool IsControl(this char c)
-    {
-        return char.IsControl(c);
-    }
+    public static Boolean IsControl(this Char c) => Char.IsControl(c);
 
     /// <summary>
     ///     Indicates whether the specified Unicode character is categorized as a decimal digit.
     /// </summary>
     /// <param name="c">The Unicode character to evaluate.</param>
     /// <returns>true if  is a decimal digit; otherwise, false.</returns>
-    public static bool IsDigit(this char c)
-    {
-        return char.IsDigit(c);
-    }
+    public static Boolean IsDigit(this Char c) => Char.IsDigit(c);
 
     /// <summary>
     ///     Indicates whether the specified Unicode character is categorized as a Unicode letter.
     /// </summary>
     /// <param name="c">The Unicode character to evaluate.</param>
     /// <returns>true if  is a letter; otherwise, false.</returns>
-    public static bool IsLetter(this char c)
-    {
-        return char.IsLetter(c);
-    }
+    public static Boolean IsLetter(this Char c) => Char.IsLetter(c);
 
     /// <summary>
     ///     Indicates whether the specified Unicode character is categorized as a letter or a decimal digit.
     /// </summary>
     /// <param name="c">The Unicode character to evaluate.</param>
     /// <returns>true if  is a letter or a decimal digit; otherwise, false.</returns>
-    public static bool IsLetterOrDigit(this char c)
-    {
-        return char.IsLetterOrDigit(c);
-    }
+    public static Boolean IsLetterOrDigit(this Char c) => Char.IsLetterOrDigit(c);
 
     /// <summary>
     ///     Indicates whether the specified Unicode character is categorized as a lowercase letter.
     /// </summary>
     /// <param name="c">The Unicode character to evaluate.</param>
     /// <returns>true if  is a lowercase letter; otherwise, false.</returns>
-    public static bool IsLower(this char c)
-    {
-        return char.IsLower(c);
-    }
+    public static Boolean IsLower(this Char c) => Char.IsLower(c);
 
     /// <summary>
     ///     Indicates whether the specified Unicode character is categorized as an uppercase letter.
     /// </summary>
     /// <param name="c">The Unicode character to evaluate.</param>
     /// <returns>true if  is an uppercase letter; otherwise, false.</returns>
-    public static bool IsUpper(this char c)
-    {
-        return char.IsUpper(c);
-    }
+    public static Boolean IsUpper(this Char c) => Char.IsUpper(c);
 
     /// <summary>
     ///     Indicates whether the specified Unicode character is categorized as a number.
     /// </summary>
     /// <param name="c">The Unicode character to evaluate.</param>
     /// <returns>true if  is a number; otherwise, false.</returns>
-    public static bool IsNumber(this char c)
-    {
-        return char.IsNumber(c);
-    }
+    public static Boolean IsNumber(this Char c) => Char.IsNumber(c);
 
     /// <summary>
     ///     Indicates whether the specified Unicode character is categorized as a separator character.
     /// </summary>
     /// <param name="c">The Unicode character to evaluate.</param>
     /// <returns>true if  is a separator character; otherwise, false.</returns>
-    public static bool IsSeparator(this char c)
-    {
-        return char.IsSeparator(c);
-    }
+    public static Boolean IsSeparator(this Char c) => Char.IsSeparator(c);
 
     /// <summary>
     ///     Indicates whether the specified Unicode character is categorized as a symbol character.
     /// </summary>
     /// <param name="c">The Unicode character to evaluate.</param>
     /// <returns>true if  is a symbol character; otherwise, false.</returns>
-    public static bool IsSymbol(this char c)
-    {
-        return char.IsSymbol(c);
-    }
+    public static Boolean IsSymbol(this Char c) => Char.IsSymbol(c);
 
     /// <summary>
     ///     Indicates whether the specified Unicode character is categorized as white space.
     /// </summary>
     /// <param name="c">The Unicode character to evaluate.</param>
     /// <returns>true if  is white space; otherwise, false.</returns>
-    public static bool IsWhiteSpace(this char c)
-    {
-        return char.IsWhiteSpace(c);
-    }
+    public static Boolean IsWhiteSpace(this Char c) => Char.IsWhiteSpace(c);
 
     /// <summary>
     ///     Converts the value of a specified Unicode character to its lowercase equivalent using specified culture-
@@ -712,10 +569,7 @@ public static class CoreExtension
     ///     The lowercase equivalent of , modified according to , or the unchanged value of , if  is already lowercase or
     ///     not alphabetic.
     /// </returns>
-    public static char ToLower(this char c, CultureInfo culture)
-    {
-        return char.ToLower(c, culture);
-    }
+    public static Char ToLower(this Char c, CultureInfo culture) => Char.ToLower(c, culture);
 
     /// <summary>
     ///     Converts the value of a Unicode character to its lowercase equivalent.
@@ -724,10 +578,7 @@ public static class CoreExtension
     /// <returns>
     ///     The lowercase equivalent of , or the unchanged value of , if  is already lowercase or not alphabetic.
     /// </returns>
-    public static char ToLower(this char c)
-    {
-        return char.ToLower(c);
-    }
+    public static Char ToLower(this Char c) => Char.ToLower(c);
 
     /// <summary>
     ///     Converts the value of a Unicode character to its lowercase equivalent using the casing rules of the invariant
@@ -738,10 +589,7 @@ public static class CoreExtension
     ///     The lowercase equivalent of the  parameter, or the unchanged value of , if  is already lowercase or not
     ///     alphabetic.
     /// </returns>
-    public static char ToLowerInvariant(this char c)
-    {
-        return char.ToLowerInvariant(c);
-    }
+    public static Char ToLowerInvariant(this Char c) => Char.ToLowerInvariant(c);
 
     /// <summary>
     ///     Converts the value of a specified Unicode character to its uppercase equivalent using specified culture-
@@ -753,10 +601,7 @@ public static class CoreExtension
     ///     The uppercase equivalent of , modified according to , or the unchanged value of  if  is already uppercase,
     ///     has no uppercase equivalent, or is not alphabetic.
     /// </returns>
-    public static char ToUpper(this char c, CultureInfo culture)
-    {
-        return char.ToUpper(c, culture);
-    }
+    public static Char ToUpper(this Char c, CultureInfo culture) => Char.ToUpper(c, culture);
 
     /// <summary>
     ///     Converts the value of a Unicode character to its uppercase equivalent.
@@ -766,10 +611,7 @@ public static class CoreExtension
     ///     The uppercase equivalent of , or the unchanged value of  if  is already uppercase, has no uppercase
     ///     equivalent, or is not alphabetic.
     /// </returns>
-    public static char ToUpper(this char c)
-    {
-        return char.ToUpper(c);
-    }
+    public static Char ToUpper(this Char c) => Char.ToUpper(c);
 
     /// <summary>
     ///     Converts the value of a Unicode character to its uppercase equivalent using the casing rules of the invariant
@@ -780,10 +622,7 @@ public static class CoreExtension
     ///     The uppercase equivalent of the  parameter, or the unchanged value of , if  is already uppercase or not
     ///     alphabetic.
     /// </returns>
-    public static char ToUpperInvariant(this char c)
-    {
-        return char.ToUpperInvariant(c);
-    }
+    public static Char ToUpperInvariant(this Char c) => Char.ToUpperInvariant(c);
 
     #endregion Char
 
@@ -794,7 +633,7 @@ public static class CoreExtension
     /// </summary>
     /// <param name="this">The @this to act on.</param>
     /// <returns>An int.</returns>
-    public static int Age(this DateTime @this)
+    public static Int32 Age(this DateTime @this)
     {
         if (DateTime.Today.Month < @this.Month ||
             DateTime.Today.Month == @this.Month &&
@@ -811,37 +650,28 @@ public static class CoreExtension
     /// <param name="date">The date to act on.</param>
     /// <param name="dateToCompare">Date/Time of the date to compare.</param>
     /// <returns>true if date equal, false if not.</returns>
-    public static bool IsDateEqual(this DateTime date, DateTime dateToCompare) => date.Date == dateToCompare.Date;
+    public static Boolean IsDateEqual(this DateTime date, DateTime dateToCompare) => date.Date == dateToCompare.Date;
 
     /// <summary>
     ///     A DateTime extension method that query if '@this' is today.
     /// </summary>
     /// <param name="this">The @this to act on.</param>
     /// <returns>true if today, false if not.</returns>
-    public static bool IsToday(this DateTime @this)
-    {
-        return @this.Date == DateTime.Today;
-    }
+    public static Boolean IsToday(this DateTime @this) => @this.Date == DateTime.Today;
 
     /// <summary>
     ///     A DateTime extension method that query if '@this' is a week day.
     /// </summary>
     /// <param name="this">The @this to act on.</param>
     /// <returns>true if '@this' is a week day, false if not.</returns>
-    public static bool IsWeekDay(this DateTime @this)
-    {
-        return !(@this.DayOfWeek == DayOfWeek.Saturday || @this.DayOfWeek == DayOfWeek.Sunday);
-    }
+    public static Boolean IsWeekDay(this DateTime @this) => !(@this.DayOfWeek == DayOfWeek.Saturday || @this.DayOfWeek == DayOfWeek.Sunday);
 
     /// <summary>
     ///     A DateTime extension method that query if '@this' is a week day.
     /// </summary>
     /// <param name="this">The @this to act on.</param>
     /// <returns>true if '@this' is a week day, false if not.</returns>
-    public static bool IsWeekendDay(this DateTime @this)
-    {
-        return @this.DayOfWeek == DayOfWeek.Saturday || @this.DayOfWeek == DayOfWeek.Sunday;
-    }
+    public static Boolean IsWeekendDay(this DateTime @this) => @this.DayOfWeek == DayOfWeek.Saturday || @this.DayOfWeek == DayOfWeek.Sunday;
 
     /// <summary>
     ///     A DateTime extension method that return a DateTime with the time set to "00:00:00:000". The first moment of
@@ -849,10 +679,7 @@ public static class CoreExtension
     /// </summary>
     /// <param name="this">The @this to act on.</param>
     /// <returns>A DateTime of the day with the time set to "00:00:00:000".</returns>
-    public static DateTime StartOfDay(this DateTime @this)
-    {
-        return new DateTime(@this.Year, @this.Month, @this.Day);
-    }
+    public static DateTime StartOfDay(this DateTime @this) => new(@this.Year, @this.Month, @this.Day);
 
     /// <summary>
     ///     A DateTime extension method that return a DateTime of the first day of the month with the time set to
@@ -860,10 +687,7 @@ public static class CoreExtension
     /// </summary>
     /// <param name="this">The @this to act on.</param>
     /// <returns>A DateTime of the first day of the month with the time set to "00:00:00:000".</returns>
-    public static DateTime StartOfMonth(this DateTime @this)
-    {
-        return new DateTime(@this.Year, @this.Month, 1);
-    }
+    public static DateTime StartOfMonth(this DateTime @this) => new(@this.Year, @this.Month, 1);
 
     /// <summary>
     ///     A DateTime extension method that starts of week.
@@ -894,10 +718,7 @@ public static class CoreExtension
     /// </summary>
     /// <param name="this">The @this to act on.</param>
     /// <returns>A DateTime of the first day of the year with the time set to "00:00:00:000".</returns>
-    public static DateTime StartOfYear(this DateTime @this)
-    {
-        return new DateTime(@this.Year, 1, 1);
-    }
+    public static DateTime StartOfYear(this DateTime @this) => new(@this.Year, 1, 1);
 
     /// <summary>
     ///     A DateTime extension method that converts the @this to an epoch time span.
@@ -913,10 +734,7 @@ public static class CoreExtension
     /// <param name="minValue">The minimum value.</param>
     /// <param name="maxValue">The maximum value.</param>
     /// <returns>true if the value is between inclusively the minValue and maxValue, otherwise false.</returns>
-    public static bool InRange(this DateTime @this, DateTime minValue, DateTime maxValue)
-    {
-        return @this.CompareTo(minValue) >= 0 && @this.CompareTo(maxValue) <= 0;
-    }
+    public static Boolean InRange(this DateTime @this, DateTime minValue, DateTime maxValue) => @this.CompareTo(minValue) >= 0 && @this.CompareTo(maxValue) <= 0;
 
     /// <summary>
     ///     Converts a time to the time in a particular time zone.
@@ -924,10 +742,7 @@ public static class CoreExtension
     /// <param name="dateTime">The date and time to convert.</param>
     /// <param name="destinationTimeZone">The time zone to convert  to.</param>
     /// <returns>The date and time in the destination time zone.</returns>
-    public static DateTime ConvertTime(this DateTime dateTime, TimeZoneInfo destinationTimeZone)
-    {
-        return TimeZoneInfo.ConvertTime(dateTime, destinationTimeZone);
-    }
+    public static DateTime ConvertTime(this DateTime dateTime, TimeZoneInfo destinationTimeZone) => TimeZoneInfo.ConvertTime(dateTime, destinationTimeZone);
 
     /// <summary>
     ///     Converts a time from one time zone to another.
@@ -938,10 +753,7 @@ public static class CoreExtension
     /// <returns>
     ///     The date and time in the destination time zone that corresponds to the  parameter in the source time zone.
     /// </returns>
-    public static DateTime ConvertTime(this DateTime dateTime, TimeZoneInfo sourceTimeZone, TimeZoneInfo destinationTimeZone)
-    {
-        return TimeZoneInfo.ConvertTime(dateTime, sourceTimeZone, destinationTimeZone);
-    }
+    public static DateTime ConvertTime(this DateTime dateTime, TimeZoneInfo sourceTimeZone, TimeZoneInfo destinationTimeZone) => TimeZoneInfo.ConvertTime(dateTime, sourceTimeZone, destinationTimeZone);
 
     /// <summary>
     ///     Converts a Coordinated Universal Time (UTC) to the time in a specified time zone.
@@ -951,10 +763,7 @@ public static class CoreExtension
     /// <returns>
     ///     The date and time in the destination time zone. Its  property is  if  is ; otherwise, its  property is .
     /// </returns>
-    public static DateTime ConvertTimeFromUtc(this DateTime dateTime, TimeZoneInfo destinationTimeZone)
-    {
-        return TimeZoneInfo.ConvertTimeFromUtc(dateTime, destinationTimeZone);
-    }
+    public static DateTime ConvertTimeFromUtc(this DateTime dateTime, TimeZoneInfo destinationTimeZone) => TimeZoneInfo.ConvertTimeFromUtc(dateTime, destinationTimeZone);
 
     /// <summary>
     ///     Converts the current date and time to Coordinated Universal Time (UTC).
@@ -964,10 +773,7 @@ public static class CoreExtension
     ///     The Coordinated Universal Time (UTC) that corresponds to the  parameter. The  value&#39;s  property is always
     ///     set to .
     /// </returns>
-    public static DateTime ConvertTimeToUtc(this DateTime dateTime)
-    {
-        return TimeZoneInfo.ConvertTimeToUtc(dateTime);
-    }
+    public static DateTime ConvertTimeToUtc(this DateTime dateTime) => TimeZoneInfo.ConvertTimeToUtc(dateTime);
 
     /// <summary>
     ///     Converts the time in a specified time zone to Coordinated Universal Time (UTC).
@@ -978,30 +784,21 @@ public static class CoreExtension
     ///     The Coordinated Universal Time (UTC) that corresponds to the  parameter. The  object&#39;s  property is
     ///     always set to .
     /// </returns>
-    public static DateTime ConvertTimeToUtc(this DateTime dateTime, TimeZoneInfo sourceTimeZone)
-    {
-        return TimeZoneInfo.ConvertTimeToUtc(dateTime, sourceTimeZone);
-    }
+    public static DateTime ConvertTimeToUtc(this DateTime dateTime, TimeZoneInfo sourceTimeZone) => TimeZoneInfo.ConvertTimeToUtc(dateTime, sourceTimeZone);
 
     /// <summary>
     /// ToDateString("yyyy-MM-dd")
     /// </summary>
     /// <param name="this">dateTime</param>
     /// <returns></returns>
-    public static string ToStandardDateString(this DateTime @this)
-    {
-        return @this.ToString("yyyy-MM-dd");
-    }
+    public static String ToStandardDateString(this DateTime @this) => @this.ToString("yyyy-MM-dd");
 
     /// <summary>
     /// ToTimeString("yyyy-MM-dd HH:mm:ss")
     /// </summary>
     /// <param name="this">datetime</param>
     /// <returns></returns>
-    public static string ToStandardTimeString(this DateTime @this)
-    {
-        return @this.ToString("yyyy-MM-dd HH:mm:ss");
-    }
+    public static String ToStandardTimeString(this DateTime @this) => @this.ToString("yyyy-MM-dd HH:mm:ss");
 
     #endregion DateTime
 
@@ -1014,20 +811,14 @@ public static class CoreExtension
     /// <param name="minValue">The minimum value.</param>
     /// <param name="maxValue">The maximum value.</param>
     /// <returns>true if the value is between inclusively the minValue and maxValue, otherwise false.</returns>
-    public static bool InRange(this decimal @this, decimal minValue, decimal maxValue)
-    {
-        return @this.CompareTo(minValue) >= 0 && @this.CompareTo(maxValue) <= 0;
-    }
+    public static Boolean InRange(this Decimal @this, Decimal minValue, Decimal maxValue) => @this.CompareTo(minValue) >= 0 && @this.CompareTo(maxValue) <= 0;
 
     /// <summary>
     ///     Returns the absolute value of a  number.
     /// </summary>
     /// <param name="value">A number that is greater than or equal to , but less than or equal to .</param>
     /// <returns>A decimal number, x, such that 0 ? x ?.</returns>
-    public static decimal Abs(this decimal value)
-    {
-        return Math.Abs(value);
-    }
+    public static Decimal Abs(this Decimal value) => Math.Abs(value);
 
     /// <summary>
     ///     Returns the smallest integral value that is greater than or equal to the specified decimal number.
@@ -1037,10 +828,7 @@ public static class CoreExtension
     ///     The smallest integral value that is greater than or equal to . Note that this method returns a  instead of an
     ///     integral type.
     /// </returns>
-    public static decimal Ceiling(this decimal d)
-    {
-        return Math.Ceiling(d);
-    }
+    public static Decimal Ceiling(this Decimal d) => Math.Ceiling(d);
 
     /// <summary>
     ///     Returns the largest integer less than or equal to the specified decimal number.
@@ -1049,10 +837,7 @@ public static class CoreExtension
     /// <returns>
     ///     The largest integer less than or equal to .  Note that the method returns an integral value of type .
     /// </returns>
-    public static decimal Floor(this decimal d)
-    {
-        return Math.Floor(d);
-    }
+    public static Decimal Floor(this Decimal d) => Math.Floor(d);
 
     /// <summary>
     ///     Returns the larger of two decimal numbers.
@@ -1060,10 +845,7 @@ public static class CoreExtension
     /// <param name="val1">The first of two decimal numbers to compare.</param>
     /// <param name="val2">The second of two decimal numbers to compare.</param>
     /// <returns>Parameter  or , whichever is larger.</returns>
-    public static decimal Max(this decimal val1, decimal val2)
-    {
-        return Math.Max(val1, val2);
-    }
+    public static Decimal Max(this Decimal val1, Decimal val2) => Math.Max(val1, val2);
 
     /// <summary>
     ///     Returns the smaller of two decimal numbers.
@@ -1071,10 +853,7 @@ public static class CoreExtension
     /// <param name="val1">The first of two decimal numbers to compare.</param>
     /// <param name="val2">The second of two decimal numbers to compare.</param>
     /// <returns>Parameter  or , whichever is smaller.</returns>
-    public static decimal Min(this decimal val1, decimal val2)
-    {
-        return Math.Min(val1, val2);
-    }
+    public static Decimal Min(this Decimal val1, Decimal val2) => Math.Min(val1, val2);
 
     /// <summary>
     ///     Rounds a decimal value to the nearest integral value.
@@ -1085,10 +864,7 @@ public static class CoreExtension
     ///     is even and the other odd, the even number is returned. Note that this method returns a  instead of an
     ///     integral type.
     /// </returns>
-    public static decimal Round(this decimal d)
-    {
-        return Math.Round(d);
-    }
+    public static Decimal Round(this Decimal d) => Math.Round(d);
 
     /// <summary>
     ///     Rounds a decimal value to a specified number of fractional digits.
@@ -1096,10 +872,7 @@ public static class CoreExtension
     /// <param name="d">A decimal number to be rounded.</param>
     /// <param name="decimals">The number of decimal places in the return value.</param>
     /// <returns>The number nearest to  that contains a number of fractional digits equal to .</returns>
-    public static decimal Round(this decimal d, int decimals)
-    {
-        return Math.Round(d, decimals);
-    }
+    public static Decimal Round(this Decimal d, Int32 decimals) => Math.Round(d, decimals);
 
     /// <summary>
     ///     Rounds a decimal value to the nearest integer. A parameter specifies how to round the value if it is midway
@@ -1111,10 +884,7 @@ public static class CoreExtension
     ///     The integer nearest . If  is halfway between two numbers, one of which is even and the other odd, then
     ///     determines which of the two is returned.
     /// </returns>
-    public static decimal Round(this decimal d, MidpointRounding mode)
-    {
-        return Math.Round(d, mode);
-    }
+    public static Decimal Round(this Decimal d, MidpointRounding mode) => Math.Round(d, mode);
 
     /// <summary>
     ///     Rounds a decimal value to a specified number of fractional digits. A parameter specifies how to round the
@@ -1127,10 +897,7 @@ public static class CoreExtension
     ///     The number nearest to  that contains a number of fractional digits equal to . If  has fewer fractional digits
     ///     than ,  is returned unchanged.
     /// </returns>
-    public static decimal Round(this decimal d, int decimals, MidpointRounding mode)
-    {
-        return Math.Round(d, decimals, mode);
-    }
+    public static Decimal Round(this Decimal d, Int32 decimals, MidpointRounding mode) => Math.Round(d, decimals, mode);
 
     /// <summary>
     ///     Returns a value indicating the sign of a decimal number.
@@ -1140,10 +907,7 @@ public static class CoreExtension
     ///     A number that indicates the sign of , as shown in the following table.Return value Meaning -1  is less than
     ///     zero. 0  is equal to zero. 1  is greater than zero.
     /// </returns>
-    public static int Sign(this decimal value)
-    {
-        return Math.Sign(value);
-    }
+    public static Int32 Sign(this Decimal value) => Math.Sign(value);
 
     /// <summary>
     ///     Calculates the integral part of a specified decimal number.
@@ -1152,20 +916,14 @@ public static class CoreExtension
     /// <returns>
     ///     The integral part of ; that is, the number that remains after any fractional digits have been discarded.
     /// </returns>
-    public static decimal Truncate(this decimal d)
-    {
-        return Math.Truncate(d);
-    }
+    public static Decimal Truncate(this Decimal d) => Math.Truncate(d);
 
     /// <summary>
     ///     A Decimal extension method that converts the @this to a money.
     /// </summary>
     /// <param name="this">The @this to act on.</param>
     /// <returns>@this as a Decimal.</returns>
-    public static decimal ToMoney(this decimal @this)
-    {
-        return Math.Round(@this, 2);
-    }
+    public static Decimal ToMoney(this Decimal @this) => Math.Round(@this, 2);
 
     #endregion Decimal
 
@@ -1180,10 +938,7 @@ public static class CoreExtension
     ///     A new delegate with an invocation list that concatenates the invocation lists of  and  in that order. Returns
     ///     if  is null, returns  if  is a null reference, and returns a null reference if both  and  are null references.
     /// </returns>
-    public static Delegate Combine([NotNull] this Delegate a, Delegate b)
-    {
-        return Delegate.Combine(a, b);
-    }
+    public static Delegate Combine([NotNull] this Delegate a, Delegate b) => Delegate.Combine(a, b);
 
     /// <summary>
     /// Removes the last occurrence of the invocation list of a delegate from the invocation list of another delegate.
@@ -1196,10 +951,7 @@ public static class CoreExtension
     ///     Returns  if  is null or if the invocation list of  is not found within the invocation list of . Returns a
     ///     null reference if the invocation list of  is equal to the invocation list of  or if  is a null reference.
     /// </returns>
-    public static Delegate Remove([NotNull] this Delegate source, Delegate value)
-    {
-        return Delegate.Remove(source, value);
-    }
+    public static Delegate? Remove([NotNull] this Delegate source, Delegate value) => Delegate.Remove(source, value);
 
     /// <summary>
     /// Removes all occurrences of the invocation list of a delegate from the invocation list of another delegate.
@@ -1213,10 +965,7 @@ public static class CoreExtension
     ///     if the invocation list of  is equal to the invocation list of , if  contains only a series of invocation
     ///     lists that are equal to the invocation list of , or if  is a null reference.
     /// </returns>
-    public static Delegate RemoveAll([NotNull] this Delegate source, Delegate value)
-    {
-        return Delegate.RemoveAll(source, value);
-    }
+    public static Delegate? RemoveAll([NotNull] this Delegate source, Delegate value) => Delegate.RemoveAll(source, value);
 
     #endregion Delegate
 
@@ -1229,20 +978,14 @@ public static class CoreExtension
     /// <param name="minValue">The minimum value.</param>
     /// <param name="maxValue">The maximum value.</param>
     /// <returns>true if the value is between inclusively the minValue and maxValue, otherwise false.</returns>
-    public static bool InRange(this double @this, double minValue, double maxValue)
-    {
-        return @this.CompareTo(minValue) >= 0 && @this.CompareTo(maxValue) <= 0;
-    }
+    public static Boolean InRange(this Double @this, Double minValue, Double maxValue) => @this.CompareTo(minValue) >= 0 && @this.CompareTo(maxValue) <= 0;
 
     /// <summary>
     ///     Returns the absolute value of a double-precision floating-point number.
     /// </summary>
     /// <param name="value">A number that is greater than or equal to , but less than or equal to .</param>
     /// <returns>A double-precision floating-point number, x, such that 0 ? x ?.</returns>
-    public static double Abs(this double value)
-    {
-        return Math.Abs(value);
-    }
+    public static Double Abs(this Double value) => Math.Abs(value);
 
     /// <summary>
     ///     Returns the angle whose cosine is the specified number.
@@ -1252,10 +995,7 @@ public static class CoreExtension
     ///     equal to 1.
     /// </param>
     /// <returns>An angle, ?, measured in radians, such that 0 ????-or-  if  &lt; -1 or  &gt; 1 or  equals .</returns>
-    public static double Acos(this double d)
-    {
-        return Math.Acos(d);
-    }
+    public static Double Acos(this Double d) => Math.Acos(d);
 
     /// <summary>
     ///     Returns the angle whose sine is the specified number.
@@ -1267,10 +1007,7 @@ public static class CoreExtension
     /// <returns>
     ///     An angle, ?, measured in radians, such that -?/2 ????/2 -or-  if  &lt; -1 or  &gt; 1 or  equals .
     /// </returns>
-    public static double Asin(this double d)
-    {
-        return Math.Asin(d);
-    }
+    public static Double Asin(this Double d) => Math.Asin(d);
 
     /// <summary>
     ///     Returns the angle whose tangent is the specified number.
@@ -1280,10 +1017,7 @@ public static class CoreExtension
     ///     An angle, ?, measured in radians, such that -?/2 ????/2.-or-  if  equals , -?/2 rounded to double precision (-
     ///     1.5707963267949) if  equals , or ?/2 rounded to double precision (1.5707963267949) if  equals .
     /// </returns>
-    public static double Atan(this double d)
-    {
-        return Math.Atan(d);
-    }
+    public static Double Atan(this Double d) => Math.Atan(d);
 
     /// <summary>
     ///     Returns the angle whose tangent is the quotient of two specified numbers.
@@ -1298,10 +1032,7 @@ public static class CoreExtension
     ///     0 and x is negative, ? = ?.If y is positive and x is 0, ? = ?/2.If y is negative and x is 0, ? = -?/2.If  or
     ///     is , or if  and  are either  or , the method returns .
     /// </returns>
-    public static double Atan2(this double y, double x)
-    {
-        return Math.Atan2(y, x);
-    }
+    public static Double Atan2(this Double y, Double x) => Math.Atan2(y, x);
 
     /// <summary>
     ///     Returns the smallest integral value that is greater than or equal to the specified double-precision floating-
@@ -1312,7 +1043,7 @@ public static class CoreExtension
     ///     The smallest integral value that is greater than or equal to . If  is equal to , , or , that value is
     ///     returned. Note that this method returns a  instead of an integral type.
     /// </returns>
-    public static int Ceiling(this double a)
+    public static Int32 Ceiling(this Double a)
         => Convert.ToInt32(Math.Ceiling(a));
 
     /// <summary>
@@ -1320,20 +1051,14 @@ public static class CoreExtension
     /// </summary>
     /// <param name="d">An angle, measured in radians.</param>
     /// <returns>The cosine of . If  is equal to , , or , this method returns .</returns>
-    public static double Cos(this double d)
-    {
-        return Math.Cos(d);
-    }
+    public static Double Cos(this Double d) => Math.Cos(d);
 
     /// <summary>
     ///     Returns the hyperbolic cosine of the specified angle.
     /// </summary>
     /// <param name="value">An angle, measured in radians.</param>
     /// <returns>The hyperbolic cosine of . If  is equal to  or ,  is returned. If  is equal to ,  is returned.</returns>
-    public static double Cosh(this double value)
-    {
-        return Math.Cosh(value);
-    }
+    public static Double Cosh(this Double value) => Math.Cosh(value);
 
     /// <summary>
     ///     Returns e raised to the specified power.
@@ -1342,20 +1067,14 @@ public static class CoreExtension
     /// <returns>
     ///     The number e raised to the power . If  equals  or , that value is returned. If  equals , 0 is returned.
     /// </returns>
-    public static double Exp(this double d)
-    {
-        return Math.Exp(d);
-    }
+    public static Double Exp(this Double d) => Math.Exp(d);
 
     /// <summary>
     ///     Returns the largest integer less than or equal to the specified double-precision floating-point number.
     /// </summary>
     /// <param name="d">A double-precision floating-point number.</param>
     /// <returns>The largest integer less than or equal to . If  is equal to , , or , that value is returned.</returns>
-    public static int Floor(this double d)
-    {
-        return Convert.ToInt32(Math.Floor(d));
-    }
+    public static Int32 Floor(this Double d) => Convert.ToInt32(Math.Floor(d));
 
     /// <summary>
     ///     Returns the remainder resulting from the division of a specified number by another specified number.
@@ -1367,10 +1086,7 @@ public static class CoreExtension
     ///     halfway between two integers, the even integer is returned).If  - ( Q) is zero, the value +0 is returned if
     ///     is positive, or -0 if  is negative.If  = 0,  is returned.
     /// </returns>
-    public static double IEEERemainder(this double x, double y)
-    {
-        return Math.IEEERemainder(x, y);
-    }
+    public static Double IEEERemainder(this Double x, Double y) => Math.IEEERemainder(x, y);
 
     /// <summary>
     ///     Returns the natural (base e) logarithm of a specified number.
@@ -1380,10 +1096,7 @@ public static class CoreExtension
     ///     One of the values in the following table.  parameterReturn value Positive The natural logarithm of ; that is,
     ///     ln , or log eZero Negative Equal to Equal to.
     /// </returns>
-    public static double Log(this double d)
-    {
-        return Math.Log(d);
-    }
+    public static Double Log(this Double d) => Math.Log(d);
 
     /// <summary>
     ///     Returns the logarithm of a specified number in a specified base.
@@ -1396,10 +1109,7 @@ public static class CoreExtension
     ///     = +InfinityNaN = NaN(any value)NaN(any value) = NaNNaN(any value) = 1NaN = 00 &lt;&lt; 1 +Infinity = 0&gt; 1-
     ///     Infinity =  +Infinity0 &lt;&lt; 1-Infinity =  +Infinity&gt; 1+Infinity = 1 = 00 = 1 = +Infinity0.
     /// </returns>
-    public static double Log(this double d, double newBase)
-    {
-        return Math.Log(d, newBase);
-    }
+    public static Double Log(this Double d, Double newBase) => Math.Log(d, newBase);
 
     /// <summary>
     ///     Returns the base 10 logarithm of a specified number.
@@ -1409,10 +1119,7 @@ public static class CoreExtension
     ///     One of the values in the following table.  parameter Return value Positive The base 10 log of ; that is, log
     ///     10. Zero Negative Equal to Equal to.
     /// </returns>
-    public static double Log10(this double d)
-    {
-        return Math.Log10(d);
-    }
+    public static Double Log10(this Double d) => Math.Log10(d);
 
     /// <summary>
     ///     Returns the larger of two double-precision floating-point numbers.
@@ -1420,10 +1127,7 @@ public static class CoreExtension
     /// <param name="val1">The first of two double-precision floating-point numbers to compare.</param>
     /// <param name="val2">The second of two double-precision floating-point numbers to compare.</param>
     /// <returns>Parameter  or , whichever is larger. If , , or both  and  are equal to ,  is returned.</returns>
-    public static double Max(this double val1, double val2)
-    {
-        return Math.Max(val1, val2);
-    }
+    public static Double Max(this Double val1, Double val2) => Math.Max(val1, val2);
 
     /// <summary>
     ///     Returns the smaller of two double-precision floating-point numbers.
@@ -1431,7 +1135,7 @@ public static class CoreExtension
     /// <param name="val1">The first of two double-precision floating-point numbers to compare.</param>
     /// <param name="val2">The second of two double-precision floating-point numbers to compare.</param>
     /// <returns>Parameter  or , whichever is smaller. If , , or both  and  are equal to ,  is returned.</returns>
-    public static double Min(this double val1, double val2) => Math.Min(val1, val2);
+    public static Double Min(this Double val1, Double val2) => Math.Min(val1, val2);
 
     /// <summary>
     ///     Returns a specified number raised to the specified power.
@@ -1439,7 +1143,7 @@ public static class CoreExtension
     /// <param name="x">A double-precision floating-point number to be raised to a power.</param>
     /// <param name="y">A double-precision floating-point number that specifies a power.</param>
     /// <returns>The number  raised to the power .</returns>
-    public static double Pow(this double x, double y) => Math.Pow(x, y);
+    public static Double Pow(this Double x, Double y) => Math.Pow(x, y);
 
     /// <summary>
     ///     Rounds a double-precision floating-point value to the nearest integral value.
@@ -1450,7 +1154,7 @@ public static class CoreExtension
     ///     and the other odd, then the even number is returned. Note that this method returns a  instead of an integral
     ///     type.
     /// </returns>
-    public static double Round(this double a) => Math.Round(a);
+    public static Double Round(this Double a) => Math.Round(a);
 
     /// <summary>
     ///     Rounds a double-precision floating-point value to a specified number of fractional digits.
@@ -1458,7 +1162,7 @@ public static class CoreExtension
     /// <param name="a">A double-precision floating-point number to be rounded.</param>
     /// <param name="digits">The number of fractional digits in the return value.</param>
     /// <returns>The number nearest to  that contains a number of fractional digits equal to .</returns>
-    public static double Round(this double a, int digits) => Math.Round(a, digits);
+    public static Double Round(this Double a, Int32 digits) => Math.Round(a, digits);
 
     /// <summary>
     ///     Rounds a double-precision floating-point value to the nearest integer. A parameter specifies how to round the
@@ -1470,7 +1174,7 @@ public static class CoreExtension
     ///     The integer nearest . If  is halfway between two integers, one of which is even and the other odd, then
     ///     determines which of the two is returned.
     /// </returns>
-    public static double Round(this double a, MidpointRounding mode) => Math.Round(a, mode);
+    public static Double Round(this Double a, MidpointRounding mode) => Math.Round(a, mode);
 
     /// <summary>
     ///     Rounds a double-precision floating-point value to a specified number of fractional digits. A parameter
@@ -1483,7 +1187,7 @@ public static class CoreExtension
     ///     The number nearest to  that has a number of fractional digits equal to . If  has fewer fractional digits than
     ///     ,  is returned unchanged.
     /// </returns>
-    public static double Round(this double value, int digits, MidpointRounding mode) => Math.Round(value, digits, mode);
+    public static Double Round(this Double value, Int32 digits, MidpointRounding mode) => Math.Round(value, digits, mode);
 
     /// <summary>
     ///     Returns a value indicating the sign of a double-precision floating-point number.
@@ -1493,27 +1197,21 @@ public static class CoreExtension
     ///     A number that indicates the sign of , as shown in the following table.Return value Meaning -1  is less than
     ///     zero. 0  is equal to zero. 1  is greater than zero.
     /// </returns>
-    public static int Sign(this double value) => Math.Sign(value);
+    public static Int32 Sign(this Double value) => Math.Sign(value);
 
     /// <summary>
     ///     Returns the sine of the specified angle.
     /// </summary>
     /// <param name="a">An angle, measured in radians.</param>
     /// <returns>The sine of . If  is equal to , , or , this method returns .</returns>
-    public static double Sin(this double a)
-    {
-        return Math.Sin(a);
-    }
+    public static Double Sin(this Double a) => Math.Sin(a);
 
     /// <summary>
     ///     Returns the hyperbolic sine of the specified angle.
     /// </summary>
     /// <param name="value">An angle, measured in radians.</param>
     /// <returns>The hyperbolic sine of . If  is equal to , , or , this method returns a  equal to .</returns>
-    public static double Sinh(this double value)
-    {
-        return Math.Sinh(value);
-    }
+    public static Double Sinh(this Double value) => Math.Sinh(value);
 
     /// <summary>
     ///     Returns the square root of a specified number.
@@ -1523,20 +1221,14 @@ public static class CoreExtension
     ///     One of the values in the following table.  parameter Return value Zero or positive The positive square root
     ///     of . Negative Equals Equals.
     /// </returns>
-    public static double Sqrt(this double d)
-    {
-        return Math.Sqrt(d);
-    }
+    public static Double Sqrt(this Double d) => Math.Sqrt(d);
 
     /// <summary>
     ///     Returns the tangent of the specified angle.
     /// </summary>
     /// <param name="a">An angle, measured in radians.</param>
     /// <returns>The tangent of . If  is equal to , , or , this method returns .</returns>
-    public static double Tan(this double a)
-    {
-        return Math.Tan(a);
-    }
+    public static Double Tan(this Double a) => Math.Tan(a);
 
     /// <summary>
     ///     Returns the hyperbolic tangent of the specified angle.
@@ -1546,10 +1238,7 @@ public static class CoreExtension
     ///     The hyperbolic tangent of . If  is equal to , this method returns -1. If value is equal to , this method
     ///     returns 1. If  is equal to , this method returns .
     /// </returns>
-    public static double Tanh(this double value)
-    {
-        return Math.Tanh(value);
-    }
+    public static Double Tanh(this Double value) => Math.Tanh(value);
 
     /// <summary>
     ///     Calculates the integral part of a specified double-precision floating-point number.
@@ -1559,14 +1248,14 @@ public static class CoreExtension
     ///     The integral part of ; that is, the number that remains after any fractional digits have been discarded, or
     ///     one of the values listed in the following table. Return value.
     /// </returns>
-    public static double Truncate(this double d) => Math.Truncate(d);
+    public static Double Truncate(this Double d) => Math.Truncate(d);
 
     /// <summary>
     ///     A Double extension method that converts the @this to a moneyFormat.
     /// </summary>
     /// <param name="this">The @this to act on.</param>
     /// <returns>@this as a Double.</returns>
-    public static double ToMoney(this double @this) => Math.Round(@this, 2);
+    public static Double ToMoney(this Double @this) => Math.Round(@this, 2);
 
     #endregion Double
 
@@ -1578,19 +1267,16 @@ public static class CoreExtension
     /// <param name="this">The object to be compared.</param>
     /// <param name="values">The value list to compare with the object.</param>
     /// <returns>true if the values list contains the object, else false.</returns>
-    public static bool In([NotNull] this Enum @this, params Enum[] values)
-    {
-        return Array.IndexOf(values, @this) >= 0;
-    }
+    public static Boolean In([NotNull] this Enum @this, params Enum[] values) => Array.IndexOf(values, @this) >= 0;
 
     /// <summary>
     /// An object extension method that gets description attribute.
     /// </summary>
     /// <param name="value">The value to act on.</param>
     /// <returns>The description attribute.</returns>
-    public static string GetDescription([NotNull] this Enum value)
+    public static String? GetDescription([NotNull] this Enum value)
     {
-        var attr = value.GetType().GetField(value.ToString())
+        var attr = value.GetType().GetField(value.ToString())?
             .GetCustomAttribute<DescriptionAttribute>();
         return attr?.Description;
     }
@@ -1604,10 +1290,7 @@ public static class CoreExtension
     /// </summary>
     /// <param name="this">The @this to act on.</param>
     /// <param name="sender">Source of the event.</param>
-    public static void RaiseEvent([CanBeNull] this EventHandler @this, object sender)
-    {
-        @this?.Invoke(sender, EventArgs.Empty);
-    }
+    public static void RaiseEvent(this EventHandler @this, Object sender) => @this?.Invoke(sender, EventArgs.Empty);
 
     /// <summary>
     ///     An EventHandler extension method that raises.
@@ -1615,10 +1298,7 @@ public static class CoreExtension
     /// <param name="handler">The handler to act on.</param>
     /// <param name="sender">Source of the event.</param>
     /// <param name="e">Event information.</param>
-    public static void RaiseEvent([CanBeNull] this EventHandler handler, object sender, EventArgs e)
-    {
-        handler?.Invoke(sender, e);
-    }
+    public static void RaiseEvent(this EventHandler handler, Object sender, EventArgs e) => handler?.Invoke(sender, e);
 
     /// <summary>
     ///     An EventHandler&lt;TEventArgs&gt; extension method that raises the event event.
@@ -1626,10 +1306,7 @@ public static class CoreExtension
     /// <typeparam name="TEventArgs">Type of the event arguments.</typeparam>
     /// <param name="this">The @this to act on.</param>
     /// <param name="sender">Source of the event.</param>
-    public static void RaiseEvent<TEventArgs>([CanBeNull] this EventHandler<TEventArgs> @this, object sender) where TEventArgs : EventArgs
-    {
-        @this?.Invoke(sender, default);
-    }
+    public static void RaiseEvent<TEventArgs>(this EventHandler<TEventArgs> @this, Object sender) where TEventArgs : EventArgs => @this?.Invoke(sender, default!);
 
     /// <summary>
     ///     An EventHandler&lt;TEventArgs&gt; extension method that raises the event event.
@@ -1638,10 +1315,7 @@ public static class CoreExtension
     /// <param name="this">The @this to act on.</param>
     /// <param name="sender">Source of the event.</param>
     /// <param name="e">Event information to send to registered event handlers.</param>
-    public static void RaiseEvent<TEventArgs>([CanBeNull] this EventHandler<TEventArgs> @this, object sender, TEventArgs e) where TEventArgs : EventArgs
-    {
-        @this?.Invoke(sender, e);
-    }
+    public static void RaiseEvent<TEventArgs>(this EventHandler<TEventArgs> @this, Object sender, TEventArgs e) where TEventArgs : EventArgs => @this?.Invoke(sender, e);
 
     #endregion EventHandler
 
@@ -1650,34 +1324,22 @@ public static class CoreExtension
     /// <summary>A GUID extension method that query if '@this' is empty.</summary>
     /// <param name="this">The @this to act on.</param>
     /// <returns>true if empty, false if not.</returns>
-    public static bool IsNullOrEmpty([NotNull] this Guid? @this)
-    {
-        return !@this.HasValue || @this == Guid.Empty;
-    }
+    public static Boolean IsNullOrEmpty(this Guid? @this) => !@this.HasValue || @this == Guid.Empty;
 
     /// <summary>A GUID extension method that query if '@this' is not null or empty.</summary>
     /// <param name="this">The @this to act on.</param>
     /// <returns>true if empty, false if not.</returns>
-    public static bool IsNotNullOrEmpty([NotNull] this Guid? @this)
-    {
-        return @this.HasValue && @this.Value != Guid.Empty;
-    }
+    public static Boolean IsNotNullOrEmpty(this Guid? @this) => @this.HasValue && @this.Value != Guid.Empty;
 
     /// <summary>A GUID extension method that query if '@this' is empty.</summary>
     /// <param name="this">The @this to act on.</param>
     /// <returns>true if empty, false if not.</returns>
-    public static bool IsEmpty(this Guid @this)
-    {
-        return @this == Guid.Empty;
-    }
+    public static Boolean IsEmpty(this Guid @this) => @this == Guid.Empty;
 
     /// <summary>A GUID extension method that queries if a not is empty.</summary>
     /// <param name="this">The @this to act on.</param>
     /// <returns>true if a not is empty, false if not.</returns>
-    public static bool IsNotEmpty(this Guid @this)
-    {
-        return @this != Guid.Empty;
-    }
+    public static Boolean IsNotEmpty(this Guid @this) => @this != Guid.Empty;
 
     #endregion Guid
 
@@ -1690,10 +1352,7 @@ public static class CoreExtension
     /// <param name="minValue">The minimum value.</param>
     /// <param name="maxValue">The maximum value.</param>
     /// <returns>true if the value is between inclusively the minValue and maxValue, otherwise false.</returns>
-    public static bool InRange(this short @this, short minValue, short maxValue)
-    {
-        return @this.CompareTo(minValue) >= 0 && @this.CompareTo(maxValue) <= 0;
-    }
+    public static Boolean InRange(this Int16 @this, Int16 minValue, Int16 maxValue) => @this.CompareTo(minValue) >= 0 && @this.CompareTo(maxValue) <= 0;
 
     /// <summary>
     ///     An Int16 extension method that factor of.
@@ -1701,37 +1360,28 @@ public static class CoreExtension
     /// <param name="this">The @this to act on.</param>
     /// <param name="factorNumer">The factor numer.</param>
     /// <returns>true if it succeeds, false if it fails.</returns>
-    public static bool FactorOf(this short @this, short factorNumer)
-    {
-        return factorNumer % @this == 0;
-    }
+    public static Boolean FactorOf(this Int16 @this, Int16 factorNumer) => factorNumer % @this == 0;
 
     /// <summary>
     ///     An Int16 extension method that query if '@this' is even.
     /// </summary>
     /// <param name="this">The @this to act on.</param>
     /// <returns>true if even, false if not.</returns>
-    public static bool IsEven(this short @this)
-    {
-        return @this % 2 == 0;
-    }
+    public static Boolean IsEven(this Int16 @this) => @this % 2 == 0;
 
     /// <summary>
     ///     An Int16 extension method that query if '@this' is odd.
     /// </summary>
     /// <param name="this">The @this to act on.</param>
     /// <returns>true if odd, false if not.</returns>
-    public static bool IsOdd(this short @this)
-    {
-        return @this % 2 != 0;
-    }
+    public static Boolean IsOdd(this Int16 @this) => @this % 2 != 0;
 
     /// <summary>
     ///     An Int16 extension method that query if '@this' is prime.
     /// </summary>
     /// <param name="this">The @this to act on.</param>
     /// <returns>true if prime, false if not.</returns>
-    public static bool IsPrime(this short @this)
+    public static Boolean IsPrime(this Int16 @this)
     {
         if (@this == 1 || @this == 2)
         {
@@ -1743,8 +1393,8 @@ public static class CoreExtension
             return false;
         }
 
-        var sqrt = (short)Math.Sqrt(@this);
-        for (long t = 3; t <= sqrt; t = t + 2)
+        var sqrt = (Int16)Math.Sqrt(@this);
+        for (Int64 t = 3; t <= sqrt; t += 2)
         {
             if (@this % t == 0)
             {
@@ -1760,10 +1410,7 @@ public static class CoreExtension
     /// </summary>
     /// <param name="value">The number to convert.</param>
     /// <returns>An array of bytes with length 2.</returns>
-    public static byte[] GetBytes(this short value)
-    {
-        return BitConverter.GetBytes(value);
-    }
+    public static Byte[] GetBytes(this Int16 value) => BitConverter.GetBytes(value);
 
     /// <summary>
     ///     Returns the larger of two 16-bit signed integers.
@@ -1771,10 +1418,7 @@ public static class CoreExtension
     /// <param name="val1">The first of two 16-bit signed integers to compare.</param>
     /// <param name="val2">The second of two 16-bit signed integers to compare.</param>
     /// <returns>Parameter  or , whichever is larger.</returns>
-    public static short Max(this short val1, short val2)
-    {
-        return Math.Max(val1, val2);
-    }
+    public static Int16 Max(this Int16 val1, Int16 val2) => Math.Max(val1, val2);
 
     /// <summary>
     ///     Returns the smaller of two 16-bit signed integers.
@@ -1782,10 +1426,7 @@ public static class CoreExtension
     /// <param name="val1">The first of two 16-bit signed integers to compare.</param>
     /// <param name="val2">The second of two 16-bit signed integers to compare.</param>
     /// <returns>Parameter  or , whichever is smaller.</returns>
-    public static short Min(this short val1, short val2)
-    {
-        return Math.Min(val1, val2);
-    }
+    public static Int16 Min(this Int16 val1, Int16 val2) => Math.Min(val1, val2);
 
     /// <summary>
     ///     Returns a value indicating the sign of a 16-bit signed integer.
@@ -1795,30 +1436,21 @@ public static class CoreExtension
     ///     A number that indicates the sign of , as shown in the following table.Return value Meaning -1  is less than
     ///     zero. 0  is equal to zero. 1  is greater than zero.
     /// </returns>
-    public static int Sign(this short value)
-    {
-        return Math.Sign(value);
-    }
+    public static Int32 Sign(this Int16 value) => Math.Sign(value);
 
     /// <summary>
     ///     Converts a short value from host byte order to network byte order.
     /// </summary>
     /// <param name="host">The number to convert, expressed in host byte order.</param>
     /// <returns>A short value, expressed in network byte order.</returns>
-    public static short HostToNetworkOrder(this short host)
-    {
-        return IPAddress.HostToNetworkOrder(host);
-    }
+    public static Int16 HostToNetworkOrder(this Int16 host) => IPAddress.HostToNetworkOrder(host);
 
     /// <summary>
     ///     Converts a short value from network byte order to host byte order.
     /// </summary>
     /// <param name="network">The number to convert, expressed in network byte order.</param>
     /// <returns>A short value, expressed in host byte order.</returns>
-    public static short NetworkToHostOrder(this short network)
-    {
-        return IPAddress.NetworkToHostOrder(network);
-    }
+    public static Int16 NetworkToHostOrder(this Int16 network) => IPAddress.NetworkToHostOrder(network);
 
     #endregion short
 
@@ -1831,10 +1463,7 @@ public static class CoreExtension
     /// <param name="minValue">The minimum value.</param>
     /// <param name="maxValue">The maximum value.</param>
     /// <returns>true if the value is between inclusively the minValue and maxValue, otherwise false.</returns>
-    public static bool InRange(this int @this, int minValue, int maxValue)
-    {
-        return @this.CompareTo(minValue) >= 0 && @this.CompareTo(maxValue) <= 0;
-    }
+    public static Boolean InRange(this Int32 @this, Int32 minValue, Int32 maxValue) => @this.CompareTo(minValue) >= 0 && @this.CompareTo(maxValue) <= 0;
 
     /// <summary>
     ///     An Int32 extension method that factor of.
@@ -1842,30 +1471,21 @@ public static class CoreExtension
     /// <param name="this">The @this to act on.</param>
     /// <param name="factorNumer">The factor numer.</param>
     /// <returns>true if it succeeds, false if it fails.</returns>
-    public static bool FactorOf(this int @this, int factorNumer)
-    {
-        return factorNumer % @this == 0;
-    }
+    public static Boolean FactorOf(this Int32 @this, Int32 factorNumer) => factorNumer % @this == 0;
 
     /// <summary>
     ///     An Int32 extension method that query if '@this' is even.
     /// </summary>
     /// <param name="this">The @this to act on.</param>
     /// <returns>true if even, false if not.</returns>
-    public static bool IsEven(this int @this)
-    {
-        return @this % 2 == 0;
-    }
+    public static Boolean IsEven(this Int32 @this) => @this % 2 == 0;
 
     /// <summary>
     ///     An Int32 extension method that query if '@this' is odd.
     /// </summary>
     /// <param name="this">The @this to act on.</param>
     /// <returns>true if odd, false if not.</returns>
-    public static bool IsOdd(this int @this)
-    {
-        return @this % 2 != 0;
-    }
+    public static Boolean IsOdd(this Int32 @this) => @this % 2 != 0;
 
     /// <summary>
     ///     An Int32 extension method that query if '@this' is multiple of.
@@ -1873,17 +1493,14 @@ public static class CoreExtension
     /// <param name="this">The @this to act on.</param>
     /// <param name="factor">The factor.</param>
     /// <returns>true if multiple of, false if not.</returns>
-    public static bool IsMultipleOf(this int @this, int factor)
-    {
-        return @this % factor == 0;
-    }
+    public static Boolean IsMultipleOf(this Int32 @this, Int32 factor) => @this % factor == 0;
 
     /// <summary>
     ///     An Int32 extension method that query if '@this' is prime.
     /// </summary>
     /// <param name="this">The @this to act on.</param>
     /// <returns>true if prime, false if not.</returns>
-    public static bool IsPrime(this int @this)
+    public static Boolean IsPrime(this Int32 @this)
     {
         if (@this == 1 || @this == 2)
         {
@@ -1895,8 +1512,8 @@ public static class CoreExtension
             return false;
         }
 
-        var sqrt = (int)Math.Sqrt(@this);
-        for (var t = 3; t <= sqrt; t = t + 2)
+        var sqrt = (Int32)Math.Sqrt(@this);
+        for (var t = 3; t <= sqrt; t += 2)
         {
             if (@this % t == 0)
             {
@@ -1912,10 +1529,7 @@ public static class CoreExtension
     /// </summary>
     /// <param name="value">The number to convert.</param>
     /// <returns>An array of bytes with length 4.</returns>
-    public static byte[] GetBytes(this int value)
-    {
-        return BitConverter.GetBytes(value);
-    }
+    public static Byte[] GetBytes(this Int32 value) => BitConverter.GetBytes(value);
 
     /// <summary>
     ///     Converts the specified Unicode code point into a UTF-16 encoded string.
@@ -1925,10 +1539,7 @@ public static class CoreExtension
     ///     A string consisting of one  object or a surrogate pair of  objects equivalent to the code point specified by
     ///     the  parameter.
     /// </returns>
-    public static string ConvertFromUtf32(this int utf32)
-    {
-        return char.ConvertFromUtf32(utf32);
-    }
+    public static String ConvertFromUtf32(this Int32 utf32) => Char.ConvertFromUtf32(utf32);
 
     /// <summary>
     ///     Returns the number of days in the specified month and year.
@@ -1939,30 +1550,21 @@ public static class CoreExtension
     ///     The number of days in  for the specified .For example, if  equals 2 for February, the return value is 28 or
     ///     29 depending upon whether  is a leap year.
     /// </returns>
-    public static int DaysInMonth(this int year, int month)
-    {
-        return DateTime.DaysInMonth(year, month);
-    }
+    public static Int32 DaysInMonth(this Int32 year, Int32 month) => DateTime.DaysInMonth(year, month);
 
     /// <summary>
     ///     Returns an indication whether the specified year is a leap year.
     /// </summary>
     /// <param name="year">A 4-digit year.</param>
     /// <returns>true if  is a leap year; otherwise, false.</returns>
-    public static bool IsLeapYear(this int year)
-    {
-        return DateTime.IsLeapYear(year);
-    }
+    public static Boolean IsLeapYear(this Int32 year) => DateTime.IsLeapYear(year);
 
     /// <summary>
     ///     Returns the absolute value of a 32-bit signed integer.
     /// </summary>
     /// <param name="value">A number that is greater than , but less than or equal to .</param>
     /// <returns>A 32-bit signed integer, x, such that 0 ? x ?.</returns>
-    public static int Abs(this int value)
-    {
-        return Math.Abs(value);
-    }
+    public static Int32 Abs(this Int32 value) => Math.Abs(value);
 
     /// <summary>
     ///     Produces the full product of two 32-bit numbers.
@@ -1970,10 +1572,7 @@ public static class CoreExtension
     /// <param name="a">The first number to multiply.</param>
     /// <param name="b">The second number to multiply.</param>
     /// <returns>The number containing the product of the specified numbers.</returns>
-    public static long BigMul(this int a, int b)
-    {
-        return Math.BigMul(a, b);
-    }
+    public static Int64 BigMul(this Int32 a, Int32 b) => Math.BigMul(a, b);
 
     /// <summary>
     ///     An Int32 extension method that div rem.
@@ -1982,10 +1581,7 @@ public static class CoreExtension
     /// <param name="b">The Int32 to process.</param>
     /// <param name="result">[out] The result.</param>
     /// <returns>An Int32.</returns>
-    public static int DivRem(this int a, int b, out int result)
-    {
-        return Math.DivRem(a, b, out result);
-    }
+    public static Int32 DivRem(this Int32 a, Int32 b, out Int32 result) => Math.DivRem(a, b, out result);
 
     /// <summary>
     ///     Returns the larger of two 32-bit signed integers.
@@ -1993,10 +1589,7 @@ public static class CoreExtension
     /// <param name="val1">The first of two 32-bit signed integers to compare.</param>
     /// <param name="val2">The second of two 32-bit signed integers to compare.</param>
     /// <returns>Parameter  or , whichever is larger.</returns>
-    public static int Max(this int val1, int val2)
-    {
-        return Math.Max(val1, val2);
-    }
+    public static Int32 Max(this Int32 val1, Int32 val2) => Math.Max(val1, val2);
 
     /// <summary>
     ///     Returns the smaller of two 32-bit signed integers.
@@ -2004,10 +1597,7 @@ public static class CoreExtension
     /// <param name="val1">The first of two 32-bit signed integers to compare.</param>
     /// <param name="val2">The second of two 32-bit signed integers to compare.</param>
     /// <returns>Parameter  or , whichever is smaller.</returns>
-    public static int Min(this int val1, int val2)
-    {
-        return Math.Min(val1, val2);
-    }
+    public static Int32 Min(this Int32 val1, Int32 val2) => Math.Min(val1, val2);
 
     /// <summary>
     ///     Returns a value indicating the sign of a 32-bit signed integer.
@@ -2017,10 +1607,7 @@ public static class CoreExtension
     ///     A number that indicates the sign of , as shown in the following table.Return value Meaning -1  is less than
     ///     zero. 0  is equal to zero. 1  is greater than zero.
     /// </returns>
-    public static int Sign(this int value)
-    {
-        return Math.Sign(value);
-    }
+    public static Int32 Sign(this Int32 value) => Math.Sign(value);
 
     #endregion int
 
@@ -2031,30 +1618,21 @@ public static class CoreExtension
     /// </summary>
     /// <param name="value">A number of ticks that represent a time.</param>
     /// <returns>An object that represents .</returns>
-    public static TimeSpan FromTicks(this long value)
-    {
-        return TimeSpan.FromTicks(value);
-    }
+    public static TimeSpan FromTicks(this Int64 value) => TimeSpan.FromTicks(value);
 
     /// <summary>
     ///     Returns the specified 64-bit signed integer value as an array of bytes.
     /// </summary>
     /// <param name="value">The number to convert.</param>
     /// <returns>An array of bytes with length 8.</returns>
-    public static byte[] GetBytes(this long value)
-    {
-        return BitConverter.GetBytes(value);
-    }
+    public static Byte[] GetBytes(this Int64 value) => BitConverter.GetBytes(value);
 
     /// <summary>
     ///     Converts the specified 64-bit signed integer to a double-precision floating point number.
     /// </summary>
     /// <param name="value">The number to convert.</param>
     /// <returns>A double-precision floating point number whose value is equivalent to .</returns>
-    public static double Int64BitsToDouble(this long value)
-    {
-        return BitConverter.Int64BitsToDouble(value);
-    }
+    public static Double Int64BitsToDouble(this Int64 value) => BitConverter.Int64BitsToDouble(value);
 
     #endregion long
 
@@ -2066,7 +1644,7 @@ public static class CoreExtension
     /// <typeparam name="T">Generic type parameter.</typeparam>
     /// <param name="this">The @this to act on.</param>
     /// <returns>A T.</returns>
-    public static T AsOrDefault<T>([NotNull] this object @this)
+    public static T? AsOrDefault<T>([NotNull] this Object @this)
     {
         try
         {
@@ -2074,7 +1652,7 @@ public static class CoreExtension
         }
         catch (Exception)
         {
-            return default(T);
+            return default;
         }
     }
 
@@ -2085,7 +1663,7 @@ public static class CoreExtension
     /// <param name="this">The @this to act on.</param>
     /// <param name="defaultValue">The default value.</param>
     /// <returns>A T.</returns>
-    public static T AsOrDefault<T>([NotNull] this object @this, T defaultValue)
+    public static T AsOrDefault<T>([NotNull] this Object @this, T defaultValue)
     {
         try
         {
@@ -2104,7 +1682,7 @@ public static class CoreExtension
     /// <param name="this">The @this to act on.</param>
     /// <param name="defaultValueFactory">The default value factory.</param>
     /// <returns>A T.</returns>
-    public static T AsOrDefault<T>([NotNull] this object @this, Func<T> defaultValueFactory)
+    public static T AsOrDefault<T>([NotNull] this Object @this, Func<T> defaultValueFactory)
     {
         try
         {
@@ -2123,7 +1701,7 @@ public static class CoreExtension
     /// <param name="this">The @this to act on.</param>
     /// <param name="defaultValueFactory">The default value factory.</param>
     /// <returns>A T.</returns>
-    public static T AsOrDefault<T>([NotNull] this object @this, Func<object, T> defaultValueFactory)
+    public static T AsOrDefault<T>([NotNull] this Object @this, Func<Object, T> defaultValueFactory)
     {
         try
         {
@@ -2141,11 +1719,11 @@ public static class CoreExtension
     /// <typeparam name="T">Generic type parameter.</typeparam>
     /// <param name="this">this.</param>
     /// <returns>A T.</returns>
-    public static T To<T>(this object @this)
+    public static T? To<T>(this Object @this)
     {
         if (@this == null || @this == DBNull.Value)
         {
-            return (T)(object)null;
+            return (T?)(Object?)null;
         }
 
         var targetType = typeof(T).Unwrap();
@@ -2157,13 +1735,13 @@ public static class CoreExtension
         var converter = TypeDescriptor.GetConverter(sourceType);
         if (converter.CanConvertTo(targetType))
         {
-            return (T)converter.ConvertTo(@this, targetType);
+            return (T?)converter.ConvertTo(@this, targetType);
         }
 
         converter = TypeDescriptor.GetConverter(targetType);
         if (converter.CanConvertFrom(sourceType))
         {
-            return (T)converter.ConvertFrom(@this);
+            return (T?)converter.ConvertFrom(@this);
         }
 
         return (T)Convert.ChangeType(@this, targetType);
@@ -2175,7 +1753,7 @@ public static class CoreExtension
     /// <param name="this">this.</param>
     /// <param name="type">The type.</param>
     /// <returns>An object.</returns>
-    public static object To([CanBeNull] this object @this, Type type)
+    public static Object? To(this Object @this, Type type)
     {
         if (@this == null || @this == DBNull.Value)
         {
@@ -2212,11 +1790,11 @@ public static class CoreExtension
     /// <param name="this">this.</param>
     /// <param name="defaultValueFactory">The default value factory.</param>
     /// <returns>The given data converted to a T.</returns>
-    public static T ToOrDefault<T>([CanBeNull] this object @this, Func<object, T> defaultValueFactory)
+    public static T? ToOrDefault<T>(this Object @this, Func<Object, T> defaultValueFactory)
     {
         try
         {
-            return (T)@this.To(typeof(T));
+            return @this.To<T>();
         }
         catch (Exception)
         {
@@ -2231,10 +1809,7 @@ public static class CoreExtension
     /// <param name="this">this.</param>
     /// <param name="defaultValueFactory">The default value factory.</param>
     /// <returns>The given data converted to a T.</returns>
-    public static T ToOrDefault<T>([NotNull] this object @this, Func<T> defaultValueFactory)
-    {
-        return @this.ToOrDefault(x => defaultValueFactory());
-    }
+    public static T? ToOrDefault<T>([NotNull] this Object @this, Func<T> defaultValueFactory) => @this.ToOrDefault(x => defaultValueFactory());
 
     /// <summary>
     ///     A System.Object extension method that converts this object to an or default.
@@ -2242,7 +1817,7 @@ public static class CoreExtension
     /// <param name="this">this.</param>
     /// <param name="type">type</param>
     /// <returns>The given data converted to</returns>
-    public static object ToOrDefault([NotNull] this object @this, [NotNull] Type type)
+    public static Object? ToOrDefault([NotNull] this Object @this, [NotNull] Type type)
     {
         try
         {
@@ -2260,10 +1835,7 @@ public static class CoreExtension
     /// <typeparam name="T">Generic type parameter.</typeparam>
     /// <param name="this">this.</param>
     /// <returns>The given data converted to a T.</returns>
-    public static T ToOrDefault<T>([CanBeNull] this object @this)
-    {
-        return @this.ToOrDefault(x => default(T));
-    }
+    public static T? ToOrDefault<T>(this Object @this) => @this.ToOrDefault(x => default(T));
 
     /// <summary>
     ///     A System.Object extension method that converts this object to an or default.
@@ -2272,10 +1844,7 @@ public static class CoreExtension
     /// <param name="this">this.</param>
     /// <param name="defaultValue">The default value.</param>
     /// <returns>The given data converted to a T.</returns>
-    public static T ToOrDefault<T>([CanBeNull] this object @this, T defaultValue)
-    {
-        return @this.ToOrDefault(x => defaultValue);
-    }
+    public static T? ToOrDefault<T>(this Object @this, T defaultValue) => @this.ToOrDefault(x => defaultValue);
 
     /// <summary>
     ///     An object extension method that query if '@this' is assignable from.
@@ -2283,7 +1852,7 @@ public static class CoreExtension
     /// <typeparam name="T">Generic type parameter.</typeparam>
     /// <param name="this">The @this to act on.</param>
     /// <returns>true if assignable from, false if not.</returns>
-    public static bool IsAssignableFrom<T>([NotNull] this object @this)
+    public static Boolean IsAssignableFrom<T>([NotNull] this Object @this)
     {
         var type = @this.GetType();
         return type.IsAssignableFrom(typeof(T));
@@ -2295,7 +1864,7 @@ public static class CoreExtension
     /// <param name="this">The @this to act on.</param>
     /// <param name="targetType">Type of the target.</param>
     /// <returns>true if assignable from, false if not.</returns>
-    public static bool IsAssignableFrom([NotNull] this object @this, Type targetType)
+    public static Boolean IsAssignableFrom([NotNull] this Object @this, Type targetType)
     {
         var type = @this.GetType();
         return type.IsAssignableFrom(targetType);
@@ -2308,7 +1877,7 @@ public static class CoreExtension
     /// <param name="this">The @this to act on.</param>
     /// <param name="action">The action.</param>
     /// <returns>The @this acted on.</returns>
-    public static T Chain<T>([NotNull] this T @this, Action<T> action)
+    public static T? Chain<T>(this T @this, Action<T> action)
     {
         action?.Invoke(@this);
 
@@ -2340,7 +1909,7 @@ public static class CoreExtension
     /// <param name="this">The @this to act on.</param>
     /// <param name="predicate">The predicate.</param>
     /// <returns>A T.</returns>
-    public static T NullIf<T>([NotNull] this T @this, Func<T, bool> predicate) where T : class
+    public static T? NullIf<T>([NotNull] this T @this, Func<T, Boolean> predicate) where T : class
     {
         if (predicate(@this))
         {
@@ -2357,7 +1926,7 @@ public static class CoreExtension
     /// <param name="this">The @this to act on.</param>
     /// <param name="func">The function.</param>
     /// <returns>The value or default.</returns>
-    public static TResult GetValueOrDefault<T, TResult>([NotNull] this T @this, Func<T, TResult> func)
+    public static TResult? GetValueOrDefault<T, TResult>(this T @this, Func<T, TResult> func)
     {
         try
         {
@@ -2365,7 +1934,7 @@ public static class CoreExtension
         }
         catch (Exception)
         {
-            return default(TResult);
+            return default;
         }
     }
 
@@ -2378,7 +1947,7 @@ public static class CoreExtension
     /// <param name="func">The function.</param>
     /// <param name="defaultValue">The default value.</param>
     /// <returns>The value or default.</returns>
-    public static TResult GetValueOrDefault<T, TResult>([NotNull] this T @this, Func<T, TResult> func, TResult defaultValue)
+    public static TResult? GetValueOrDefault<T, TResult>(this T @this, Func<T, TResult> func, TResult defaultValue)
     {
         try
         {
@@ -2397,7 +1966,7 @@ public static class CoreExtension
     /// <param name="tryFunction">The try function.</param>
     /// <param name="catchValue">The catch value.</param>
     /// <returns>A TResult.</returns>
-    public static TResult Try<TType, TResult>([NotNull] this TType @this, Func<TType, TResult> tryFunction, TResult catchValue)
+    public static TResult Try<TType, TResult>(this TType @this, Func<TType, TResult> tryFunction, TResult catchValue)
     {
         try
         {
@@ -2416,7 +1985,7 @@ public static class CoreExtension
     /// <param name="tryFunction">The try function.</param>
     /// <param name="catchValueFactory">The catch value factory.</param>
     /// <returns>A TResult.</returns>
-    public static TResult Try<TType, TResult>([NotNull] this TType @this, Func<TType, TResult> tryFunction, Func<TType, TResult> catchValueFactory)
+    public static TResult Try<TType, TResult>(this TType @this, Func<TType, TResult> tryFunction, Func<TType, TResult> catchValueFactory)
     {
         try
         {
@@ -2435,7 +2004,7 @@ public static class CoreExtension
     /// <param name="tryFunction">The try function.</param>
     /// <param name="result">[out] The result.</param>
     /// <returns>A TResult.</returns>
-    public static bool Try<TType, TResult>([NotNull] this TType @this, Func<TType, TResult> tryFunction, out TResult result)
+    public static Boolean Try<TType, TResult>(this TType @this, Func<TType, TResult> tryFunction, out TResult? result)
     {
         try
         {
@@ -2444,7 +2013,7 @@ public static class CoreExtension
         }
         catch
         {
-            result = default(TResult);
+            result = default;
             return false;
         }
     }
@@ -2457,7 +2026,7 @@ public static class CoreExtension
     /// <param name="catchValue">The catch value.</param>
     /// <param name="result">[out] The result.</param>
     /// <returns>A TResult.</returns>
-    public static bool Try<TType, TResult>([NotNull] this TType @this, Func<TType, TResult> tryFunction, TResult catchValue, out TResult result)
+    public static Boolean Try<TType, TResult>(this TType @this, Func<TType, TResult> tryFunction, TResult catchValue, out TResult result)
     {
         try
         {
@@ -2479,7 +2048,7 @@ public static class CoreExtension
     /// <param name="catchValueFactory">The catch value factory.</param>
     /// <param name="result">[out] The result.</param>
     /// <returns>A TResult.</returns>
-    public static bool Try<TType, TResult>([NotNull] this TType @this, Func<TType, TResult> tryFunction, Func<TType, TResult> catchValueFactory, out TResult result)
+    public static Boolean Try<TType, TResult>(this TType @this, Func<TType, TResult> tryFunction, Func<TType, TResult> catchValueFactory, out TResult result)
     {
         try
         {
@@ -2498,7 +2067,7 @@ public static class CoreExtension
     /// <param name="this">The @this to act on.</param>
     /// <param name="tryAction">The try action.</param>
     /// <returns>true if it succeeds, false if it fails.</returns>
-    public static bool Try<TType>([NotNull] this TType @this, Action<TType> tryAction)
+    public static Boolean Try<TType>(this TType @this, Action<TType> tryAction)
     {
         try
         {
@@ -2517,7 +2086,7 @@ public static class CoreExtension
     /// <param name="tryAction">The try action.</param>
     /// <param name="catchAction">The catch action.</param>
     /// <returns>true if it succeeds, false if it fails.</returns>
-    public static bool Try<TType>([NotNull] this TType @this, Action<TType> tryAction, Action<TType> catchAction)
+    public static Boolean Try<TType>(this TType @this, Action<TType> tryAction, Action<TType> catchAction)
     {
         try
         {
@@ -2539,10 +2108,7 @@ public static class CoreExtension
     /// <param name="minValue">The minimum value.</param>
     /// <param name="maxValue">The maximum value.</param>
     /// <returns>true if the value is between inclusively the minValue and maxValue, otherwise false.</returns>
-    public static bool InRange<T>([NotNull] this T @this, T minValue, T maxValue) where T : IComparable<T>
-    {
-        return @this.CompareTo(minValue) >= 0 && @this.CompareTo(maxValue) <= 0;
-    }
+    public static Boolean InRange<T>([NotNull] this T @this, T minValue, T maxValue) where T : IComparable<T> => @this.CompareTo(minValue) >= 0 && @this.CompareTo(maxValue) <= 0;
 
     /// <summary>
     ///     A T extension method that query if 'source' is the default value.
@@ -2550,10 +2116,7 @@ public static class CoreExtension
     /// <typeparam name="T">Generic type parameter.</typeparam>
     /// <param name="source">The source to act on.</param>
     /// <returns>true if default, false if not.</returns>
-    public static bool IsDefault<T>(this T source)
-    {
-        return typeof(T).IsValueType ? source.Equals(default(T)) : source == null;
-    }
+    public static Boolean IsDefault<T>(this T source) => typeof(T).IsValueType ? source?.Equals(default(T)) == true : source == null;
 
     #endregion object
 
@@ -2564,10 +2127,7 @@ public static class CoreExtension
     /// </summary>
     /// <param name="args">An array of objects whose types to determine.</param>
     /// <returns>An array of  objects representing the types of the corresponding elements in .</returns>
-    public static Type[] GetTypeArray([NotNull] this object[] args)
-    {
-        return Type.GetTypeArray(args);
-    }
+    public static Type[] GetTypeArray([NotNull] this Object[] args) => Type.GetTypeArray(args);
 
     #endregion object[]
 
@@ -2580,20 +2140,14 @@ public static class CoreExtension
     /// <param name="this">The @this to act on.</param>
     /// <param name="values">A variable-length parameters list containing arguments.</param>
     /// <returns>One of the specified value.</returns>
-    public static T OneOf<T>([NotNull] this Random @this, params T[] values)
-    {
-        return values[@this.Next(values.Length)];
-    }
+    public static T OneOf<T>([NotNull] this Random @this, params T[] values) => values[@this.Next(values.Length)];
 
     /// <summary>
     ///     A Random extension method that flip a coin toss.
     /// </summary>
     /// <param name="this">The @this to act on.</param>
     /// <returns>true 50% of time, otherwise false.</returns>
-    public static bool CoinToss([NotNull] this Random @this)
-    {
-        return @this.Next(2) == 0;
-    }
+    public static Boolean CoinToss([NotNull] this Random @this) => @this.Next(2) == 0;
 
     #endregion Random
 
@@ -2604,32 +2158,29 @@ public static class CoreExtension
     /// </summary>
     /// <param name="this">The @this to act on.</param>
     /// <returns>true if null, false if not.</returns>
-    public static bool IsNull(this string @this)
-    {
-        return @this == null;
-    }
+    public static Boolean IsNull(this String @this) => @this == null;
 
     /// <summary>
     ///     A string extension method that query if '@this' is not null and not empty.
     /// </summary>
     /// <param name="this">The @this to act on.</param>
     /// <returns>false if null or empty, true if not.</returns>
-    public static bool IsNotNullOrEmpty(this string @this)
-        => !string.IsNullOrEmpty(@this);
+    public static Boolean IsNotNullOrEmpty(this String @this)
+        => !String.IsNullOrEmpty(@this);
 
     /// <summary>
     ///     A string extension method that query if '@this' is not null and not whiteSpace.
     /// </summary>
     /// <param name="this">The @this to act on.</param>
     /// <returns>false if null or whiteSpace, true if not.</returns>
-    public static bool IsNotNullOrWhiteSpace(this string @this) => !string.IsNullOrWhiteSpace(@this);
+    public static Boolean IsNotNullOrWhiteSpace(this String @this) => !String.IsNullOrWhiteSpace(@this);
 
     /// <summary>
     ///     Creates a new instance of  with the same value as a specified .
     /// </summary>
     /// <param name="str">The string to copy.</param>
     /// <returns>A new string with the same value as .</returns>
-    public static string Copy([NotNull] this string str) => string.Copy(str);
+    public static String Copy([NotNull] this String str) => new(str.ToCharArray());
 
     /// <summary>
     ///     Retrieves the system&#39;s reference to the specified .
@@ -2638,14 +2189,14 @@ public static class CoreExtension
     /// <returns>
     ///     The system&#39;s reference to , if it is interned; otherwise, a new reference to a string with the value of .
     /// </returns>
-    public static string Intern([NotNull] this string str) => string.Intern(str);
+    public static String Intern([NotNull] this String str) => String.Intern(str);
 
     /// <summary>
     ///     Retrieves a reference to a specified .
     /// </summary>
     /// <param name="str">The string to search for in the intern pool.</param>
     /// <returns>A reference to  if it is in the common language runtime intern pool; otherwise, null.</returns>
-    public static string IsInterned([NotNull] this string str) => string.IsInterned(str);
+    public static String? IsInterned([NotNull] this String str) => String.IsInterned(str);
 
     /// <summary>
     ///     Concatenates the elements of an object array, using the specified separator between each element.
@@ -2659,7 +2210,7 @@ public static class CoreExtension
     ///     A string that consists of the elements of  delimited by the  string. If  is an empty array, the method
     ///     returns .
     /// </returns>
-    public static string Join<T>([NotNull] this string separator, IEnumerable<T> values) => string.Join(separator, values);
+    public static String Join<T>([NotNull] this String separator, IEnumerable<T> values) => String.Join(separator, values);
 
     /// <summary>
     ///     Indicates whether the specified regular expression finds a match in the specified input string.
@@ -2667,7 +2218,7 @@ public static class CoreExtension
     /// <param name="input">The string to search for a match.</param>
     /// <param name="pattern">The regular expression pattern to match.</param>
     /// <returns>true if the regular expression finds a match; otherwise, false.</returns>
-    public static bool IsMatch([NotNull] this string input, string pattern) => Regex.IsMatch(input, pattern);
+    public static Boolean IsMatch([NotNull] this String input, String pattern) => Regex.IsMatch(input, pattern);
 
     /// <summary>
     ///     Indicates whether the specified regular expression finds a match in the specified input string, using the
@@ -2677,12 +2228,12 @@ public static class CoreExtension
     /// <param name="pattern">The regular expression pattern to match.</param>
     /// <param name="options">A bitwise combination of the enumeration values that provide options for matching.</param>
     /// <returns>true if the regular expression finds a match; otherwise, false.</returns>
-    public static bool IsMatch([NotNull] this string input, string pattern, RegexOptions options) => Regex.IsMatch(input, pattern, options);
+    public static Boolean IsMatch([NotNull] this String input, String pattern, RegexOptions options) => Regex.IsMatch(input, pattern, options);
 
     /// <summary>An IEnumerable&lt;string&gt; extension method that concatenates the given this.</summary>
     /// <param name="this">The @this to act on.</param>
     /// <returns>A string.</returns>
-    public static string Concatenate([NotNull] this IEnumerable<string> @this)
+    public static String Concatenate([NotNull] this IEnumerable<String> @this)
     {
         var sb = new StringBuilder();
 
@@ -2699,7 +2250,7 @@ public static class CoreExtension
     /// <param name="source">The source to act on.</param>
     /// <param name="func">The function.</param>
     /// <returns>A string.</returns>
-    public static string Concatenate<T>([NotNull] this IEnumerable<T> source, Func<T, string> func)
+    public static String Concatenate<T>([NotNull] this IEnumerable<T> source, Func<T, String> func)
     {
         var sb = new StringBuilder();
         foreach (var item in source)
@@ -2711,29 +2262,12 @@ public static class CoreExtension
     }
 
     /// <summary>
-    ///     A string extension method that query if this object contains the given value.
-    /// </summary>
-    /// <param name="this">The @this to act on.</param>
-    /// <param name="value">The value.</param>
-    /// <returns>true if the value is in the string, false if not.</returns>
-    public static bool Contains([NotNull] this string @this, string value) => @this.IndexOf(value, StringComparison.Ordinal) != -1;
-
-    /// <summary>
-    ///     A string extension method that query if this object contains the given value.
-    /// </summary>
-    /// <param name="this">The @this to act on.</param>
-    /// <param name="value">The value.</param>
-    /// <param name="comparisonType">Type of the comparison.</param>
-    /// <returns>true if the value is in the string, false if not.</returns>
-    public static bool Contains([NotNull] this string @this, string value, StringComparison comparisonType) => @this.IndexOf(value, comparisonType) != -1;
-
-    /// <summary>
     ///     A string extension method that extracts this object.
     /// </summary>
     /// <param name="this">The @this to act on.</param>
     /// <param name="predicate">The predicate.</param>
     /// <returns>A string.</returns>
-    public static string Extract([NotNull] this string @this, Func<char, bool> predicate) => new string(@this.ToCharArray().Where(predicate).ToArray());
+    public static String Extract([NotNull] this String @this, Func<Char, Boolean> predicate) => new(@this.ToCharArray().Where(predicate).ToArray());
 
     /// <summary>
     ///     A string extension method that removes the letter.
@@ -2741,7 +2275,7 @@ public static class CoreExtension
     /// <param name="this">The @this to act on.</param>
     /// <param name="predicate">The predicate.</param>
     /// <returns>A string.</returns>
-    public static string RemoveWhere([NotNull] this string @this, Func<char, bool> predicate) => new string(@this.ToCharArray().Where(x => !predicate(x)).ToArray());
+    public static String RemoveWhere([NotNull] this String @this, Func<Char, Boolean> predicate) => new(@this.ToCharArray().Where(x => !predicate(x)).ToArray());
 
     /// <summary>
     ///     Replaces the format item in a specified String with the text equivalent of the value of a corresponding
@@ -2753,29 +2287,7 @@ public static class CoreExtension
     ///     A copy of format in which the format items have been replaced by the String equivalent of the corresponding
     ///     instances of Object in args.
     /// </returns>
-    public static string FormatWith([NotNull] this string @this, params object[] values) => string.Format(@this, values);
-
-    /// <summary>
-    ///     A string extension method that query if '@this' satisfy the specified pattern.
-    /// </summary>
-    /// <param name="this">The @this to act on.</param>
-    /// <param name="pattern">The pattern to use. Use '*' as wildcard string.</param>
-    /// <returns>true if '@this' satisfy the specified pattern, false if not.</returns>
-    public static bool IsLike([NotNull] this string @this, string pattern)
-    {
-        // Turn the pattern into regex pattern, and match the whole string with ^$
-        var regexPattern = "^" + Regex.Escape(pattern) + "$";
-
-        // Escape special character ?, #, *, [], and [!]
-        regexPattern = regexPattern.Replace(@"\[!", "[^")
-            .Replace(@"\[", "[")
-            .Replace(@"\]", "]")
-            .Replace(@"\?", ".")
-            .Replace(@"\*", ".*")
-            .Replace(@"\#", @"\d");
-
-        return Regex.IsMatch(@this, regexPattern);
-    }
+    public static String FormatWith([NotNull] this String @this, params Object[] values) => String.Format(@this, values);
 
     /// <summary>
     /// SafeSubstring
@@ -2783,13 +2295,13 @@ public static class CoreExtension
     /// <param name="this"></param>
     /// <param name="startIndex"></param>
     /// <returns></returns>
-    public static string SafeSubstring([NotNull] this string @this, int startIndex)
+    public static String SafeSubstring([NotNull] this String @this, Int32 startIndex)
     {
         if (startIndex < 0 || startIndex > @this.Length)
         {
-            return string.Empty;
+            return String.Empty;
         }
-        return @this.Substring(startIndex);
+        return @this[startIndex..];
     }
 
     /// <summary>
@@ -2799,11 +2311,11 @@ public static class CoreExtension
     /// <param name="startIndex"></param>
     /// <param name="length"></param>
     /// <returns></returns>
-    public static string SafeSubstring([NotNull] this string str, int startIndex, int length)
+    public static String SafeSubstring([NotNull] this String str, Int32 startIndex, Int32 length)
     {
         if (startIndex < 0 || startIndex >= str.Length || length < 0)
         {
-            return string.Empty;
+            return String.Empty;
         }
         return str.Substring(startIndex, Math.Min(str.Length - startIndex, length));
     }
@@ -2814,7 +2326,7 @@ public static class CoreExtension
     /// <param name="this">string to be handled</param>
     /// <param name="startIndex">startIndex to substract</param>
     /// <returns>substring</returns>
-    public static string Sub([NotNull] this string @this, int startIndex)
+    public static String Sub([NotNull] this String @this, Int32 startIndex)
     {
         if (startIndex >= 0)
         {
@@ -2822,9 +2334,9 @@ public static class CoreExtension
         }
         if (Math.Abs(startIndex) > @this.Length)
         {
-            return string.Empty;
+            return String.Empty;
         }
-        return @this.Substring(@this.Length + startIndex);
+        return @this[(@this.Length + startIndex)..];
     }
 
     /// <summary>
@@ -2833,11 +2345,11 @@ public static class CoreExtension
     /// <param name="this">The @this to act on.</param>
     /// <param name="repeatCount">Number of repeats.</param>
     /// <returns>The repeated string.</returns>
-    public static string Repeat([NotNull] this string @this, int repeatCount)
+    public static String Repeat([NotNull] this String @this, Int32 repeatCount)
     {
         if (@this.Length == 1)
         {
-            return new string(@this[0], repeatCount);
+            return new String(@this[0], repeatCount);
         }
 
         var sb = new StringBuilder(repeatCount * @this.Length);
@@ -2854,7 +2366,7 @@ public static class CoreExtension
     /// </summary>
     /// <param name="this">The @this to act on.</param>
     /// <returns>The string reversed.</returns>
-    public static string Reverse([NotNull] this string @this)
+    public static String Reverse([NotNull] this String @this)
     {
         if (@this.Length <= 1)
         {
@@ -2863,30 +2375,15 @@ public static class CoreExtension
 
         var chars = @this.ToCharArray();
         Array.Reverse(chars);
-        return new string(chars);
+        return new String(chars);
     }
-
-    /// <summary>
-    ///     Returns a String array containing the substrings in this string that are delimited by elements of a specified
-    ///     String array. A parameter specifies whether to return empty array elements.
-    /// </summary>
-    /// <param name="this">The @this to act on.</param>
-    /// <param name="separator">A string that delimit the substrings in this string.</param>
-    /// <param name="option">
-    ///     (Optional) Specify RemoveEmptyEntries to omit empty array elements from the array returned,
-    ///     or None to include empty array elements in the array returned.
-    /// </param>
-    /// <returns>
-    ///     An array whose elements contain the substrings in this string that are delimited by the separator.
-    /// </returns>
-    public static string[] Split([NotNull] this string @this, string separator, StringSplitOptions option = StringSplitOptions.None) => @this.Split(new[] { separator }, option);
 
     /// <summary>
     ///     A string extension method that converts the @this to a byte array.
     /// </summary>
     /// <param name="this">The @this to act on.</param>
     /// <returns>@this as a byte[].</returns>
-    public static byte[] ToByteArray([NotNull] this string @this) => Encoding.UTF8.GetBytes(@this);
+    public static Byte[] ToByteArray([NotNull] this String @this) => Encoding.UTF8.GetBytes(@this);
 
     /// <summary>
     ///     A string extension method that converts the @this to a byte array.
@@ -2894,9 +2391,9 @@ public static class CoreExtension
     /// <param name="this">The @this to act on.</param>
     /// <param name="encoding">encoding</param>
     /// <returns>@this as a byte[].</returns>
-    public static byte[] ToByteArray([NotNull] this string @this, Encoding encoding) => encoding.GetBytes(@this);
+    public static Byte[] ToByteArray([NotNull] this String @this, Encoding encoding) => encoding.GetBytes(@this);
 
-    public static byte[] GetBytes([NotNull] this string str, Encoding encoding) => encoding.GetBytes(str);
+    public static Byte[] GetBytes([NotNull] this String str, Encoding encoding) => encoding.GetBytes(str);
 
     /// <summary>
     ///     A string extension method that converts the @this to an enum.
@@ -2904,22 +2401,7 @@ public static class CoreExtension
     /// <typeparam name="T">Generic type parameter.</typeparam>
     /// <param name="this">The @this to act on.</param>
     /// <returns>@this as a T.</returns>
-    public static T ToEnum<T>([NotNull] this string @this) => (T)Enum.Parse(typeof(T), @this);
-
-    /// <summary>
-    ///     A string extension method that converts the @this to a title case.
-    /// </summary>
-    /// <param name="this">The @this to act on.</param>
-    /// <returns>@this as a string.</returns>
-    public static string ToTitleCase([NotNull] this string @this) => new CultureInfo("en-US").TextInfo.ToTitleCase(@this);
-
-    /// <summary>
-    ///     A string extension method that converts the @this to a title case.
-    /// </summary>
-    /// <param name="this">The @this to act on.</param>
-    /// <param name="cultureInfo">Information describing the culture.</param>
-    /// <returns>@this as a string.</returns>
-    public static string ToTitleCase([NotNull] this string @this, CultureInfo cultureInfo) => cultureInfo.TextInfo.ToTitleCase(@this);
+    public static T ToEnum<T>([NotNull] this String @this) => (T)Enum.Parse(typeof(T), @this);
 
     /// <summary>
     ///     A string extension method that truncates.
@@ -2927,7 +2409,7 @@ public static class CoreExtension
     /// <param name="this">The @this to act on.</param>
     /// <param name="maxLength">The maximum length.</param>
     /// <returns>A string.</returns>
-    public static string Truncate(this string @this, int maxLength) => @this.Truncate(maxLength, "...");
+    public static String? Truncate(this String @this, Int32 maxLength) => @this.Truncate(maxLength, "...");
 
     /// <summary>
     ///     A string extension method that truncates.
@@ -2936,7 +2418,7 @@ public static class CoreExtension
     /// <param name="maxLength">The maximum length.</param>
     /// <param name="suffix">The suffix.</param>
     /// <returns>A string.</returns>
-    public static string Truncate(this string @this, int maxLength, string suffix)
+    public static String? Truncate(this String @this, Int32 maxLength, String suffix)
     {
         if (@this == null || @this.Length <= maxLength)
         {
@@ -2951,8 +2433,8 @@ public static class CoreExtension
     /// <param name="s1">string1</param>
     /// <param name="s2">string2</param>
     /// <returns></returns>
-    public static bool EqualsIgnoreCase(this string s1, string s2)
-        => string.Equals(s1, s2, StringComparison.OrdinalIgnoreCase);
+    public static Boolean EqualsIgnoreCase(this String s1, String s2)
+        => String.Equals(s1, s2, StringComparison.OrdinalIgnoreCase);
 
     #endregion string
 
@@ -2962,29 +2444,23 @@ public static class CoreExtension
     /// <param name="this">The @this to act on.</param>
     /// <param name="startIndex">The start index.</param>
     /// <returns>A string.</returns>
-    public static string Substring([NotNull] this StringBuilder @this, int startIndex)
-    {
-        return @this.ToString(startIndex, @this.Length - startIndex);
-    }
+    public static String Substring([NotNull] this StringBuilder @this, Int32 startIndex) => @this.ToString(startIndex, @this.Length - startIndex);
 
     /// <summary>A StringBuilder extension method that substrings.</summary>
     /// <param name="this">The @this to act on.</param>
     /// <param name="startIndex">The start index.</param>
     /// <param name="length">The length.</param>
     /// <returns>A string.</returns>
-    public static string Substring([NotNull] this StringBuilder @this, int startIndex, int length)
-    {
-        return @this.ToString(startIndex, length);
-    }
+    public static String Substring([NotNull] this StringBuilder @this, Int32 startIndex, Int32 length) => @this.ToString(startIndex, length);
 
     /// <summary>A StringBuilder extension method that appends a join.</summary>
     /// <typeparam name="T">Generic type parameter.</typeparam>
     /// <param name="this">The @this to act on.</param>
     /// <param name="separator">The separator.</param>
     /// <param name="values">The values.</param>
-    public static StringBuilder AppendJoin<T>([NotNull] this StringBuilder @this, string separator, IEnumerable<T> values)
+    public static StringBuilder AppendJoin<T>([NotNull] this StringBuilder @this, String separator, IEnumerable<T> values)
     {
-        @this.Append(string.Join(separator, values));
+        @this.Append(String.Join(separator, values));
 
         return @this;
     }
@@ -2994,9 +2470,9 @@ public static class CoreExtension
     /// <param name="this">The @this to act on.</param>
     /// <param name="separator">The separator.</param>
     /// <param name="values">The values.</param>
-    public static StringBuilder AppendLineJoin<T>([NotNull] this StringBuilder @this, string separator, IEnumerable<T> values)
+    public static StringBuilder AppendLineJoin<T>([NotNull] this StringBuilder @this, String separator, IEnumerable<T> values)
     {
-        @this.AppendLine(string.Join(separator, values));
+        @this.AppendLine(String.Join(separator, values));
 
         return @this;
     }
@@ -3044,7 +2520,7 @@ public static class CoreExtension
     /// <typeparam name="T">Generic type parameter.</typeparam>
     /// <param name="this">The @this to act on.</param>
     /// <returns>The new instance.</returns>
-    public static T CreateInstance<T>([NotNull] this Type @this) => (T)Activator.CreateInstance(@this);
+    public static T? CreateInstance<T>([NotNull] this Type @this) => (T?)Activator.CreateInstance(@this);
 
     /// <summary>
     ///     A Type extension method that creates an instance.
@@ -3053,31 +2529,28 @@ public static class CoreExtension
     /// <param name="this">The @this to act on.</param>
     /// <param name="args">The arguments.</param>
     /// <returns>The new instance.</returns>
-    public static T CreateInstance<T>([NotNull] this Type @this, params object[] args) => (T)Activator.CreateInstance(@this, args);
+    public static T? CreateInstance<T>([NotNull] this Type @this, params Object[] args) => (T?)Activator.CreateInstance(@this, args);
 
     /// <summary>
     /// if a type has empty constructor
     /// </summary>
     /// <param name="type">type</param>
     /// <returns></returns>
-    public static bool HasEmptyConstructor([NotNull] this Type type)
+    public static Boolean HasEmptyConstructor([NotNull] this Type type)
         => type.GetConstructors(BindingFlags.Instance).Any(c => c.GetParameters().Length == 0);
 
-    public static bool IsNullableType(this Type type)
-    {
-        return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
-    }
+    public static Boolean IsNullableType(this Type type) => type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
 
-    private static readonly ConcurrentDictionary<Type, object> _defaultValues =
-        new ConcurrentDictionary<Type, object>();
+    private static readonly ConcurrentDictionary<Type, Object> _defaultValues =
+        new();
 
     /// <summary>
     /// 根据 Type 获取默认值，实现类似 default(T) 的功能
     /// </summary>
     /// <param name="type">type</param>
     /// <returns></returns>
-    public static object GetDefaultValue([NotNull] this Type type) =>
-        type.IsValueType && type != typeof(void) ? _defaultValues.GetOrAdd(type, Activator.CreateInstance) : null;
+    public static Object? GetDefaultValue([NotNull] this Type type) =>
+        type.IsValueType && type != typeof(void) ? _defaultValues.GetOrAdd(type, Activator.CreateInstance!) : null;
 
     /// <summary>
     /// GetUnderlyingType if nullable else return self
@@ -3092,7 +2565,7 @@ public static class CoreExtension
     /// </summary>
     /// <param name="type">type</param>
     /// <returns></returns>
-    public static Type GetUnderlyingType([NotNull] this Type type)
+    public static Type? GetUnderlyingType([NotNull] this Type type)
         => Nullable.GetUnderlyingType(type);
 
     #endregion Type
@@ -3102,15 +2575,15 @@ public static class CoreExtension
     /// </summary>
     /// <param name="source"></param>
     /// <returns></returns>
-    public static string UpperToUnderline(this string source)
+    public static String UpperToUnderline(this String source)
     {
-        var result = string.Empty;
+        var result = String.Empty;
         foreach (var item in source)
         {
             if (item >= 65 && item <= 90)
             {
-                var temp = string.Empty;
-                if (!string.IsNullOrWhiteSpace(result))
+                var temp = String.Empty;
+                if (!String.IsNullOrWhiteSpace(result))
                 {
                     temp = "_";
                 }
@@ -3129,19 +2602,19 @@ public static class CoreExtension
     /// </summary>
     /// <param name="source"></param>
     /// <returns></returns>
-    public static string UnderlineToUpper(this string source)
+    public static String UnderlineToUpper(this String source)
     {
-        var result = string.Empty;
+        var result = String.Empty;
         var toUpper = false;
         foreach (var item in source)
         {
-            if (item == '_' && !string.IsNullOrWhiteSpace(result))
+            if (item == '_' && !String.IsNullOrWhiteSpace(result))
             {
                 toUpper = true;
             }
             else
             {
-                if (toUpper || string.IsNullOrWhiteSpace(result))
+                if (toUpper || String.IsNullOrWhiteSpace(result))
                 {
                     result += item.ToString().ToUpper();
                     toUpper = false;
