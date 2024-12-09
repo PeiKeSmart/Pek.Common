@@ -182,21 +182,6 @@ public static class CharExtensions
     public static Int32 FromHex(this Char c) => c.IsDigit() ? c - 0x30 : c - (c.IsLowercaseAscii() ? 0x57 : 0x37);
 
     /// <summary>
-    /// Transforms the given number to a hexadecimal string.
-    /// </summary>
-    /// <param name="num">The number (0-255).</param>
-    /// <returns>A 2 digit upper case hexadecimal string.</returns>
-    public static String ToHex(this Byte num)
-    {
-        var chrs = new Char[2];
-        var rem = num >> 4;
-        chrs[0] = (Char)(rem + (rem < 10 ? 48 : 55));
-        rem = num - 16 * rem;
-        chrs[1] = (Char)(rem + (rem < 10 ? 48 : 55));
-        return new String(chrs);
-    }
-
-    /// <summary>
     /// Transforms the given character to a hexadecimal string.
     /// </summary>
     /// <param name="character">The single character.</param>
