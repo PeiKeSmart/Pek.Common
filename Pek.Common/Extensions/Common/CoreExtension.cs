@@ -219,14 +219,6 @@ public static class CoreExtension
     public static Int32 LastIndexOf([NotNull] this Array array, Object value, Int32 startIndex, Int32 count) => Array.LastIndexOf(array, value, startIndex, count);
 
     /// <summary>
-    ///     Reverses the sequence of the elements in a range of elements in the one-dimensional .
-    /// </summary>
-    /// <param name="array">The one-dimensional  to reverse.</param>
-    /// <param name="index">The starting index of the section to reverse.</param>
-    /// <param name="length">The number of elements in the section to reverse.</param>
-    public static void Reverse([NotNull] this Array array, Int32 index, Int32 length) => Array.Reverse(array, index, length);
-
-    /// <summary>
     ///     Sorts the elements in an entire one-dimensional  using the  implementation of each element of the .
     /// </summary>
     /// <param name="array">The one-dimensional  to sort.</param>
