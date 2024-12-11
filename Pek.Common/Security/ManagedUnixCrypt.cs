@@ -4,18 +4,16 @@ using System.Text;
 namespace Pek.Security;
 
 /// <summary>
-/// A managed implementation of the Unix C library crypt function. It supports the MD5, SHA-256
-/// and SHA-512 algorithms.
+/// Unix C 库加密函数的管理实现。它支持 MD5、SHA-256和 SHA-512 算法。
 /// </summary>
 /// <remarks>
-/// This code is based on https://github.com/ahall/PasswordSharp, which is based on
-/// https://gist.github.com/otac0n/1092558 and adds SHA-512 support. This is an implementation
-/// of the crypt format described in http://www.akkadia.org/drepper/SHA-crypt.txt. The code has
-/// been cleaned up, modernised and optimised for current C# versions.
+/// 这段代码基于 https://github.com/ahall/PasswordSharp，该代码又基于
+/// https://gist.github.com/otac0n/1092558 并增加了 SHA-512 支持。这是一个实现。
+/// 对加密格式的描述见于 http://www.akkadia.org/drepper/SHA-crypt.txt。代码包含已经进行了清理、现代化和优化，适用于当前的 C#版本。
 /// </remarks>
 public static class ManagedUnixCrypt
 {
-    #region Public constants
+    #region 公共常量
 
     public const string TypeMD5 = "$1$";
     public const string TypeSHA256 = "$5$";
@@ -23,9 +21,9 @@ public static class ManagedUnixCrypt
 
     public const string DefaultType = TypeSHA512;
 
-    #endregion Public constants
+    #endregion 公共常量
 
-    #region Public methods
+    #region 公共方法
 
     /// <summary>
     /// Computes the crypt value for the specified password and salt.
@@ -98,9 +96,9 @@ public static class ManagedUnixCrypt
         return $"{algoType}{roundsParam}{randomB64}";
     }
 
-    #endregion Public methods
+    #endregion 公共方法
 
-    #region Private constants
+    #region 私有常量
 
     // Table with characters for base64 transformation.
     private const string B64Chars = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -130,9 +128,9 @@ public static class ManagedUnixCrypt
     // Maximum number of rounds
     private const int RoundsMax = 999999999;
 
-    #endregion Private constants
+    #endregion 私有常量
 
-    #region Crypt implementation
+    #region 加密实现
 
     private static string CryptMD5(ArrayPointer<byte> key, ArrayPointer<byte> salt)
     {
@@ -739,9 +737,9 @@ public static class ManagedUnixCrypt
         return buffer;
     }
 
-    #endregion Crypt implementation
+    #endregion 加密实现
 
-    #region Processing helper methods
+    #region 处理辅助方法
 
     private static ArrayPointer<byte> B64From24bit(uint b2, uint b1, uint b0, int n, ArrayPointer<byte> cp, ref int buflen)
     {
@@ -770,9 +768,9 @@ public static class ManagedUnixCrypt
         }
     }
 
-    #endregion Processing helper methods
+    #endregion 处理辅助方法
 
-    #region String and memory helper methods
+    #region 字符串和内存辅助方法
 
     private static int Strlen(ArrayPointer<byte> str)
     {
@@ -862,9 +860,9 @@ public static class ManagedUnixCrypt
         return dest + n;
     }
 
-    #endregion String and memory helper methods
+    #endregion 字符串和内存辅助方法
 
-    #region Constant-time comparison
+    #region 常量时间比较
 
     private static bool ConstantTimeEquals(string a, string b)
     {
@@ -881,9 +879,9 @@ public static class ManagedUnixCrypt
         return differentBits == 0;
     }
 
-    #endregion Constant-time comparison
+    #endregion 常量时间比较
 
-    #region Private classes
+    #region 私类
 
     private struct ArrayPointer<T>
     {
@@ -1050,5 +1048,5 @@ public static class ManagedUnixCrypt
         }
     }
 
-    #endregion Private classes
+    #endregion 私类
 }
