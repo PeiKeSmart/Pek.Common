@@ -2469,8 +2469,6 @@ public static class CoreExtension
     public static Boolean HasEmptyConstructor([NotNull] this Type type)
         => type.GetConstructors(BindingFlags.Instance).Any(c => c.GetParameters().Length == 0);
 
-    public static Boolean IsNullableType(this Type type) => type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
-
     private static readonly ConcurrentDictionary<Type, Object> _defaultValues =
         new();
 
