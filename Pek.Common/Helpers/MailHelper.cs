@@ -5,6 +5,12 @@
 /// </summary>
 public class MailHelper
 {
+    /// <summary>
+    /// 获取邮箱后缀
+    /// </summary>
+    /// <param name="email"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
     public static String GetEmailSuffix(String email)
     {
         if (String.IsNullOrWhiteSpace(email))
