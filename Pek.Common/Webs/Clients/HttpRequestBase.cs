@@ -80,7 +80,7 @@ public abstract class HttpRequestBase<TRequest> where TRequest : IRequest<TReque
     /// <summary>
     /// ssl证书验证委托
     /// </summary>
-    private Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, Boolean>?
+    private Func<HttpRequestMessage, X509Certificate2?, X509Chain?, SslPolicyErrors, Boolean>?
         _serverCertificateCustomValidationCallback;
 
     /// <summary>
@@ -439,7 +439,14 @@ public abstract class HttpRequestBase<TRequest> where TRequest : IRequest<TReque
     /// <summary>
     /// 创建Http客户端
     /// </summary>
-    protected virtual HttpClient CreateHttpClient() => HttpClientBuilderFactory.CreateClient(_url, _timeout);//return new HttpClient(new HttpClientHandler()//{//    CookieContainer = _cookieContainer,//    ServerCertificateCustomValidationCallback = _serverCertificateCustomValidationCallback//})//{ Timeout = _timeout };
+    protected virtual HttpClient CreateHttpClient()
+    {
+        var client = HttpClientBuilderFactory.CreateClient(_url, _timeout, _serverCertificateCustomValidationCallback);
+        
+
+        return client;
+        //return new HttpClient(new HttpClientHandler()//{//    CookieContainer = _cookieContainer,//    ServerCertificateCustomValidationCallback = _serverCertificateCustomValidationCallback//})//{ Timeout = _timeout };
+    }
 
     /// <summary>
     /// 初始化Http客户端

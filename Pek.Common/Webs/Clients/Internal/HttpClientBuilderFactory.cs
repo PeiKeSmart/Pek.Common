@@ -1,4 +1,6 @@
 ﻿using System.Collections.Concurrent;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 
 namespace Pek.Webs.Clients.Internal;
@@ -35,6 +37,23 @@ internal static class HttpClientBuilderFactory {
     }
 
     /// <summary>
+    /// 创建Http客户端
+    /// </summary>
+    /// <param name="url">请求地址</param>
+    /// <param name="timeout">超时时间</param>
+    /// <param name="serverCertificateCustomValidationCallback">证书回调</param>
+    public static HttpClient CreateClient(String url, TimeSpan timeout, Func<HttpRequestMessage, X509Certificate2?, X509Chain?, SslPolicyErrors, Boolean>?
+        serverCertificateCustomValidationCallback)
+    {
+        var domain = GetDomainByUrl(url);
+        if (_httpClients.TryGetValue(domain, out var value))
+            return value;
+        var httpClient = Create(timeout, serverCertificateCustomValidationCallback);
+        _httpClients[domain] = httpClient;
+        return httpClient;
+    }
+
+    /// <summary>
     /// 通过Url地址获取域名
     /// </summary>
     /// <param name="url">Url地址</param>
@@ -51,6 +70,24 @@ internal static class HttpClientBuilderFactory {
         })
         {
             Timeout = timeout
+        };
+        //httpClient.DefaultRequestHeaders.Connection.Add("keep-alive");
+        return httpClient;
+    }
+
+    /// <summary>
+    /// 创建Http客户端
+    /// </summary>
+    private static HttpClient Create(TimeSpan timeout, Func<HttpRequestMessage, X509Certificate2?, X509Chain?, SslPolicyErrors, Boolean>?
+        serverCertificateCustomValidationCallback)
+    {
+        var httpClient = new HttpClient(new HttpClientHandler()
+        {
+            UseProxy = false,
+            ServerCertificateCustomValidationCallback = serverCertificateCustomValidationCallback,
+        })
+        {
+            Timeout = timeout,
         };
         //httpClient.DefaultRequestHeaders.Connection.Add("keep-alive");
         return httpClient;
