@@ -522,7 +522,7 @@ public static partial class Encrypt
     /// </summary>
     /// <param name="value">值</param>
     /// <param name="key">密钥</param>
-    public static string HmacSha1(string value, string key) => HmacSha1(value, key, Encoding.UTF8);
+    public static String HmacSha1(String value, String key) => HmacSha1(value, key, Encoding.UTF8);
 
     /// <summary>
     /// HMACSHA1加密
@@ -530,13 +530,13 @@ public static partial class Encrypt
     /// <param name="value">值</param>
     /// <param name="key">密钥</param>
     /// <param name="encoding">字符编码</param>
-    public static string HmacSha1(string value, string key, Encoding encoding)
+    public static String HmacSha1(String value, String key, Encoding encoding)
     {
-        if (string.IsNullOrWhiteSpace(value) || string.IsNullOrWhiteSpace(key))
-            return string.Empty;
+        if (String.IsNullOrWhiteSpace(value) || String.IsNullOrWhiteSpace(key))
+            return String.Empty;
         var sha1 = new HMACSHA1(encoding.GetBytes(key));
         var hash = sha1.ComputeHash(encoding.GetBytes(value));
-        return string.Join("", hash.ToList().Select(x => x.ToString("x2")).ToArray());
+        return String.Join("", hash.ToList().Select(x => x.ToString("x2")).ToArray());
     }
 
     #endregion
@@ -600,7 +600,7 @@ public static partial class Encrypt
     /// </summary>
     /// <param name="value">值</param>
     /// <param name="key">密钥</param>
-    public static string HmacSha512(string value, string key) => HmacSha512(value, key, Encoding.UTF8);
+    public static String HmacSha512(String value, String key) => HmacSha512(value, key, Encoding.UTF8);
 
     /// <summary>
     /// HMACSHA512加密
@@ -608,13 +608,13 @@ public static partial class Encrypt
     /// <param name="value">值</param>
     /// <param name="key">密钥</param>
     /// <param name="encoding">字符编码</param>
-    public static string HmacSha512(string value, string key, Encoding encoding)
+    public static String HmacSha512(String value, String key, Encoding encoding)
     {
-        if (string.IsNullOrWhiteSpace(value) || string.IsNullOrWhiteSpace(key))
-            return string.Empty;
+        if (String.IsNullOrWhiteSpace(value) || String.IsNullOrWhiteSpace(key))
+            return String.Empty;
         var sha512 = new HMACSHA512(encoding.GetBytes(key));
         var hash = sha512.ComputeHash(encoding.GetBytes(value));
-        return string.Join("", hash.ToList().Select(x => x.ToString("x2")).ToArray());
+        return String.Join("", hash.ToList().Select(x => x.ToString("x2")).ToArray());
     }
 
     #endregion
