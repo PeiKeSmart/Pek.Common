@@ -388,10 +388,10 @@ public abstract class HttpRequestBase<TRequest> where TRequest : IRequest<TReque
 
     #endregion
 
-    #region ResultAsync(获取结果)
+    #region DownloadDataAsync(下载)
 
     /// <summary>
-    /// 获取结果
+    /// 下载
     /// </summary>
     public async Task<Byte[]?> DownloadDataAsync(CancellationToken cancellationToken = default)
     {
