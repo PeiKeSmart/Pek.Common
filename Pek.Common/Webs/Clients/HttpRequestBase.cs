@@ -409,7 +409,7 @@ public abstract class HttpRequestBase<TRequest> where TRequest : IRequest<TReque
                     {
                         return _exceptionHandler.Invoke(ex);
                     }
-                    throw;
+                    throw new HttpRequestException($"请求在重试 {_retryCount} 次后失败", ex);
                 }
             }
         }
