@@ -5,6 +5,7 @@ using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
+using NewLife.Log;
 using NewLife.Serialization;
 
 using Pek.Webs.Clients.Internal;
@@ -387,6 +388,7 @@ public abstract class HttpRequestBase<TRequest> where TRequest : IRequest<TReque
     /// </summary>
     public async Task<String> ResultAsync()
     {
+        XTrace.WriteLine($"要重试的次数：{_retryCount}");
         SendBefore();
         var attempt = 0;
         while (true)
@@ -608,16 +610,6 @@ public abstract class HttpRequestBase<TRequest> where TRequest : IRequest<TReque
     }
 
     #endregion
-
-    /// <summary>
-    /// 设置重试次数
-    /// </summary>
-    /// <param name="retryCount">重试次数</param>
-    public TRequest Retry(Int32 retryCount)
-    {
-        _retryCount = retryCount;
-        return This();
-    }
 
     /// <summary>
     /// 设置异常处理函数

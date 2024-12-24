@@ -24,6 +24,12 @@ public interface IHttpRequest : IRequest<IHttpRequest>
     /// </summary>
     /// <typeparam name="TResult">返回结果类型</typeparam>
     Task<TResult> ResultFromJsonAsync<TResult>();
+
+    /// <summary>
+    /// 设置重试次数
+    /// </summary>
+    /// <param name="retryCount">重试次数</param>
+    IHttpRequest Retry(Int32 retryCount);
 }
 
 /// <summary>
@@ -50,4 +56,10 @@ public interface IHttpRequest<TResult> : IRequest<IHttpRequest<TResult>> where T
     /// 获取Json结果
     /// </summary>
     Task<TResult> ResultFromJsonAsync();
+
+    /// <summary>
+    /// 设置重试次数
+    /// </summary>
+    /// <param name="retryCount">重试次数</param>
+    IHttpRequest<TResult> Retry(Int32 retryCount);
 }
