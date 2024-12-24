@@ -5,10 +5,8 @@ using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
-using NewLife;
 using NewLife.Serialization;
 
-using System.IO;
 using Pek.Webs.Clients.Internal;
 using Pek.Webs.Clients.Parameters;
 
@@ -92,6 +90,16 @@ public abstract class HttpRequestBase<TRequest> where TRequest : IRequest<TReque
     /// 文件集合
     /// </summary>
     private readonly IList<IFileParameter> _files;
+
+    /// <summary>
+    /// 重试次数
+    /// </summary>
+    protected Int32 _retryCount;
+
+    /// <summary>
+    /// 异常处理函数
+    /// </summary>
+    protected Func<Exception, String>? _exceptionHandler;
 
     #endregion
 
@@ -380,10 +388,26 @@ public abstract class HttpRequestBase<TRequest> where TRequest : IRequest<TReque
     public async Task<String> ResultAsync()
     {
         SendBefore();
-        var response = await SendAsync().ConfigureAwait(false);
-        var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-        SendAfter(result, response);
-        return result;
+        var attempt = 0;
+        while (true)
+        {
+            try
+            {
+                var response = await SendAsync().ConfigureAwait(false);
+                var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                SendAfter(result, response);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                if (++attempt > _retryCount)
+                {
+                    _exceptionHandler?.Invoke(ex);
+                    return ex.Message;
+                }
+                
+            }
+        }
     }
 
     #endregion
@@ -584,4 +608,25 @@ public abstract class HttpRequestBase<TRequest> where TRequest : IRequest<TReque
     }
 
     #endregion
+
+    /// <summary>
+    /// 设置重试次数
+    /// </summary>
+    /// <param name="retryCount">重试次数</param>
+    public TRequest Retry(Int32 retryCount)
+    {
+        _retryCount = retryCount;
+        return This();
+    }
+
+    /// <summary>
+    /// 设置异常处理函数
+    /// </summary>
+    /// <typeparam name="TException">异常类型</typeparam>
+    /// <param name="func">异常处理函数</param>
+    public TRequest WhenCatch<TException>(Func<TException, String> func) where TException : Exception
+    {
+        _exceptionHandler = ex => func((TException)ex);
+        return This();
+    }
 }
