@@ -30,6 +30,13 @@ public interface IHttpRequest : IRequest<IHttpRequest>
     /// </summary>
     /// <param name="retryCount">重试次数</param>
     IHttpRequest Retry(Int32 retryCount);
+
+    /// <summary>
+    /// 设置异常处理函数
+    /// </summary>
+    /// <typeparam name="TException">异常类型</typeparam>
+    /// <param name="func">异常处理函数</param>
+    IHttpRequest WhenCatch<TException>(Func<TException, String> func) where TException : Exception;
 }
 
 /// <summary>
@@ -62,4 +69,11 @@ public interface IHttpRequest<TResult> : IRequest<IHttpRequest<TResult>> where T
     /// </summary>
     /// <param name="retryCount">重试次数</param>
     IHttpRequest<TResult> Retry(Int32 retryCount);
+
+    /// <summary>
+    /// 设置异常处理函数
+    /// </summary>
+    /// <typeparam name="TException">异常类型</typeparam>
+    /// <param name="func">异常处理函数</param>
+    IHttpRequest<TResult> WhenCatch<TException>(Func<TException, String> func) where TException : Exception;
 }

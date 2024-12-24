@@ -51,16 +51,6 @@ public class HttpRequest : HttpRequestBase<IHttpRequest>, IHttpRequest
     }
 
     /// <summary>
-    /// 设置重试次数
-    /// </summary>
-    /// <param name="retryCount">重试次数</param>
-    public IHttpRequest Retry(Int32 retryCount)
-    {
-        _retryCount = retryCount;
-        return this;
-    }
-
-    /// <summary>
     /// 成功处理操作
     /// </summary>
     /// <param name="result">结果</param>
@@ -135,16 +125,6 @@ public class HttpRequest<TResult> : HttpRequestBase<IHttpRequest<TResult>>, IHtt
     {
         _successStatusCodeAction = action;
         _convertAction = convertAction;
-        return this;
-    }
-
-    /// <summary>
-    /// 设置重试次数
-    /// </summary>
-    /// <param name="retryCount">重试次数</param>
-    public IHttpRequest<TResult> Retry(Int32 retryCount)
-    {
-        _retryCount = retryCount;
         return this;
     }
 

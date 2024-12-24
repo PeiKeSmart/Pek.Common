@@ -612,6 +612,16 @@ public abstract class HttpRequestBase<TRequest> where TRequest : IRequest<TReque
     #endregion
 
     /// <summary>
+    /// 设置重试次数
+    /// </summary>
+    /// <param name="retryCount">重试次数</param>
+    public TRequest Retry(Int32 retryCount)
+    {
+        _retryCount = retryCount;
+        return This();
+    }
+
+    /// <summary>
     /// 设置异常处理函数
     /// </summary>
     /// <typeparam name="TException">异常类型</typeparam>
