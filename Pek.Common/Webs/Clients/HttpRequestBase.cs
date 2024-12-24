@@ -404,10 +404,13 @@ public abstract class HttpRequestBase<TRequest> where TRequest : IRequest<TReque
             {
                 if (++attempt > _retryCount)
                 {
-                    _exceptionHandler?.Invoke(ex);
-                    return ex.Message;
+                    XTrace.WriteLine($"错误委托是否为空：{_exceptionHandler == null}");
+                    if (_exceptionHandler != null)
+                    {
+                        return _exceptionHandler.Invoke(ex);
+                    }
+                    throw;
                 }
-                
             }
         }
     }
