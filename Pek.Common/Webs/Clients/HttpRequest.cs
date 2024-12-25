@@ -1,5 +1,6 @@
 ﻿using System.Net;
 
+using NewLife.Log;
 using NewLife.Serialization;
 
 using Pek.Helpers;
@@ -20,6 +21,11 @@ public class HttpRequest : HttpRequestBase<IHttpRequest>, IHttpRequest
     /// 执行成功的回调函数
     /// </summary>
     private Action<String, HttpStatusCode>? _successStatusCodeAction;
+
+    /// <summary>
+    /// 异常处理函数
+    /// </summary>
+    protected Func<Exception, String>? _exceptionHandler;
 
     /// <summary>
     /// 初始化一个<see cref="HttpRequest"/>类型的实例
@@ -51,6 +57,17 @@ public class HttpRequest : HttpRequestBase<IHttpRequest>, IHttpRequest
     }
 
     /// <summary>
+    /// 设置异常处理函数
+    /// </summary>
+    /// <typeparam name="TException">异常类型</typeparam>
+    /// <param name="func">异常处理函数</param>
+    public IHttpRequest WhenCatch<TException>(Func<TException, String> func) where TException : Exception
+    {
+        _exceptionHandler = ex => func((TException)ex);
+        return this;
+    }
+
+    /// <summary>
     /// 成功处理操作
     /// </summary>
     /// <param name="result">结果</param>
@@ -63,13 +80,62 @@ public class HttpRequest : HttpRequestBase<IHttpRequest>, IHttpRequest
     }
 
     /// <summary>
+    /// 获取结果
+    /// </summary>
+    public async Task<String> ResultStringAsync()
+    {
+        XTrace.WriteLine($"要重试的次数：{_retryCount}");
+        var attempt = 0;
+        while (true)
+        {
+            try
+            {
+                var result = await ResultAsync().ConfigureAwait(false);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                if (++attempt > _retryCount)
+                {
+                    XTrace.WriteLine($"错误委托是否为空：{_exceptionHandler == null}");
+                    if (_exceptionHandler != null)
+                    {
+                        XTrace.Log.Error($"请求在重试 {_retryCount} 次后失败", ex);
+                        return _exceptionHandler.Invoke(ex);
+                    }
+                }
+            }
+        }
+    }
+
+    /// <summary>
     /// 获取Json结果
     /// </summary>
     /// <typeparam name="TResult">返回结果类型</typeparam>
     public async Task<TResult> ResultFromJsonAsync<TResult>()
     {
-        var result = await ResultAsync().ConfigureAwait(false);
-        return JsonHelper.ToJsonEntity<TResult>(result) ?? throw new InvalidOperationException("JsonHelper returned null");
+        XTrace.WriteLine($"要重试的次数：{_retryCount}");
+        var attempt = 0;
+        while (true)
+        {
+            try
+            {
+                var result = await ResultAsync().ConfigureAwait(false);
+                return JsonHelper.ToJsonEntity<TResult>(result) ?? throw new InvalidOperationException("JsonHelper returned null");
+            }
+            catch (Exception ex)
+            {
+                if (++attempt > _retryCount)
+                {
+                    XTrace.WriteLine($"错误委托是否为空：{_exceptionHandler == null}");
+                    if (_exceptionHandler != null)
+                    {
+                        XTrace.Log.Error($"请求在重试 {_retryCount} 次后失败", ex);
+                        return _exceptionHandler.Invoke(ex).ToJsonEntity<TResult>() ?? throw new InvalidOperationException("JsonHelper returned null");
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -94,6 +160,11 @@ public class HttpRequest<TResult> : HttpRequestBase<IHttpRequest<TResult>>, IHtt
     /// 执行成功的转换函数
     /// </summary>
     private Func<String, TResult>? _convertAction;
+
+    /// <summary>
+    /// 异常处理函数
+    /// </summary>
+    protected Func<Exception, TResult>? _exceptionHandler;
 
     /// <summary>
     /// 初始化一个<see cref="HttpRequest{TResult}"/>类型的实例
@@ -129,6 +200,17 @@ public class HttpRequest<TResult> : HttpRequestBase<IHttpRequest<TResult>>, IHtt
     }
 
     /// <summary>
+    /// 设置异常处理函数
+    /// </summary>
+    /// <typeparam name="TException">异常类型</typeparam>
+    /// <param name="func">异常处理函数</param>
+    public IHttpRequest<TResult> WhenCatch<TException>(Func<TException, TResult> func) where TException : Exception
+    {
+        _exceptionHandler = ex => func((TException)ex);
+        return this;
+    }
+
+    /// <summary>
     /// 成功处理操作
     /// </summary>
     /// <param name="result">结果</param>
@@ -158,11 +240,60 @@ public class HttpRequest<TResult> : HttpRequestBase<IHttpRequest<TResult>>, IHtt
     }
 
     /// <summary>
+    /// 获取结果
+    /// </summary>
+    public async Task<String> ResultStringAsync()
+    {
+        XTrace.WriteLine($"要重试的次数：{_retryCount}");
+        var attempt = 0;
+        while (true)
+        {
+            try
+            {
+                var result = await ResultAsync().ConfigureAwait(false);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                if (++attempt > _retryCount)
+                {
+                    XTrace.WriteLine($"错误委托是否为空：{_exceptionHandler == null}");
+                    if (_exceptionHandler != null)
+                    {
+                        XTrace.Log.Error($"请求在重试 {_retryCount} 次后失败", ex);
+                        return _exceptionHandler.Invoke(ex).ToJson();
+                    }
+                }
+            }
+        }
+    }
+
+    /// <summary>
     /// 获取Json结果
     /// </summary>
     public async Task<TResult> ResultFromJsonAsync()
     {
-        var result = await ResultAsync().ConfigureAwait(false);
-        return JsonHelper.ToJsonEntity<TResult>(result) ?? throw new InvalidOperationException("JsonHelper returned null");
+        XTrace.WriteLine($"要重试的次数：{_retryCount}");
+        var attempt = 0;
+        while (true)
+        {
+            try
+            {
+                var result = await ResultAsync().ConfigureAwait(false);
+                return JsonHelper.ToJsonEntity<TResult>(result) ?? throw new InvalidOperationException("JsonHelper returned null");
+            }
+            catch (Exception ex)
+            {
+                if (++attempt > _retryCount)
+                {
+                    XTrace.WriteLine($"错误委托是否为空：{_exceptionHandler == null}");
+                    if (_exceptionHandler != null)
+                    {
+                        XTrace.Log.Error($"请求在重试 {_retryCount} 次后失败", ex);
+                        return _exceptionHandler.Invoke(ex);
+                    }
+                }
+            }
+        }        
     }
 }

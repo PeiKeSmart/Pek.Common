@@ -97,11 +97,6 @@ public abstract class HttpRequestBase<TRequest> where TRequest : IRequest<TReque
     /// </summary>
     protected Int32 _retryCount;
 
-    /// <summary>
-    /// 异常处理函数
-    /// </summary>
-    protected Func<Exception, String>? _exceptionHandler;
-
     #endregion
 
     #region 构造函数
@@ -386,33 +381,13 @@ public abstract class HttpRequestBase<TRequest> where TRequest : IRequest<TReque
     /// <summary>
     /// 获取结果
     /// </summary>
-    public async Task<String> ResultAsync()
+    protected async Task<String> ResultAsync()
     {
-        XTrace.WriteLine($"要重试的次数：{_retryCount}");
         SendBefore();
-        var attempt = 0;
-        while (true)
-        {
-            try
-            {
-                var response = await SendAsync().ConfigureAwait(false);
-                var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-                SendAfter(result, response);
-                return result;
-            }
-            catch (Exception ex)
-            {
-                if (++attempt > _retryCount)
-                {
-                    XTrace.WriteLine($"错误委托是否为空：{_exceptionHandler == null}");
-                    if (_exceptionHandler != null)
-                    {
-                        return _exceptionHandler.Invoke(ex);
-                    }
-                    throw new HttpRequestException($"请求在重试 {_retryCount} 次后失败", ex);
-                }
-            }
-        }
+        var response = await SendAsync().ConfigureAwait(false);
+        var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        SendAfter(result, response);
+        return result;
     }
 
     #endregion
@@ -618,20 +593,9 @@ public abstract class HttpRequestBase<TRequest> where TRequest : IRequest<TReque
     /// 设置重试次数
     /// </summary>
     /// <param name="retryCount">重试次数</param>
-    public TRequest Retry(Int32 retryCount)
+    public TRequest Retry(Int32? retryCount)
     {
-        _retryCount = retryCount;
-        return This();
-    }
-
-    /// <summary>
-    /// 设置异常处理函数
-    /// </summary>
-    /// <typeparam name="TException">异常类型</typeparam>
-    /// <param name="func">异常处理函数</param>
-    public TRequest WhenCatch<TException>(Func<TException, String> func) where TException : Exception
-    {
-        _exceptionHandler = ex => func((TException)ex);
+        _retryCount = retryCount ?? 0;
         return This();
     }
 }

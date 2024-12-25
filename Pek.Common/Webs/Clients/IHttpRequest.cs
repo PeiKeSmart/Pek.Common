@@ -20,6 +20,11 @@ public interface IHttpRequest : IRequest<IHttpRequest>
     IHttpRequest OnSuccess(Action<String, HttpStatusCode> action);
 
     /// <summary>
+    /// 获取结果
+    /// </summary>
+    Task<String> ResultStringAsync();
+
+    /// <summary>
     /// 获取Json结果
     /// </summary>
     /// <typeparam name="TResult">返回结果类型</typeparam>
@@ -29,7 +34,7 @@ public interface IHttpRequest : IRequest<IHttpRequest>
     /// 设置重试次数
     /// </summary>
     /// <param name="retryCount">重试次数</param>
-    IHttpRequest Retry(Int32 retryCount);
+    IHttpRequest Retry(Int32? retryCount);
 
     /// <summary>
     /// 设置异常处理函数
@@ -68,12 +73,12 @@ public interface IHttpRequest<TResult> : IRequest<IHttpRequest<TResult>> where T
     /// 设置重试次数
     /// </summary>
     /// <param name="retryCount">重试次数</param>
-    IHttpRequest<TResult> Retry(Int32 retryCount);
+    IHttpRequest<TResult> Retry(Int32? retryCount);
 
     /// <summary>
     /// 设置异常处理函数
     /// </summary>
     /// <typeparam name="TException">异常类型</typeparam>
     /// <param name="func">异常处理函数</param>
-    IHttpRequest<TResult> WhenCatch<TException>(Func<TException, String> func) where TException : Exception;
+    IHttpRequest<TResult> WhenCatch<TException>(Func<TException, TResult> func) where TException : Exception;
 }
