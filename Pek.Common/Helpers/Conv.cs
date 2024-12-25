@@ -137,22 +137,22 @@ public static partial class Conv
     /// 转换为32位整型
     /// </summary>
     /// <param name="input">输入值</param>
-    public static int ToDGInt(this object input) => ToDGInt(input, default);
+    public static Int32 ToDGInt(this Object? input) => ToDGInt(input, default);
 
     /// <summary>
     /// 转换为32位整型
     /// </summary>
     /// <param name="input">输入值</param>
     /// <param name="defaultValue">默认值</param>
-    public static int ToDGInt(this object input, int defaultValue) => ToDGIntOrNull(input) ?? defaultValue;
+    public static Int32 ToDGInt(this Object? input, Int32 defaultValue) => ToDGIntOrNull(input) ?? defaultValue;
 
     /// <summary>
     /// 转换为32位可空整型
     /// </summary>
     /// <param name="input">输入值</param>
-    public static int? ToDGIntOrNull(this object input)
+    public static Int32? ToDGIntOrNull(this Object? input)
     {
-        var success = int.TryParse(input.SafeString(), out var result);
+        var success = Int32.TryParse(input.SafeString(), out var result);
         if (success)
             return result;
         try
@@ -250,7 +250,7 @@ public static partial class Conv
     /// </summary>
     /// <param name="input">输入值</param>
     /// <param name="digits">小数位数</param>
-    public static double ToDGDouble(this object input, int? digits = null) => ToDGDouble(input, default, digits);
+    public static Double ToDGDouble(this Object input, Int32? digits = null) => ToDGDouble(input, default, digits);
 
     /// <summary>
     /// 转换为64位浮点型，并按指定小数位舍入，温馨提示：4舍6入5成双
@@ -258,16 +258,16 @@ public static partial class Conv
     /// <param name="input">输入值</param>
     /// <param name="defaultValue">默认值</param>
     /// <param name="digits">小数位数</param>
-    public static double ToDGDouble(this object input, double defaultValue, int? digits = null) => ToDGDoubleOrNull(input, digits) ?? defaultValue;
+    public static Double ToDGDouble(this Object input, Double defaultValue, Int32? digits = null) => ToDGDoubleOrNull(input, digits) ?? defaultValue;
 
     /// <summary>
     /// 转换为64位可空浮点型，并按指定小数位舍入，温馨提示：4舍6入5成双
     /// </summary>
     /// <param name="input">输入值</param>
     /// <param name="digits">小数位数</param>
-    public static double? ToDGDoubleOrNull(this object input, int? digits = null)
+    public static Double? ToDGDoubleOrNull(this Object? input, Int32? digits = null)
     {
-        var success = double.TryParse(input.SafeString(), out var result);
+        var success = Double.TryParse(input.SafeString(), out var result);
         if (!success)
             return null;
         return digits == null ? result : Math.Round(result, digits.Value);
