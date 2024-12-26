@@ -33,27 +33,27 @@ public static partial class Encrypt
     /// Md5加密，返回16位结果
     /// </summary>
     /// <param name="value">值</param>
-    public static string Md5By16(string value) => Md5By16(value, Encoding.UTF8);
+    public static String Md5By16(String value) => Md5By16(value, Encoding.UTF8);
 
     /// <summary>
     /// Md5加密，返回16位结果
     /// </summary>
     /// <param name="value">值</param>
     /// <param name="encoding">字符编码</param>
-    public static string Md5By16(string value, Encoding encoding) => Md5(value, encoding, 4, 8);
+    public static String Md5By16(String value, Encoding encoding) => Md5(value, encoding, 4, 8);
 
     /// <summary>
     /// Md5加密，返回32位结果
     /// </summary>
     /// <param name="value">值</param>
-    public static string Md5By32(string value) => Md5By32(value, Encoding.UTF8);
+    public static String Md5By32(String value) => Md5By32(value, Encoding.UTF8);
 
     /// <summary>
     /// Md5加密，返回32位结果
     /// </summary>
     /// <param name="value">值</param>
     /// <param name="encoding">字符编码</param>
-    public static string Md5By32(string value, Encoding encoding) => Md5(value, encoding, null, null);
+    public static String Md5By32(String value, Encoding encoding) => Md5(value, encoding, null, null);
 
     /// <summary>
     /// Md5加密
@@ -62,12 +62,12 @@ public static partial class Encrypt
     /// <param name="encoding">字符编码</param>
     /// <param name="startIndex">开始索引</param>
     /// <param name="length">长度</param>
-    private static string Md5(string value, Encoding encoding, int? startIndex, int? length)
+    private static String Md5(String value, Encoding encoding, Int32? startIndex, Int32? length)
     {
-        if (string.IsNullOrWhiteSpace(value))
-            return string.Empty;
+        if (String.IsNullOrWhiteSpace(value))
+            return String.Empty;
         var md5 = MD5.Create();
-        string result;
+        String result;
         try
         {
             var hash = md5.ComputeHash(encoding.GetBytes(value));
@@ -88,7 +88,7 @@ public static partial class Encrypt
     /// </summary>
     /// <param name="message">需要加密的字符串</param>
     /// <returns>加密后的结果</returns>
-    public static string MDString(this string message)
+    public static String MDString(this String message)
     {
         var md5 = MD5.Create();
         var buffer = Encoding.Default.GetBytes(message);
@@ -101,14 +101,14 @@ public static partial class Encrypt
     /// </summary>
     /// <param name="message">需要加密的字符串</param>
     /// <returns>加密后的结果</returns>
-    public static string MDString2(this string message) => MDString(MDString(message));
+    public static String MDString2(this String message) => MDString(MDString(message));
 
     /// <summary>
     /// MD5 三次加密算法
     /// </summary>
     /// <param name="s">需要加密的字符串</param>
     /// <returns>MD5字符串</returns>
-    public static string MDString3(this string s)
+    public static String MDString3(this String s)
     {
         using var md5 = MD5.Create();
         var bytes = Encoding.ASCII.GetBytes(s);
@@ -124,7 +124,7 @@ public static partial class Encrypt
     /// <param name="message">需要加密的字符串</param>
     /// <param name="salt">盐</param>
     /// <returns>加密后的结果</returns>
-    public static string MDString(this string message, string salt) => MDString(message + salt);
+    public static String MDString(this String message, String salt) => MDString(message + salt);
 
     /// <summary>
     ///     对字符串进行MD5二次加盐加密
@@ -132,7 +132,7 @@ public static partial class Encrypt
     /// <param name="message">需要加密的字符串</param>
     /// <param name="salt">盐</param>
     /// <returns>加密后的结果</returns>
-    public static string MDString2(this string message, string salt) => MDString(MDString(message + salt), salt);
+    public static String MDString2(this String message, String salt) => MDString(MDString(message + salt), salt);
 
     /// <summary>
     /// MD5 三次加密算法
@@ -140,7 +140,7 @@ public static partial class Encrypt
     /// <param name="s">需要加密的字符串</param>
     /// <param name="salt">盐</param>
     /// <returns>MD5字符串</returns>
-    public static string MDString3(this string s, string salt)
+    public static String MDString3(this String s, String salt)
     {
         using var md5 = MD5.Create();
         var bytes = Encoding.ASCII.GetBytes(s + salt);
@@ -155,7 +155,7 @@ public static partial class Encrypt
     /// </summary>
     /// <param name="encypStr"></param>
     /// <returns></returns>
-    public static string Md5Upper(string encypStr)
+    public static String Md5Upper(String encypStr)
     {
         var md5 = MD5.Create();
         var bs = Encoding.GetEncoding("utf-8").GetBytes(encypStr);
@@ -163,7 +163,7 @@ public static partial class Encrypt
         return BytesToHexString(bs);
     }
 
-    private static string BytesToHexString(byte[] bytes)
+    private static String BytesToHexString(Byte[] bytes)
     {
         var s = new StringBuilder();
         foreach (var b in bytes)
@@ -171,6 +171,38 @@ public static partial class Encrypt
             s.Append(b.ToString("x2").ToUpper());
         }
         return s.ToString();
+    }
+
+    /// <summary>
+    /// 获取大写的MD5签名结果
+    /// </summary>
+    /// <param name="encypStr">需要加密的字符串</param>
+    /// <param name="charset">编码</param>
+    /// <returns></returns>
+    public static String GetMD5(String encypStr, String charset = "UTF-8")
+    {
+        String retStr;
+
+        var m5 = MD5.Create();
+
+        //创建md5对象
+        Byte[] inputBye;
+        Byte[] outputBye;
+
+        //使用GB2312编码方式把字符串转化为字节数组．
+        try
+        {
+            inputBye = Encoding.GetEncoding(charset).GetBytes(encypStr);
+        }
+        catch
+        {
+            inputBye = Encoding.GetEncoding(936).GetBytes(encypStr);
+        }
+        outputBye = m5.ComputeHash(inputBye);
+
+        retStr = BitConverter.ToString(outputBye);
+        retStr = retStr.Replace("-", "").ToUpper();
+        return retStr;
     }
     #endregion
 
