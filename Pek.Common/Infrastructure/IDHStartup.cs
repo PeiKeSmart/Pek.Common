@@ -14,27 +14,17 @@ public interface IDHStartup
     void ConfigureVirtualFileSystem(DHVirtualFileSystemOptions options);
 
     /// <summary>
-    /// 将区域路由写入数据库
-    /// </summary>
-    void ConfigureArea();
-
-    /// <summary>
-    /// 调整菜单
-    /// </summary>
-    void ChangeMenu();
-
-    /// <summary>
     /// 升级处理逻辑
     /// </summary>
     void Update();
 
     /// <summary>
+    /// 处理数据
+    /// </summary>
+    void ProcessData();
+
+    /// <summary>
     /// 获取此启动配置实现的顺序
     /// </summary>
     Int32 StartupOrder { get; }
-
-    /// <summary>
-    /// 获取此启动配置实现的顺序。主要针对ConfigureMiddleware、UseRouting前执行的数据、UseAuthentication或者UseAuthorization后面 Endpoints前执行的数据
-    /// </summary>
-    Int32 ConfigureOrder { get; }
 }
