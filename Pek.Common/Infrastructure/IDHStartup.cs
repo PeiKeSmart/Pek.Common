@@ -27,4 +27,9 @@ public interface IDHStartup
     /// 获取此启动配置实现的顺序
     /// </summary>
     Int32 StartupOrder { get; }
+
+    /// <summary>
+    /// 获取此启动配置实现的顺序。主要针对ConfigureMiddleware、UseRouting前执行的数据、UseAuthentication或者UseAuthorization后面 Endpoints前执行的数据
+    /// </summary>
+    Int32 ConfigureOrder { get; }
 }
