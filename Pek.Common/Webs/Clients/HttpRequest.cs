@@ -98,7 +98,7 @@ public class HttpRequest : HttpRequestBase<IHttpRequest>, IHttpRequest
                 if (++attempt > _retryCount)
                 {
                     //XTrace.WriteLine($"错误委托是否为空：{_exceptionHandler == null}");
-                    XTrace.WriteException(ex);
+                    XTrace.Log.Error("请求链接失败：{0} {1}", Url, ex);
 
                     if (_exceptionHandler != null)
                     {
@@ -130,7 +130,7 @@ public class HttpRequest : HttpRequestBase<IHttpRequest>, IHttpRequest
                 if (++attempt > _retryCount)
                 {
                     //XTrace.WriteLine($"错误委托是否为空：{_exceptionHandler == null}");
-                    XTrace.WriteException(ex);
+                    XTrace.Log.Error("请求链接失败：{0} {1}", Url, ex);
 
                     if (_exceptionHandler != null)
                     {
@@ -262,7 +262,7 @@ public class HttpRequest<TResult> : HttpRequestBase<IHttpRequest<TResult>>, IHtt
                 if (++attempt > _retryCount)
                 {
                     //XTrace.WriteLine($"错误委托是否为空：{_exceptionHandler == null}");
-                    XTrace.WriteException(ex);
+                    XTrace.Log.Error("请求链接失败：{0} {1}", Url, ex);
 
                     if (_exceptionHandler != null)
                     {
@@ -293,7 +293,7 @@ public class HttpRequest<TResult> : HttpRequestBase<IHttpRequest<TResult>>, IHtt
                 if (++attempt > _retryCount)
                 {
                     //XTrace.WriteLine($"错误委托是否为空：{_exceptionHandler == null}");
-                    XTrace.WriteException(ex);
+                    XTrace.Log.Error("请求链接失败：{0} {1}", Url, ex);
 
                     if (_exceptionHandler != null)
                     {

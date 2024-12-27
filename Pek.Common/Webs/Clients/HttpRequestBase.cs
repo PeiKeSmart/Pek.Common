@@ -97,6 +97,8 @@ public abstract class HttpRequestBase<TRequest> where TRequest : IRequest<TReque
     /// </summary>
     protected Int32 _retryCount;
 
+    protected String? Url => _url;
+
     #endregion
 
     #region 构造函数
