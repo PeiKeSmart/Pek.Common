@@ -97,7 +97,9 @@ public class HttpRequest : HttpRequestBase<IHttpRequest>, IHttpRequest
             {
                 if (++attempt > _retryCount)
                 {
-                    XTrace.WriteLine($"错误委托是否为空：{_exceptionHandler == null}");
+                    //XTrace.WriteLine($"错误委托是否为空：{_exceptionHandler == null}");
+                    XTrace.WriteException(ex);
+
                     if (_exceptionHandler != null)
                     {
                         XTrace.Log.Error($"请求在重试 {_retryCount} 次后失败", ex);
@@ -127,7 +129,9 @@ public class HttpRequest : HttpRequestBase<IHttpRequest>, IHttpRequest
             {
                 if (++attempt > _retryCount)
                 {
-                    XTrace.WriteLine($"错误委托是否为空：{_exceptionHandler == null}");
+                    //XTrace.WriteLine($"错误委托是否为空：{_exceptionHandler == null}");
+                    XTrace.WriteException(ex);
+
                     if (_exceptionHandler != null)
                     {
                         XTrace.Log.Error($"请求在重试 {_retryCount} 次后失败", ex);
@@ -257,7 +261,9 @@ public class HttpRequest<TResult> : HttpRequestBase<IHttpRequest<TResult>>, IHtt
             {
                 if (++attempt > _retryCount)
                 {
-                    XTrace.WriteLine($"错误委托是否为空：{_exceptionHandler == null}");
+                    //XTrace.WriteLine($"错误委托是否为空：{_exceptionHandler == null}");
+                    XTrace.WriteException(ex);
+
                     if (_exceptionHandler != null)
                     {
                         XTrace.Log.Error($"请求在重试 {_retryCount} 次后失败", ex);
@@ -286,7 +292,9 @@ public class HttpRequest<TResult> : HttpRequestBase<IHttpRequest<TResult>>, IHtt
             {
                 if (++attempt > _retryCount)
                 {
-                    XTrace.WriteLine($"错误委托是否为空：{_exceptionHandler == null}");
+                    //XTrace.WriteLine($"错误委托是否为空：{_exceptionHandler == null}");
+                    XTrace.WriteException(ex);
+
                     if (_exceptionHandler != null)
                     {
                         XTrace.Log.Error($"请求在重试 {_retryCount} 次后失败", ex);
