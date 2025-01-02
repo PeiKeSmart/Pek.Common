@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Text.Json;
 
 using NewLife.Log;
 using NewLife.Serialization;
@@ -122,7 +123,7 @@ public class HttpRequest : HttpRequestBase<IHttpRequest>, IHttpRequest
             try
             {
                 var result = await ResultAsync().ConfigureAwait(false);
-                return JsonHelper.ToJsonEntity<TResult>(result) ?? throw new InvalidOperationException("JsonHelper returned null");
+                return JsonSerializer.Deserialize<TResult>(result) ?? throw new InvalidOperationException("JsonHelper returned null");
             }
             catch (Exception ex)
             {
@@ -285,7 +286,7 @@ public class HttpRequest<TResult> : HttpRequestBase<IHttpRequest<TResult>>, IHtt
             try
             {
                 var result = await ResultAsync().ConfigureAwait(false);
-                return JsonHelper.ToJsonEntity<TResult>(result) ?? throw new InvalidOperationException("JsonHelper returned null");
+                return JsonSerializer.Deserialize<TResult>(result) ?? throw new InvalidOperationException("JsonHelper returned null");
             }
             catch (Exception ex)
             {
