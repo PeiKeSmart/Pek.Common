@@ -224,7 +224,7 @@ public abstract class HttpRequestBase<TRequest> where TRequest : IRequest<TReque
     /// 设置超时时间
     /// </summary>
     /// <param name="timeout">超时时间。单位：秒</param>
-    public TRequest Timeout(Int32 timeout) => Timeout(new TimeSpan(0, 0, 1));
+    public TRequest Timeout(Int32 timeout) => Timeout(new TimeSpan(0, 0, timeout));
 
     /// <summary>
     /// 设置超时时间
