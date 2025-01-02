@@ -84,7 +84,6 @@ public class HttpRequest : HttpRequestBase<IHttpRequest>, IHttpRequest
     /// </summary>
     public async Task<String> ResultStringAsync()
     {
-        XTrace.WriteLine($"要重试的次数：{_retryCount}");
         var attempt = 0;
         while (true)
         {
