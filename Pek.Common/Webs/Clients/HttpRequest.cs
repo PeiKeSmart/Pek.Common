@@ -116,7 +116,6 @@ public class HttpRequest : HttpRequestBase<IHttpRequest>, IHttpRequest
     /// <typeparam name="TResult">返回结果类型</typeparam>
     public async Task<TResult> ResultFromJsonAsync<TResult>()
     {
-        XTrace.WriteLine($"要重试的次数：{_retryCount}");
         var attempt = 0;
         while (true)
         {
@@ -248,7 +247,6 @@ public class HttpRequest<TResult> : HttpRequestBase<IHttpRequest<TResult>>, IHtt
     /// </summary>
     public async Task<String> ResultStringAsync()
     {
-        XTrace.WriteLine($"要重试的次数：{_retryCount}");
         var attempt = 0;
         while (true)
         {
@@ -279,7 +277,6 @@ public class HttpRequest<TResult> : HttpRequestBase<IHttpRequest<TResult>>, IHtt
     /// </summary>
     public async Task<TResult> ResultFromJsonAsync()
     {
-        XTrace.WriteLine($"要重试的次数：{_retryCount}");
         var attempt = 0;
         while (true)
         {
