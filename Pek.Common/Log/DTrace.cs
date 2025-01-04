@@ -21,7 +21,7 @@ public static class DTrace
     /// <param name="format"></param>
     /// <param name="args"></param>
     /// <param name="memberName">方法名</param>
-    public static void WriteLine(String format, [CallerMemberName] String memberName = "", params Object?[] args) => XTrace.WriteLine($"[{memberName}]:{format}", args);
+    public static void WriteLineF(String format, [CallerMemberName] String memberName = "", params Object?[] args) => XTrace.WriteLine($"[{memberName}]:{format}", args);
 
     /// <summary>输出异常日志</summary>
     /// <param name="ex">异常信息</param>

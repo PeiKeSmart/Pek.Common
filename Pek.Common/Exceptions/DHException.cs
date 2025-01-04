@@ -1,7 +1,5 @@
 ﻿using System.Runtime.Serialization;
 
-using NewLife.Log;
-
 using Pek.Log;
 
 namespace Pek.Exceptions;
@@ -15,31 +13,22 @@ public class DHException : Exception
     /// <summary>
     /// 初始化Exception类的新实例.
     /// </summary>
-    public DHException()
-    {
-        DTrace.WriteException(this);
-    }
+    public DHException() => DTrace.WriteException(this);
 
     /// <summary>
     /// 使用指定的错误消息初始化Exception类的新实例.
     /// </summary>
     /// <param name="message">描述错误的消息.</param>
-    public DHException(string message)
-        : base(message)
-    {
-        DTrace.Log.Error($"{message}/r/n{this}");
-    }
+    public DHException(String message)
+        : base(message) => DTrace.Log.Error($"{message}/r/n{this}");
 
     /// <summary>
     /// 使用指定的错误消息初始化Exception类的新实例.
     /// </summary>
     /// <param name="messageFormat">异常消息格式.</param>
     /// <param name="args">异常消息参数.</param>
-    public DHException(string messageFormat, params object[] args)
-        : base(string.Format(messageFormat, args))
-    {
-        DTrace.Log.Error(messageFormat, args);
-    }
+    public DHException(String messageFormat, params Object[] args)
+        : base(String.Format(messageFormat, args)) => DTrace.Log.Error(messageFormat, args);
 
     /// <summary>
     /// 使用序列化的数据初始化Exception类的新实例.
@@ -56,9 +45,6 @@ public class DHException : Exception
     /// </summary>
     /// <param name="message">解释异常原因的错误消息.</param>
     /// <param name="innerException">导致当前异常的异常；如果未指定内部异常，则为null引用.</param>
-    public DHException(string message, Exception innerException)
-        : base(message, innerException)
-    {
-        DTrace.Log.Error($"{message}/r/n{innerException}");
-    }
+    public DHException(String message, Exception innerException)
+        : base(message, innerException) => DTrace.Log.Error($"{message}/r/n{innerException}");
 }
