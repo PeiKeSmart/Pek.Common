@@ -4,8 +4,6 @@ using System.Reflection;
 using NewLife;
 using NewLife.Log;
 
-using Pek.Log;
-
 namespace Pek.Helpers;
 
 public static class ApplicationHelper
@@ -61,6 +59,6 @@ public static class ApplicationHelper
         }
 
         var processId = Process.GetCurrentProcess().Id;
-        DTrace.WriteLine($"获取PID：{processId}");
+        XTrace.WriteLine($"获取PID：{processId}");
     }
 }

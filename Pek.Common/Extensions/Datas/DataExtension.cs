@@ -9,7 +9,6 @@ using System.Linq.Expressions;
 using NewLife.Log;
 
 using Pek.Helpers;
-using Pek.Log;
 
 namespace Pek;
 
@@ -311,7 +310,7 @@ public static partial class DataExtension
             }
             catch (Exception e)
             {
-                DTrace.WriteException(e);
+                XTrace.WriteException(e);
                 throw;
             }
         }
