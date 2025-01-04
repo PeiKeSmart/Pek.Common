@@ -2,9 +2,8 @@
 using System.Collections.Concurrent;
 
 using NewLife;
+using NewLife.Log;
 using NewLife.Threading;
-
-using Pek.Log;
 
 namespace Pek.Collections;
 
@@ -373,7 +372,7 @@ public class DictionaryCache<TKey, TValue> : DisposeBase, IEnumerable<KeyValuePa
             }
         }
 #if DEBUG
-        if (k2 > 0) DTrace.WriteLineF("字典缓存[{0:n0}]超过容量[{1:n0}]，逐出[{2:n0}]个", "DictionaryCache.RemoveNotAlive", _count, Capacity, k2);
+        if (k2 > 0)XTrace.WriteLine("[DictionaryCache.RemoveNotAlive]字典缓存[{0:n0}]超过容量[{1:n0}]，逐出[{2:n0}]个", _count, Capacity, k2);
 #endif
 
         foreach (var item in ds)

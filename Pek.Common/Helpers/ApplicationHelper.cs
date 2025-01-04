@@ -2,8 +2,7 @@
 using System.Reflection;
 
 using NewLife;
-
-using Pek.Log;
+using NewLife.Log;
 
 namespace Pek.Helpers;
 
@@ -60,6 +59,6 @@ public static class ApplicationHelper
         }
 
         var processId = Process.GetCurrentProcess().Id;
-        DTrace.WriteLine($"获取PID：{processId}", "ApplicationHelper.SetEnvironment");
+        XTrace.WriteLine($"[ApplicationHelper.SetEnvironment]获取PID：{processId}");
     }
 }

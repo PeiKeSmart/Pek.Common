@@ -3,8 +3,6 @@
 using NewLife;
 using NewLife.Log;
 
-using Pek.Log;
-
 namespace Pek.Helpers;
 
 /// <summary>
@@ -270,7 +268,7 @@ public static partial class DesensitizedUtil
         }
         catch (Exception ex)
         {
-            DTrace.WriteException(ex);
+            XTrace.WriteException(ex);
         }
 
         return value;
