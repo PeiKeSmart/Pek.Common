@@ -60,6 +60,6 @@ public static class ApplicationHelper
         }
 
         var processId = Process.GetCurrentProcess().Id;
-        DTrace.WriteLine($"获取PID：{processId}", "SetEnvironment");
+        DTrace.WriteLine($"获取PID：{processId}", "ApplicationHelper.SetEnvironment");
     }
 }
