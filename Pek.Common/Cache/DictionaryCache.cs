@@ -4,6 +4,8 @@ using System.Collections.Concurrent;
 using NewLife;
 using NewLife.Threading;
 
+using Pek.Log;
+
 namespace Pek.Collections;
 
 /// <summary>字典缓存。当指定键的缓存项不存在时，调用委托获取值，并写入缓存。</summary>
@@ -371,7 +373,7 @@ public class DictionaryCache<TKey, TValue> : DisposeBase, IEnumerable<KeyValuePa
             }
         }
 #if DEBUG
-        if (k2 > 0) NewLife.Log.XTrace.WriteLine("字典缓存[{0:n0}]超过容量[{1:n0}]，逐出[{2:n0}]个", _count, Capacity, k2);
+        if (k2 > 0) DTrace.WriteLine("字典缓存[{0:n0}]超过容量[{1:n0}]，逐出[{2:n0}]个", _count, Capacity, k2);
 #endif
 
         foreach (var item in ds)

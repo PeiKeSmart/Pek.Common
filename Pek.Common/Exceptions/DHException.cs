@@ -2,6 +2,8 @@
 
 using NewLife.Log;
 
+using Pek.Log;
+
 namespace Pek.Exceptions;
 
 /// <summary>
@@ -15,7 +17,7 @@ public class DHException : Exception
     /// </summary>
     public DHException()
     {
-        XTrace.WriteException(this);
+        DTrace.WriteException(this);
     }
 
     /// <summary>
@@ -25,7 +27,7 @@ public class DHException : Exception
     public DHException(string message)
         : base(message)
     {
-        XTrace.Log.Error($"{message}/r/n{this}");
+        DTrace.Log.Error($"{message}/r/n{this}");
     }
 
     /// <summary>
@@ -36,7 +38,7 @@ public class DHException : Exception
     public DHException(string messageFormat, params object[] args)
         : base(string.Format(messageFormat, args))
     {
-        XTrace.Log.Error(messageFormat, args);
+        DTrace.Log.Error(messageFormat, args);
     }
 
     /// <summary>
@@ -57,6 +59,6 @@ public class DHException : Exception
     public DHException(string message, Exception innerException)
         : base(message, innerException)
     {
-        XTrace.Log.Error($"{message}/r/n{innerException}");
+        DTrace.Log.Error($"{message}/r/n{innerException}");
     }
 }
