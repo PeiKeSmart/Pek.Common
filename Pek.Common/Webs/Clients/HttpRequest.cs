@@ -5,6 +5,7 @@ using NewLife.Log;
 using NewLife.Serialization;
 
 using Pek.Helpers;
+using Pek.Log;
 
 namespace Pek.Webs.Clients;
 
@@ -98,11 +99,11 @@ public class HttpRequest : HttpRequestBase<IHttpRequest>, IHttpRequest
                 if (++attempt > _retryCount)
                 {
                     //DTrace.WriteLine($"错误委托是否为空：{_exceptionHandler == null}");
-                    XTrace.Log.Error("请求链接失败：{0} {1}", Url, ex);
+                    DTrace.Log.Error("请求链接失败：{0} {1}", Url, ex);
 
                     if (_exceptionHandler != null)
                     {
-                        XTrace.Log.Error($"请求在重试 {_retryCount} 次后失败", ex);
+                        DTrace.Log.Error($"请求在重试 {_retryCount} 次后失败", ex);
                         return _exceptionHandler.Invoke(ex);
                     }
                 }
@@ -129,11 +130,11 @@ public class HttpRequest : HttpRequestBase<IHttpRequest>, IHttpRequest
                 if (++attempt > _retryCount)
                 {
                     //DTrace.WriteLine($"错误委托是否为空：{_exceptionHandler == null}");
-                    XTrace.Log.Error("请求链接失败：{0} {1}", Url, ex);
+                    DTrace.Log.Error("请求链接失败：{0} {1}", Url, ex);
 
                     if (_exceptionHandler != null)
                     {
-                        XTrace.Log.Error($"请求在重试 {_retryCount} 次后失败", ex);
+                        DTrace.Log.Error($"请求在重试 {_retryCount} 次后失败", ex);
                         return _exceptionHandler.Invoke(ex).ToJsonEntity<TResult>() ?? throw new InvalidOperationException("JsonHelper returned null");
                     }
                 }
@@ -260,11 +261,11 @@ public class HttpRequest<TResult> : HttpRequestBase<IHttpRequest<TResult>>, IHtt
                 if (++attempt > _retryCount)
                 {
                     //DTrace.WriteLine($"错误委托是否为空：{_exceptionHandler == null}");
-                    XTrace.Log.Error("请求链接失败：{0} {1}", Url, ex);
+                    DTrace.Log.Error("请求链接失败：{0} {1}", Url, ex);
 
                     if (_exceptionHandler != null)
                     {
-                        XTrace.Log.Error($"请求在重试 {_retryCount} 次后失败", ex);
+                        DTrace.Log.Error($"请求在重试 {_retryCount} 次后失败", ex);
                         return _exceptionHandler.Invoke(ex).ToJson();
                     }
                 }
@@ -290,11 +291,11 @@ public class HttpRequest<TResult> : HttpRequestBase<IHttpRequest<TResult>>, IHtt
                 if (++attempt > _retryCount)
                 {
                     //DTrace.WriteLine($"错误委托是否为空：{_exceptionHandler == null}");
-                    XTrace.Log.Error("请求链接失败：{0} {1}", Url, ex);
+                    DTrace.Log.Error("请求链接失败：{0} {1}", Url, ex);
 
                     if (_exceptionHandler != null)
                     {
-                        XTrace.Log.Error($"请求在重试 {_retryCount} 次后失败", ex);
+                        DTrace.Log.Error($"请求在重试 {_retryCount} 次后失败", ex);
                         return _exceptionHandler.Invoke(ex);
                     }
                 }
