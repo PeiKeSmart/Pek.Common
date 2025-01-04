@@ -2,7 +2,6 @@
 using System.Reflection;
 
 using NewLife;
-using NewLife.Log;
 
 using Pek.Log;
 
@@ -13,19 +12,19 @@ public static class ApplicationHelper
     /// <summary>
     /// ApplicationName
     /// </summary>
-    public static string ApplicationName => Assembly.GetEntryAssembly()?.GetName().Name ?? AppDomain.CurrentDomain.FriendlyName;
+    public static String ApplicationName => Assembly.GetEntryAssembly()?.GetName().Name ?? AppDomain.CurrentDomain.FriendlyName;
 
     /// <summary>
     /// 应用根目录
     /// </summary>
-    public static readonly string AppRoot = AppDomain.CurrentDomain.BaseDirectory;
+    public static readonly String AppRoot = AppDomain.CurrentDomain.BaseDirectory;
 
     /// <summary>
     /// 将虚拟路径转换为物理路径，相对路径转换为绝对路径
     /// </summary>
     /// <param name="virtualPath">虚拟路径</param>
     /// <returns>虚拟路径对应的物理路径</returns>
-    public static string MapPath(string virtualPath) => AppRoot + virtualPath.TrimStart('~');
+    public static String MapPath(String virtualPath) => AppRoot + virtualPath.TrimStart('~');
 
     /// <summary>
     /// 是否IIS
@@ -61,6 +60,6 @@ public static class ApplicationHelper
         }
 
         var processId = Process.GetCurrentProcess().Id;
-        DTrace.WriteLine($"获取PID：{processId}");
+        DTrace.WriteLine($"获取PID：{processId}", "SetEnvironment");
     }
 }
