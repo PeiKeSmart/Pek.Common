@@ -15,7 +15,7 @@ public static class UnixTime
     /// </summary>
     /// <param name="isContainMillisecond">是否包含毫秒</param>
     /// <returns></returns>
-    public static long ToTimestamp(bool isContainMillisecond = true)
+    public static Int64 ToTimestamp(Boolean isContainMillisecond = true)
     {
         return ToTimestamp(DateTime.Now, isContainMillisecond);
     }
@@ -26,7 +26,7 @@ public static class UnixTime
     /// <param name="dateTime">时间</param>
     /// <param name="isContainMillisecond">是否包含毫秒</param>
     /// <returns></returns>
-    public static long ToTimestamp(DateTime dateTime, bool isContainMillisecond = true)
+    public static Int64 ToTimestamp(DateTime dateTime, Boolean isContainMillisecond = true)
     {
         return dateTime.Kind == DateTimeKind.Utc
             ? Convert.ToInt64((dateTime - EpochTime).TotalMilliseconds / (isContainMillisecond ? 1 : 1000))
@@ -40,12 +40,66 @@ public static class UnixTime
     /// <param name="timestamp">时间戳。</param>
     /// <param name="isContainMillisecond">是否包含毫秒</param>
     /// <returns></returns>
-    public static DateTime ToDateTime(long timestamp, bool isContainMillisecond = true)
+    public static DateTime ToDateTime(Int64 timestamp, Boolean isContainMillisecond = true)
     {
         if (isContainMillisecond)
             return EpochTime.AddMilliseconds(timestamp).ToLocalTime();
 
         return EpochTime.AddSeconds(timestamp).ToLocalTime();
+    }
+
+    /// <summary>
+    /// 转换为DateTime对象
+    /// </summary>
+    /// <param name="timestamp">时间戳</param>
+    /// <param name="timeZoneOffset">时区。如+1/-1等</param>
+    /// <param name="isContainMillisecond">是否包含毫秒</param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    public static DateTime ToDateTime(Int64 timestamp, String timeZoneOffset, Boolean isContainMillisecond = true)
+    {
+        DateTime utcDateTime;
+        if (isContainMillisecond)
+        {
+            utcDateTime = EpochTime.AddMilliseconds(timestamp);
+        }
+        else
+        {
+            utcDateTime = EpochTime.AddSeconds(timestamp);
+        }
+
+        // 解析时区偏移
+        if (TryParseTimeZoneOffset(timeZoneOffset, out var offset))
+        {
+            return TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, TimeZoneInfo.CreateCustomTimeZone(timeZoneOffset, offset, timeZoneOffset, timeZoneOffset));
+        }
+        else
+        {
+            throw new ArgumentException("Invalid time zone offset format.");
+        }
+    }
+
+    /// <summary>
+    /// 尝试解析时区偏移
+    /// </summary>
+    /// <param name="timeZoneOffset">时区。如+1/-1等</param>
+    /// <param name="offset">解析后的 <see cref="TimeSpan"/> 对象。</param>
+    /// <returns></returns>
+    private static Boolean TryParseTimeZoneOffset(String timeZoneOffset, out TimeSpan offset)
+    {
+        offset = TimeSpan.Zero;
+        if (String.IsNullOrEmpty(timeZoneOffset)) return false;
+
+        var isNegative = timeZoneOffset[0] == '-';
+        if (timeZoneOffset[0] != '+' && !isNegative) return false;
+
+        if (Int32.TryParse(timeZoneOffset.Substring(1), out var hours))
+        {
+            offset = new TimeSpan(hours * (isNegative ? -1 : 1), 0, 0);
+            return true;
+        }
+
+        return false;
     }
 
     /// <summary>
