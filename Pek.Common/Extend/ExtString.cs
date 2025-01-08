@@ -5,7 +5,7 @@ namespace Pek;
 
 public static class ExtString
 {
-    public static string NoHTML(this string Htmlstring)
+    public static String NoHTML(this String Htmlstring)
     {
         Htmlstring = Regex.Replace(Htmlstring, @"<script[\s\S]*?</script>", "", RegexOptions.IgnoreCase);
         Htmlstring = Regex.Replace(Htmlstring, @"<noscript[\s\S]*?</noscript>", "", RegexOptions.IgnoreCase);
@@ -28,52 +28,42 @@ public static class ExtString
         return Htmlstring;
     }
 
+    public static Byte[] ToByte(this String value) => Encoding.UTF8.GetBytes(value);
 
-    public static byte[] ToByte(this string value)
+    public static String UrlEncode(this String value)
     {
-        return System.Text.Encoding.UTF8.GetBytes(value);
-    }
-
-    public static string UrlEncode(this string value)
-    {
-        StringBuilder sb = new StringBuilder();
-        byte[] byStr = System.Text.Encoding.UTF8.GetBytes(value);
-        for (int i = 0; i < byStr.Length; i++)
+        var sb = new StringBuilder();
+        var byStr = Encoding.UTF8.GetBytes(value);
+        for (var i = 0; i < byStr.Length; i++)
         {
             sb.Append(@"%" + Convert.ToString(byStr[i], 16));
         }
         return (sb.ToString());
     }
 
-
-    public static string ToUnicode(this string value)
+    public static String ToUnicode(this String value)
     {
-        if (string.IsNullOrEmpty(value)) return value;
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < value.Length; i++)
+        if (String.IsNullOrEmpty(value)) return value;
+        var builder = new StringBuilder();
+        for (var i = 0; i < value.Length; i++)
         {
-            builder.Append("\\u" + ((int)value[i]).ToString("x"));
+            builder.Append("\\u" + ((Int32)value[i]).ToString("x"));
         }
         return builder.ToString();
     }
 
-    private static readonly Regex emailExpression = new Regex(@"^([0-9a-zA-Z]+[-._+&])*[0-9a-zA-Z]+@([-0-9a-zA-Z]+[.])+[a-zA-Z]{2,6}$", RegexOptions.Singleline | RegexOptions.CultureInvariant | RegexOptions.Compiled);
-    private static readonly Regex webUrlExpression = new Regex(@"(http|https)://([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*)?", RegexOptions.Singleline | RegexOptions.CultureInvariant | RegexOptions.Compiled);
-    private static readonly Regex stripHTMLExpression = new Regex("<\\S[^><]*>", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Multiline | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex emailExpression = new(@"^([0-9a-zA-Z]+[-._+&])*[0-9a-zA-Z]+@([-0-9a-zA-Z]+[.])+[a-zA-Z]{2,6}$", RegexOptions.Singleline | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex webUrlExpression = new(@"(http|https)://([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*)?", RegexOptions.Singleline | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Regex stripHTMLExpression = new("<\\S[^><]*>", RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Multiline | RegexOptions.CultureInvariant | RegexOptions.Compiled);
+    private static readonly Char[] separator = new Char[] { '/', '\\' };
 
+    public static String FormatWith(this String instance, params Object[] args) => String.Format(instance, args);
 
-    public static string FormatWith(this string instance, params object[] args)
+    public static T ToEnum<T>(this String instance, T defaultValue) where T : struct, IComparable, IFormattable
     {
-        return string.Format(instance, args);
-    }
+        var convertedValue = defaultValue;
 
-
-
-    public static T ToEnum<T>(this string instance, T defaultValue) where T : struct, IComparable, IFormattable
-    {
-        T convertedValue = defaultValue;
-
-        if (!string.IsNullOrWhiteSpace(instance) && !Enum.TryParse(instance.Trim(), true, out convertedValue))
+        if (!String.IsNullOrWhiteSpace(instance) && !Enum.TryParse(instance.Trim(), true, out convertedValue))
         {
             convertedValue = defaultValue;
         }
@@ -81,11 +71,9 @@ public static class ExtString
         return convertedValue;
     }
 
-    public static T ToEnum<T>(this int instance, T defaultValue) where T : struct, IComparable, IFormattable
+    public static T ToEnum<T>(this Int32 instance, T defaultValue) where T : struct, IComparable, IFormattable
     {
-        T convertedValue;
-
-        if (!Enum.TryParse(instance.ToString(), true, out convertedValue))
+        if (!Enum.TryParse(instance.ToString(), true, out T convertedValue))
         {
             convertedValue = defaultValue;
         }
@@ -93,67 +81,45 @@ public static class ExtString
         return convertedValue;
     }
 
-    public static string StripHtml(this string instance)
-    {
-        return stripHTMLExpression.Replace(instance, string.Empty);
-    }
+    public static String StripHtml(this String instance) => stripHTMLExpression.Replace(instance, String.Empty);
 
-    public static bool IsEmail(this string instance)
-    {
-        return !string.IsNullOrWhiteSpace(instance) && emailExpression.IsMatch(instance);
-    }
+    public static Boolean IsEmail(this String instance) => !String.IsNullOrWhiteSpace(instance) && emailExpression.IsMatch(instance);
 
-    public static bool IsWebUrl(this string instance)
-    {
-        return !string.IsNullOrWhiteSpace(instance) && webUrlExpression.IsMatch(instance);
-    }
+    public static Boolean IsWebUrl(this String instance) => !String.IsNullOrWhiteSpace(instance) && webUrlExpression.IsMatch(instance);
 
-
-    public static bool AsBool(this string instance)
+    public static Boolean AsBool(this String instance)
     {
-        bool result = false;
-        bool.TryParse(instance, out result);
+        _ = Boolean.TryParse(instance, out var result);
         return result;
     }
 
-    public static DateTime AsDateTime(this string instance)
+    public static DateTime AsDateTime(this String instance)
     {
-        DateTime result = DateTime.MinValue;
-        DateTime.TryParse(instance, out result);
+        _ = DateTime.TryParse(instance, out var result);
         return result;
     }
 
-    public static Decimal AsDecimal(this string instance)
+    public static Decimal AsDecimal(this String instance)
     {
-        var result = (decimal)0.0;
-        Decimal.TryParse(instance, out result);
+        _ = Decimal.TryParse(instance, out var result);
         return result;
     }
 
-    public static int AsInt(this string instance)
+    public static Int32 AsInt(this String instance)
     {
-        var result = (int)0;
-        int.TryParse(instance, out result);
+        _ = Int32.TryParse(instance, out var result);
         return result;
     }
 
-    public static bool IsInt(this string instance)
-    {
-        int result;
-        return int.TryParse(instance, out result);
-    }
+    public static Boolean IsIntT(this String instance) => Int32.TryParse(instance, out _);
 
-    public static bool IsFloat(this string instance)
-    {
-        float result;
-        return float.TryParse(instance, out result);
-    }
+    public static Boolean IsFloat(this String instance) => Single.TryParse(instance, out _);
 
-    public static String FirstCharToLowerCase(this string instance)
+    public static String FirstCharToLowerCase(this String instance)
     {
-        if (!String.IsNullOrWhiteSpace(instance) && instance.Length > 2 && char.IsUpper(instance[0]))
+        if (!String.IsNullOrWhiteSpace(instance) && instance.Length > 2 && Char.IsUpper(instance[0]))
         {
-            return char.ToLower(instance[0]) + instance.Substring(1);
+            return Char.ToLower(instance[0]) + instance[1..];
         }
         if (instance.Length == 2)
         {
@@ -161,12 +127,8 @@ public static class ExtString
         }
         return instance;
     }
-    public static string ToFilePath(this string path)
-    {
-        return Path.Combine(path.Split(new char[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries));
-    }
-    public static string CombinePath(this string p, string path)
-    {
-        return $"{p.TrimEnd(Path.DirectorySeparatorChar)}{Path.DirectorySeparatorChar}{path.ToFilePath()}";
-    }
+
+    public static String ToFilePath(this String path) => Path.Combine(path.Split(separator, StringSplitOptions.RemoveEmptyEntries));
+
+    public static String CombinePath(this String p, String path) => $"{p.TrimEnd(Path.DirectorySeparatorChar)}{Path.DirectorySeparatorChar}{path.ToFilePath()}";
 }
