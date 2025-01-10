@@ -1,5 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 
+using NewLife;
+
 namespace Pek.Helpers;
 
 /// <summary>
