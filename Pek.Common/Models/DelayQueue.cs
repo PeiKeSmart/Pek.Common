@@ -28,10 +28,10 @@ public class DelayQueue
     /// <summary>
     /// 链路追踪
     /// </summary>
-    public String TraceId { get; set; }
+    public String? TraceId { get; set; }
 
     /// <summary>
     /// 数据集合
     /// </summary>
-    public IDictionary<String, Object> Data { get; set; }
+    public IDictionary<String, Object?>? Data { get; set; }
 }
