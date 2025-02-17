@@ -121,7 +121,7 @@ public static class ExpressionExtension
     {
         if (expression.NodeType != ExpressionType.Lambda)
         {
-            throw new ArgumentException(String.Format(ObjectContainer.Provider.GetPekService<IPekLanguage>()?.Translate($"{0} must be lambda expression")!, nameof(expression)), nameof(expression));
+            throw new ArgumentException(String.Format(ObjectContainer.Provider.GetPekService<IPekLanguage>()?.Translate("{0} must be lambda expression")!, nameof(expression)), nameof(expression));
         }
 
         var lambda = (LambdaExpression)expression;
@@ -129,7 +129,7 @@ public static class ExpressionExtension
         var memberExpression = ExtractMemberExpression(lambda.Body);
         if (memberExpression == null)
         {
-            throw new ArgumentException(String.Format(ObjectContainer.Provider.GetPekService<IPekLanguage>()?.Translate($"{0} must be lambda expression")!, nameof(memberExpression)), nameof(memberExpression));
+            throw new ArgumentException(String.Format(ObjectContainer.Provider.GetPekService<IPekLanguage>()?.Translate("{0} must be lambda expression")!, nameof(memberExpression)), nameof(memberExpression));
         }
         return memberExpression.Member;
     }
