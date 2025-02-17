@@ -2,7 +2,7 @@
 
 using Pek.Infrastructure;
 
-namespace Pek;
+namespace Pek.Iot;
 
 /// <summary>
 /// 进制转换
