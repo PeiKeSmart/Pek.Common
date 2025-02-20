@@ -91,7 +91,9 @@ public static class HexConv
         }
 
         // 每个字节转8位二进制
-        return String.Join("", bytes.Select(b => Convert.ToString(b, 2).PadLeft(8, '0').Reverse()));
+        if (Reverse)
+            return String.Join("", bytes.Select(b => Convert.ToString(b, 2).PadLeft(8, '0').Reverse()));
+        return String.Join("", bytes.Select(b => Convert.ToString(b, 2).PadLeft(8, '0')));
     }
 
     /// <summary>
