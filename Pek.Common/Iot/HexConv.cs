@@ -1,4 +1,5 @@
-﻿using NewLife.Model;
+﻿using NewLife;
+using NewLife.Model;
 
 using Pek.Infrastructure;
 
@@ -72,9 +73,10 @@ public static class HexConv
     /// 十六进制转换为二进制
     /// </summary>
     /// <param name="value">十六进制</param>
-    public static String HexToBin(String value)
+    /// <param name="Reverse">是否翻转</param>
+    public static String HexToBin(String value, Boolean Reverse = false)
     {
-        if (String.IsNullOrWhiteSpace(value))
+        if (value.IsNullOrWhiteSpace())
             throw new ArgumentNullException(nameof(value));
 
         // 处理奇数长度：补前导零使长度为偶数
@@ -89,7 +91,7 @@ public static class HexConv
         }
 
         // 每个字节转8位二进制
-        return String.Join("", bytes.Select(b => Convert.ToString(b, 2).PadLeft(8, '0')));
+        return String.Join("", bytes.Select(b => Convert.ToString(b, 2).PadLeft(8, '0').Reverse()));
     }
 
     /// <summary>
