@@ -353,10 +353,10 @@ public static partial class DHExtensions
     /// </summary>
     /// <param name="expression"></param>
     /// <returns></returns>
-    public static bool IsDouble(this object expression)
+    public static Boolean IsDouble(this Object expression)
     {
-        if (!Pek.DHExtensions.ObjIsNull(expression))
-            return Pek.DHExtensions.QuickValidate(expression.ToString(), @"^([0-9])[0-9]*(\.\w*)?$");
+        if (!ObjIsNull(expression))
+            return expression.SafeString().QuickValidate(@"^[+-]?\d+(\.\d+)?([eE][+-]?\d+)?$");
 
         return false;
     }
