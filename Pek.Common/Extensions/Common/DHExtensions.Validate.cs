@@ -356,7 +356,7 @@ public static partial class DHExtensions
     public static Boolean IsDouble(this Object expression)
     {
         if (!ObjIsNull(expression))
-            return expression.SafeString().QuickValidate(@"^[+-]?\d+(\.\d+)?([eE][+-]?\d+)?$");
+            return expression.QuickValidate(@"^[+-]?\d+(\.\d+)?([eE][+-]?\d+)?$");
 
         return false;
     }
