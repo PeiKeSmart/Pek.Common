@@ -20,7 +20,7 @@ public static partial class DHExtensions
     /// </summary>
     /// <typeparam name="TResult">返回值类型</typeparam>
     /// <param name="instance">枚举实例</param>
-    public static TResult Value<TResult>(this Enum instance) => Helpers.Conv.To<TResult>(instance.Value());
+    public static TResult? Value<TResult>(this Enum instance) => Helpers.Conv.CTo<TResult>(instance.Value());
     #endregion
 
     #region SafeValue(安全获取值)

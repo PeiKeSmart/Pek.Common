@@ -407,7 +407,7 @@ public static partial class Conv
         if (String.IsNullOrWhiteSpace(input))
             return result;
         var array = input.Split(',');
-        result.AddRange(from each in array where !String.IsNullOrWhiteSpace(each) select To<T>(each));
+        result.AddRange(from each in array where !String.IsNullOrWhiteSpace(each) select CTo<T>(each));
         return result;
     }
 
@@ -452,7 +452,7 @@ public static partial class Conv
     /// </summary>
     /// <typeparam name="T">目标类型</typeparam>
     /// <param name="input">输入值</param>
-    public static T? To<T>(this Object input)
+    public static T? CTo<T>(this Object input)
     {
         if (input == null)
             return default;

@@ -32,10 +32,10 @@ public static partial class IdentityExtensions
     /// <typeparam name="T">泛型</typeparam>
     /// <param name="identity">标识</param>
     /// <param name="type">类型</param>
-    public static T GetValue<T>(this IIdentity identity, string type)
+    public static T? GetValue<T>(this IIdentity identity, string type)
     {
         var result = identity.GetValue(type);
-        return result.IsEmpty() ? default(T) : Conv.To<T>(result);
+        return result.IsEmpty() ? default : Conv.CTo<T>(result);
     }
 
     #endregion

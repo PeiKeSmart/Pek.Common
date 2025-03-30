@@ -83,12 +83,12 @@ public static class XmlNodeExtensions
     /// <param name="node">节点</param>
     /// <param name="name">属性名</param>
     /// <param name="defaultValue">>默认值。如果没有匹配属性存在</param>
-    public static T GetAttribute<T>(this XmlNode node, string name, T defaultValue = default(T))
+    public static T? GetAttribute<T>(this XmlNode node, string name, T? defaultValue = default)
     {
         var value = node.GetAttribute(name);
-        if (string.IsNullOrWhiteSpace(value))
+        if (String.IsNullOrWhiteSpace(value))
             return defaultValue;
-        return Conv.To<T>(value);
+        return Conv.CTo<T>(value);
     }
 
     #endregion

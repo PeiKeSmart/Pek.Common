@@ -234,7 +234,7 @@ public class HttpRequest<TResult> : HttpRequestBase<IHttpRequest<TResult>>, IHtt
     private TResult? ConvertTo(String result, String? contentType)
     {
         if (typeof(TResult) == typeof(String))
-            return Conv.To<TResult>(result);
+            return Conv.CTo<TResult>(result);
         if (_convertAction != null)
             return _convertAction(result);
         if (contentType.SafeString().Equals("application/json", StringComparison.CurrentCultureIgnoreCase))
