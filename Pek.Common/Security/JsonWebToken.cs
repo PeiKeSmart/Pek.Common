@@ -32,27 +32,27 @@ public class JsonWebToken
     /// <summary>
     /// 访问令牌签发时间。UTC标准
     /// </summary>
-    public DateTimeOffset StartTime { get; set; }
+    public DateTimeOffset StartTime { get; set; } = DateTimeOffset.Now;
 
     /// <summary>
     /// 是否已过期
     /// </summary>
-    public Boolean IsExpired() => Conv.CTo<long>(DateTime.UtcNow.ToJsGetTime()) > AccessTokenUtcExpires;
+    public Boolean IsExpired() => Conv.CTo<Int64>(DateTime.UtcNow.ToJsGetTime()) > AccessTokenUtcExpires;
 
     /// <summary>
     /// 是否已过期
     /// </summary>
     /// <param name="Min">提前分钟数</param>
-    public Boolean IsExpired(Int32 Min) => Conv.CTo<long>(DateTime.UtcNow.AddMinutes(Min).ToJsGetTime()) > AccessTokenUtcExpires;
+    public Boolean IsExpired(Int32 Min) => Conv.CTo<Int64>(DateTime.UtcNow.AddMinutes(Min).ToJsGetTime()) > AccessTokenUtcExpires;
 
     /// <summary>
     /// 是否刷新令牌已过期
     /// </summary>
-    public Boolean IsRefreshExpired() => Conv.CTo<long>(DateTime.UtcNow.ToJsGetTime()) > RefreshUtcExpires;
+    public Boolean IsRefreshExpired() => Conv.CTo<Int64>(DateTime.UtcNow.ToJsGetTime()) > RefreshUtcExpires;
 
     /// <summary>
     /// 是否刷新令牌已过期
     /// </summary>
     /// <param name="Min">提前分钟数</param>
-    public Boolean IsRefreshExpired(Int32 Min) => Conv.CTo<long>(DateTime.UtcNow.AddMinutes(Min).ToJsGetTime()) > RefreshUtcExpires;
+    public Boolean IsRefreshExpired(Int32 Min) => Conv.CTo<Int64>(DateTime.UtcNow.AddMinutes(Min).ToJsGetTime()) > RefreshUtcExpires;
 }
