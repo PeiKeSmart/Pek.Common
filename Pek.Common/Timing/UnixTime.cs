@@ -15,10 +15,7 @@ public static class UnixTime
     /// </summary>
     /// <param name="isContainMillisecond">是否包含毫秒</param>
     /// <returns></returns>
-    public static Int64 ToTimestamp(Boolean isContainMillisecond = true)
-    {
-        return ToTimestamp(DateTime.Now, isContainMillisecond);
-    }
+    public static Int64 ToTimestamp(Boolean isContainMillisecond = true) => ToTimestamp(DateTime.Now, isContainMillisecond);
 
     /// <summary>
     /// 转换为Unix时间戳

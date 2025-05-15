@@ -32,7 +32,7 @@ public class JsonWebToken
     /// <summary>
     /// 访问令牌签发时间。UTC标准
     /// </summary>
-    public DateTimeOffset StartTime { get; set; } = DateTimeOffset.Now;
+    public Int64 StartTime { get; set; } = UnixTime.ToTimestamp();
 
     /// <summary>
     /// 是否已过期
