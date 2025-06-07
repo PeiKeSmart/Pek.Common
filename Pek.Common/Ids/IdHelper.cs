@@ -7,7 +7,7 @@ namespace Pek.Ids;
 /// </summary>
 public static class IdHelper
 {
-    public static readonly Snowflake snowflake = new Snowflake();
+    public static readonly Snowflake snowflake = new();
 
 #if NETSTANDARD2_1_OR_GREATER || NET8_0_OR_GREATER
     /// <summary>
@@ -28,7 +28,7 @@ public static class IdHelper
     /// 生成sessionid
     /// </summary>
     /// <example>62acfda11f5a4b3c</example>
-    public static string GenerateSid()
+    public static String GenerateSid()
     {
         var i = 1;
         var byteArray = Guid.NewGuid().ToByteArray();
@@ -36,15 +36,12 @@ public static class IdHelper
         {
             i *= b + 1;
         }
-        return string.Format("{0:x}", i - DateTime.Now.Ticks);
+        return String.Format("{0:x}", i - DateTime.Now.Ticks);
     }
 
     /// <summary>
     /// 获取NewLife的改进雪花算法
     /// </summary>
     /// <returns></returns>
-    public static Int64 GetSId()
-    {
-        return snowflake.NewId();
-    }
+    public static Int64 GetSId() => snowflake.NewId();
 }
