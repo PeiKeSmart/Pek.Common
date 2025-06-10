@@ -5,58 +5,58 @@
 /// </summary>
 public class CompresTo
 {
-    public static string IntToi32(long xx)
+    public static String IntToi32(Int64 xx)
     {
-        string a = "";
+        var a = "";
         while (xx >= 1)
         {
-            int index = Convert.ToInt16(xx - (xx / 32) * 32);
+            Int32 index = Convert.ToInt16(xx - (xx / 32) * 32);
             a = Base64Code[index] + a;
-            xx = xx / 32;
+            xx /= 32;
         }
         return a;
     }
 
-    public static long i32ToInt(string xx)
+    public static Int64 I32ToInt(String xx)
     {
-        long a = 0;
-        int power = xx.Length - 1;
+        Int64 a = 0;
+        var power = xx.Length - 1;
 
-        for (int i = 0; i <= power; i++)
+        for (var i = 0; i <= power; i++)
         {
-            a += _Base64Code[xx[power - i].ToString()] * Convert.ToInt64(Math.Pow(32, i));
+            a += Base64CodeR[xx[power - i].ToString()] * Convert.ToInt64(Math.Pow(32, i));
         }
 
         return a;
     }
 
 
-    public static string IntToi64(long xx)
+    public static String IntToi64(Int64 xx)
     {
-        string a = "";
+        var a = "";
         while (xx >= 1)
         {
-            int index = Convert.ToInt16(xx - (xx / 64) * 64);
+            var index = Convert.ToInt16(xx - (xx / 64) * 64);
             a = Base64Code[index] + a;
-            xx = xx / 64;
+            xx /= 64;
         }
         return a;
     }
 
-    public static long i64ToInt(string xx)
+    public static Int64 I64ToInt(String xx)
     {
-        long a = 0;
-        int power = xx.Length - 1;
+        Int64 a = 0;
+        var power = xx.Length - 1;
 
-        for (int i = 0; i <= power; i++)
+        for (var i = 0; i <= power; i++)
         {
-            a += _Base64Code[xx[power - i].ToString()] * Convert.ToInt64(Math.Pow(64, i));
+            a += Base64CodeR[xx[power - i].ToString()] * Convert.ToInt64(Math.Pow(64, i));
         }
 
         return a;
     }
 
-    public static Dictionary<int, string> Base64Code = new Dictionary<int, string>() {
+    public static Dictionary<Int32, String> Base64Code = new() {
             {   0  ,"z"}, {   1  ,"1"}, {   2  ,"2"}, {   3  ,"3"}, {   4  ,"4"}, {   5  ,"5"}, {   6  ,"6"}, {   7  ,"7"}, {   8  ,"8"}, {   9  ,"9"},
             {   10  ,"a"}, {   11  ,"b"}, {   12  ,"c"}, {   13  ,"d"}, {   14  ,"e"}, {   15  ,"f"}, {   16  ,"g"}, {   17  ,"h"}, {   18  ,"i"}, {   19  ,"j"},
             {   20  ,"k"}, {   21  ,"x"}, {   22  ,"m"}, {   23  ,"n"}, {   24  ,"y"}, {   25  ,"p"}, {   26  ,"q"}, {   27  ,"r"}, {   28  ,"s"}, {   29  ,"t"},
@@ -66,11 +66,5 @@ public class CompresTo
             {   60  ,"Y"}, {   61  ,"Z"}, {   62  ,"-"}, {   63  ,"_"},
         };
 
-    public static Dictionary<string, int> _Base64Code
-    {
-        get
-        {
-            return Enumerable.Range(0, Base64Code.Count()).ToDictionary(i => Base64Code[i], i => i);
-        }
-    }
+    public static Dictionary<String, Int32> Base64CodeR => Enumerable.Range(0, Base64Code.Count).ToDictionary(i => Base64Code[i], i => i);
 }
