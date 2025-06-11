@@ -1,6 +1,8 @@
 ﻿using System.Globalization;
 using System.Text.RegularExpressions;
 
+using NewLife;
+
 namespace Pek.Iot;
 
 /// <summary>
@@ -28,9 +30,11 @@ public class MacHelper
     /// <param name="startMac">起始MAC地址</param>
     /// <param name="endMac">结束MAC地址</param>
     /// <returns>MAC地址列表</returns>
-    public static List<String> GetMacAddresses(String startMac, String endMac) =>
-        // 默认格式为 dash
-        GetMacAddresses(startMac, endMac, "dash");
+    // 默认格式为冒号
+    public static List<String> GetMacAddresses(String startMac, String endMac)
+    {
+        return GetMacAddresses(startMac, endMac, "colon");
+    }
 
     /// <summary>
     /// 解析MAC地址为long类型
@@ -92,4 +96,31 @@ public class MacHelper
         }
         return new String(macChars);
     }
+
+    /// <summary>
+    /// 将任意格式的MAC地址字符串转为冒号格式（XX:XX:XX:XX:XX:XX）
+    /// </summary>
+    /// <param name="mac">任意格式的MAC地址</param>
+    /// <returns>冒号格式MAC地址</returns>
+    public static String NormalizeToColonFormat(String mac)
+    {
+        if (mac.IsNullOrWhiteSpace()) return String.Empty; 
+        
+        // 移除所有非十六进制字符，保留0-9，A-F，a-f
+        var cleaned = Regex.Replace(mac, "[^0-9A-Fa-f]", "").ToUpperInvariant();
+        
+        // 验证清理后的字符串长度必须是12位
+        if (cleaned.Length != 12) 
+            throw new FormatException($"MAC地址格式不正确，期望12位十六进制字符，实际得到{cleaned.Length}位");
+        
+        // 转换为冒号格式
+        return ToMacFormat(cleaned, ':');
+    }
+
+    /// <summary>
+    /// 默认格式为冒号
+    /// </summary>
+    /// <param name="value">MAC地址long值</param>
+    /// <returns>格式化后的MAC地址</returns>
+    public static String LongToMac(Int64 value) => LongToMac(value, "colon");
 }
