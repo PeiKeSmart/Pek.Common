@@ -31,15 +31,12 @@ public class MacHelper
     /// <param name="endMac">结束MAC地址</param>
     /// <returns>MAC地址列表</returns>
     // 默认格式为冒号
-    public static List<String> GetMacAddresses(String startMac, String endMac)
-    {
-        return GetMacAddresses(startMac, endMac, "colon");
-    }
+    public static List<String> GetMacAddresses(String startMac, String endMac) => GetMacAddresses(startMac, endMac, "colon");
 
     /// <summary>
     /// 解析MAC地址为long类型
     /// </summary>
-    private static Int64 ParseMacToLong(String mac)
+    public static Int64 ParseMacToLong(String mac)
     {
         if (String.IsNullOrWhiteSpace(mac)) throw new ArgumentNullException(nameof(mac));
         // 兼容多种格式
@@ -84,7 +81,13 @@ public class MacHelper
         return list;
     }
 
-    private static String ToMacFormat(String hex, Char separator)
+    /// <summary>
+    /// 将12位无分隔符的十六进制MAC地址字符串格式化为带指定分隔符的MAC地址字符串。
+    /// </summary>
+    /// <param name="hex">12位无分隔符的十六进制MAC地址字符串 (例如 "001122AABBCC")。</param>
+    /// <param name="separator">用于分隔MAC地址中每两个十六进制字符的分隔符 (例如 ':' 或 '-')。</param>
+    /// <returns>带指定分隔符的格式化MAC地址字符串 (例如 "00:11:22:AA:BB:CC" 或 "00-11-22-AA-BB-CC")。</returns>
+    public static String ToMacFormat(String hex, Char separator)
     {
         var macChars = new Char[17];
         for (var i = 0; i < 6; i++)
