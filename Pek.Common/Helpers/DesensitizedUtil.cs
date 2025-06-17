@@ -138,11 +138,11 @@ public static partial class DesensitizedUtil
         }
 
         var atIndex = email.IndexOf('@');
-        var prefix = email.Substring(0, atIndex);  // @符号前的用户名部分
-        var domain = email.Substring(atIndex);     // @符号及域名部分
-        
+        var prefix = email[..atIndex];  // @符号前的用户名部分
+        var domain = email[atIndex..];     // @符号及域名部分
+
         // 根据前缀长度采用不同的脱敏策略
-        string maskedPrefix;
+        String maskedPrefix;
         switch (prefix.Length)
         {
             case 1:
