@@ -3,7 +3,7 @@
 /// <summary>
 /// Extension methods for exceptions.
 /// </summary>
-internal static class ExceptionExtensions
+public static class ExceptionExtensions
 {
     /// <summary>
     /// Check if exception is of the given type.
@@ -11,7 +11,7 @@ internal static class ExceptionExtensions
     /// <typeparam name="TException">The exception type to check for.</typeparam>
     /// <param name="ex">The exception to check.</param>
     /// <returns><see langword="true"/> if the exception is of the given type.</returns>
-    public static bool Is<TException>(this Exception ex)
+    public static Boolean Is<TException>(this Exception ex)
         where TException : Exception
     {
         switch (ex)
@@ -20,6 +20,8 @@ internal static class ExceptionExtensions
                 return true;
             case AggregateException aggregateException:
                 return aggregateException.InnerException is TException;
+            default:
+                break;
         }
 
         return false;
