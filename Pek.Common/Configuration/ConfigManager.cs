@@ -84,7 +84,6 @@ public static class ConfigManager
     
     private static FileWatcher? _fileWatcher;
     private static readonly object _watcherLock = new();
-    private static bool _autoReloadEnabled = true;
     private static readonly ConcurrentDictionary<string, DateTime> _lastReloadTimes = new();
     private static readonly ConcurrentDictionary<string, DateTime> _lastSaveTimes = new();
     private static readonly TimeSpan _debounceInterval = TimeSpan.FromMilliseconds(500);
@@ -222,23 +221,6 @@ public static class ConfigManager
 
         XTrace.WriteLine("[INFO] 配置系统默认变更日志记录已启用");
     }
-
-    /// <summary>
-    /// 启用或禁用配置文件自动重新加载
-    /// </summary>
-    /// <param name="enabled">是否启用自动重新加载</param>
-    public static void SetAutoReload(bool enabled)
-    {
-        _autoReloadEnabled = enabled;
-        if (enabled)
-        {
-            InitializeFileWatcher();
-        }
-        else
-        {
-            StopFileWatcher();
-        }
-    }
     
     /// <summary>
     /// 注册配置类型
@@ -260,11 +242,8 @@ public static class ConfigManager
         var filePath = GetConfigFilePath(configType);
         _filePathToConfigType[filePath] = configType;
         
-        // 如果启用了自动重新加载，初始化文件监控器
-        if (_autoReloadEnabled)
-        {
-            InitializeFileWatcher();
-        }
+        // 始终初始化文件监控器（自动重新加载始终启用）
+        InitializeFileWatcher();
     }
 
     /// <summary>
@@ -474,22 +453,6 @@ public static class ConfigManager
             catch (Exception ex)
             {
                 XTrace.WriteException(ex);
-            }
-        }
-    }
-    
-    /// <summary>
-    /// 停止文件监控器
-    /// </summary>
-    private static void StopFileWatcher()
-    {
-        lock (_watcherLock)
-        {
-            if (_fileWatcher != null)
-            {
-                _fileWatcher.Stop();
-                _fileWatcher = null;
-                XTrace.WriteLine("配置文件监控器已停止");
             }
         }
     }

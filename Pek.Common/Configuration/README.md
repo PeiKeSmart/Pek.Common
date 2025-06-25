@@ -219,15 +219,14 @@ public static void SetupConfigurationEventHandlers()
 3. 更新 `AppConfig.Current` 中的值
 4. 触发所有订阅的配置变更事件
 
-#### 4.4 控制自动重新加载功能
+#### 4.4 自动重新加载功能
 
-```csharp
-// 禁用自动重新加载（全局设置）
-ConfigManager.SetAutoReload(false);
+配置系统的自动重新加载功能始终启用，无需手动控制。系统会：
 
-// 重新启用自动重新加载
-ConfigManager.SetAutoReload(true);
-```
+- **智能监控**：自动监控配置文件变更
+- **防抖处理**：避免频繁触发重新加载
+- **代码保存过滤**：过滤掉程序代码保存导致的变更
+- **异步处理**：异步重新加载配置，不阻塞主线程
 
 ### 5. 配置自动初始化机制
 
