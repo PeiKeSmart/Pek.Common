@@ -108,6 +108,9 @@ public static class ConfigManager
     private static readonly CancellationTokenSource _cancellationTokenSource = new();
     private static readonly Task _queueProcessorTask;
     
+    // 自动清理机制 - Channel版本析构函数清理
+    private static readonly ChannelCleanupHelper _cleanupHelper = new();
+    
     // 唯一事件
     public static event EventHandler<ConfigChangedEventArgs>? ConfigChanged;
 
@@ -122,20 +125,147 @@ public static class ConfigManager
         // 启动队列处理器
         _queueProcessorTask = Task.Run(ProcessChangeQueueAsync);
         
-        // 默认日志记录
+        // 默认日志记录（简化版本）
         ConfigChanged += (sender, e) =>
         {
+            // 记录变更日志
             if (e.HasChanges)
             {
                 var changes = string.Join(", ", e.PropertyChanges.Take(3).Select(c => c.ToString()));
                 var moreInfo = e.PropertyChanges.Count > 3 ? $" 等{e.PropertyChanges.Count}个属性" : "";
                 XTrace.WriteLine($"[INFO] 配置 {e.ConfigName} 变更: {changes}{moreInfo}");
             }
+            
+            // ConfigManager 已经在 ReloadConfigInternal 中更新了 _configs 缓存
+            // Config<T>.Current 会自动从 ConfigManager.GetConfig<T>() 获取最新实例
+            // 无需额外的实例同步操作
         };
         
-        XTrace.WriteLine("[INFO] 配置系统已启动");
+        XTrace.WriteLine("[INFO] 配置系统已启动（Channel + 析构函数清理）");
     }
 
+    /// <summary>
+    /// Channel自动清理辅助类 - 通过析构函数实现自动资源释放
+    /// </summary>
+    private sealed class ChannelCleanupHelper
+    {
+        private volatile bool _isDisposed = false;
+
+        /// <summary>
+        /// 析构函数 - 在垃圾回收时自动清理Channel相关资源
+        /// </summary>
+        ~ChannelCleanupHelper()
+        {
+            if (!_isDisposed)
+            {
+                PerformCleanup();
+            }
+        }
+
+        /// <summary>
+        /// 手动清理资源
+        /// </summary>
+        public void Dispose()
+        {
+            if (!_isDisposed)
+            {
+                PerformCleanup();
+                _isDisposed = true;
+                GC.SuppressFinalize(this); // 抑制析构函数调用
+            }
+        }
+
+        /// <summary>
+        /// 执行实际的清理操作
+        /// </summary>
+        private void PerformCleanup()
+        {
+            try
+            {
+                XTrace.WriteLine("[INFO] 开始自动清理Channel配置系统资源...");
+
+                // 1. 停止Channel写入
+                try
+                {
+                    _channelWriter?.Complete();
+                    XTrace.WriteLine("[INFO] Channel写入已停止");
+                }
+                catch (Exception ex)
+                {
+                    XTrace.WriteLine($"[WARNING] 停止Channel写入时出错: {ex.Message}");
+                }
+                
+                // 2. 取消后台任务
+                try
+                {
+                    _cancellationTokenSource?.Cancel();
+                    XTrace.WriteLine("[INFO] 后台任务取消信号已发送");
+                }
+                catch (Exception ex)
+                {
+                    XTrace.WriteLine($"[WARNING] 取消后台任务时出错: {ex.Message}");
+                }
+                
+                // 3. 等待后台任务完成（有超时限制，避免析构函数阻塞）
+                if (_queueProcessorTask != null && !_queueProcessorTask.IsCompleted)
+                {
+                    // 在析构函数中使用较短的超时时间
+                    if (_queueProcessorTask.Wait(TimeSpan.FromSeconds(3)))
+                    {
+                        XTrace.WriteLine("[INFO] 后台任务已正常完成");
+                    }
+                    else
+                    {
+                        XTrace.WriteLine("[WARNING] 后台任务未能在3秒内完成，强制继续清理");
+                    }
+                }
+                
+                // 4. 清理文件监控器
+                lock (_watcherLock)
+                {
+                    if (_fileWatcher != null)
+                    {
+                        try
+                        {
+                            _fileWatcher.Stop();
+                            _fileWatcher = null;
+                            XTrace.WriteLine("[INFO] 文件监控器已自动停止");
+                        }
+                        catch (Exception ex)
+                        {
+                            XTrace.WriteLine($"[WARNING] 停止文件监控器时出错: {ex.Message}");
+                        }
+                    }
+                }
+                
+                // 5. 释放CancellationTokenSource
+                try
+                {
+                    _cancellationTokenSource?.Dispose();
+                    XTrace.WriteLine("[INFO] CancellationTokenSource已释放");
+                }
+                catch (Exception ex)
+                {
+                    XTrace.WriteLine($"[WARNING] 释放CancellationTokenSource时出错: {ex.Message}");
+                }
+
+                XTrace.WriteLine("[INFO] Channel配置系统资源自动清理完成");
+            }
+            catch (Exception ex)
+            {
+                // 清理过程中的异常不应该抛出，静默处理
+                try
+                {
+                    XTrace.WriteLine($"[ERROR] 自动清理过程中发生异常: {ex.Message}");
+                }
+                catch
+                {
+                    // 如果连日志都无法记录，则完全静默
+                }
+            }
+        }
+    }
+    
     /// <summary>
     /// 注册配置类型
     /// </summary>
@@ -498,260 +628,30 @@ public static class ConfigManager
     }
 
     /// <summary>
-    /// 比较两个配置对象并获取属性变更信息（AOT兼容）
+    /// 比较两个配置对象并获取属性变更信息（使用独立的JSON对比工具）
     /// </summary>
     private static List<ConfigPropertyChange> GetPropertyChanges(object? oldConfig, object newConfig)
     {
-        var changes = new List<ConfigPropertyChange>();
-        
-        if (oldConfig == null)
-        {
-            changes.Add(new ConfigPropertyChange
-            {
-                PropertyName = "Configuration",
-                OldValue = "初始配置",
-                NewValue = "已加载配置"
-            });
-            return changes;
-        }
-
         var configType = newConfig.GetType();
         
         try
         {
-            // 使用 JSON 序列化比较（AOT 兼容）
+            // 使用独立的JSON对比工具类
             if (_serializerOptions.TryGetValue(configType, out var options))
             {
-                var oldJson = JsonSerializer.Serialize(oldConfig, configType, options);
-                var newJson = JsonSerializer.Serialize(newConfig, configType, options);
-                
-                if (oldJson != newJson)
-                {
-                    // 使用 JsonDocument 进行属性级比较（AOT 兼容）
-                    var propertyChanges = CompareJsonProperties(oldJson, newJson);
-                    changes.AddRange(propertyChanges);
-                }
+                return ConfigJsonComparer.GetPropertyChanges(oldConfig, newConfig, configType, options);
             }
             else
             {
                 // 回退到简单比较
-                if (!ReferenceEquals(oldConfig, newConfig))
-                {
-                    changes.Add(new ConfigPropertyChange
-                    {
-                        PropertyName = "Configuration",
-                        OldValue = "原始配置",
-                        NewValue = "已更新配置"
-                    });
-                }
+                return ConfigJsonComparer.GetPropertyChangesSimple(oldConfig, newConfig);
             }
         }
         catch (Exception ex)
         {
             XTrace.WriteException(ex);
-            changes.Add(new ConfigPropertyChange
-            {
-                PropertyName = "Configuration",
-                OldValue = "比较失败",
-                NewValue = "配置已变更"
-            });
+            return ConfigJsonComparer.GetPropertyChangesSimple(oldConfig, newConfig);
         }
-
-        return changes;
-    }
-
-    /// <summary>
-    /// 比较两个 JSON 字符串的属性差异（AOT 兼容）
-    /// </summary>
-    private static List<ConfigPropertyChange> CompareJsonProperties(string oldJson, string newJson)
-    {
-        var changes = new List<ConfigPropertyChange>();
-
-        try
-        {
-            using var oldDoc = JsonDocument.Parse(oldJson);
-            using var newDoc = JsonDocument.Parse(newJson);
-
-            CompareJsonElements(oldDoc.RootElement, newDoc.RootElement, "", changes);
-        }
-        catch (Exception ex)
-        {
-            XTrace.WriteException(ex);
-            changes.Add(new ConfigPropertyChange
-            {
-                PropertyName = "JSON比较",
-                OldValue = "解析失败",
-                NewValue = "配置已变更"
-            });
-        }
-
-        return changes;
-    }
-
-    /// <summary>
-    /// 递归比较 JSON 元素（AOT 兼容）
-    /// </summary>
-    private static void CompareJsonElements(JsonElement oldElement, JsonElement newElement, string propertyPath, List<ConfigPropertyChange> changes)
-    {
-        if (oldElement.ValueKind != newElement.ValueKind)
-        {
-            changes.Add(new ConfigPropertyChange
-            {
-                PropertyName = propertyPath,
-                OldValue = GetJsonElementValue(oldElement),
-                NewValue = GetJsonElementValue(newElement)
-            });
-            return;
-        }
-
-        switch (oldElement.ValueKind)
-        {
-            case JsonValueKind.Object:
-                CompareJsonObjects(oldElement, newElement, propertyPath, changes);
-                break;
-            
-            case JsonValueKind.Array:
-                CompareJsonArrays(oldElement, newElement, propertyPath, changes);
-                break;
-            
-            case JsonValueKind.String:
-            case JsonValueKind.Number:
-            case JsonValueKind.True:
-            case JsonValueKind.False:
-            case JsonValueKind.Null:
-                var oldValue = GetJsonElementValue(oldElement);
-                var newValue = GetJsonElementValue(newElement);
-                if (!Equals(oldValue, newValue))
-                {
-                    changes.Add(new ConfigPropertyChange
-                    {
-                        PropertyName = propertyPath,
-                        OldValue = oldValue,
-                        NewValue = newValue
-                    });
-                }
-                break;
-        }
-    }
-
-    /// <summary>
-    /// 比较 JSON 对象
-    /// </summary>
-    private static void CompareJsonObjects(JsonElement oldObj, JsonElement newObj, string basePath, List<ConfigPropertyChange> changes)
-    {
-        var oldProperties = new Dictionary<string, JsonElement>();
-        var newProperties = new Dictionary<string, JsonElement>();
-
-        // 收集旧对象的属性
-        foreach (var prop in oldObj.EnumerateObject())
-        {
-            oldProperties[prop.Name] = prop.Value;
-        }
-
-        // 收集新对象的属性
-        foreach (var prop in newObj.EnumerateObject())
-        {
-            newProperties[prop.Name] = prop.Value;
-        }
-
-        // 检查所有属性
-        var allPropertyNames = oldProperties.Keys.Union(newProperties.Keys);
-        foreach (var propName in allPropertyNames)
-        {
-            var propertyPath = string.IsNullOrEmpty(basePath) ? propName : $"{basePath}.{propName}";
-
-            if (!oldProperties.TryGetValue(propName, out var oldProp))
-            {
-                // 新增属性
-                changes.Add(new ConfigPropertyChange
-                {
-                    PropertyName = propertyPath,
-                    OldValue = null,
-                    NewValue = GetJsonElementValue(newProperties[propName])
-                });
-            }
-            else if (!newProperties.TryGetValue(propName, out var newProp))
-            {
-                // 删除属性
-                changes.Add(new ConfigPropertyChange
-                {
-                    PropertyName = propertyPath,
-                    OldValue = GetJsonElementValue(oldProp),
-                    NewValue = null
-                });
-            }
-            else
-            {
-                // 比较属性值
-                CompareJsonElements(oldProp, newProp, propertyPath, changes);
-            }
-        }
-    }
-
-    /// <summary>
-    /// 比较 JSON 数组
-    /// </summary>
-    private static void CompareJsonArrays(JsonElement oldArray, JsonElement newArray, string propertyPath, List<ConfigPropertyChange> changes)
-    {
-        var oldItems = oldArray.EnumerateArray().ToArray();
-        var newItems = newArray.EnumerateArray().ToArray();
-
-        if (oldItems.Length != newItems.Length)
-        {
-            changes.Add(new ConfigPropertyChange
-            {
-                PropertyName = $"{propertyPath}.Length",
-                OldValue = oldItems.Length,
-                NewValue = newItems.Length
-            });
-        }
-
-        var maxLength = Math.Max(oldItems.Length, newItems.Length);
-        for (int i = 0; i < maxLength; i++)
-        {
-            var itemPath = $"{propertyPath}[{i}]";
-            
-            if (i >= oldItems.Length)
-            {
-                changes.Add(new ConfigPropertyChange
-                {
-                    PropertyName = itemPath,
-                    OldValue = null,
-                    NewValue = GetJsonElementValue(newItems[i])
-                });
-            }
-            else if (i >= newItems.Length)
-            {
-                changes.Add(new ConfigPropertyChange
-                {
-                    PropertyName = itemPath,
-                    OldValue = GetJsonElementValue(oldItems[i]),
-                    NewValue = null
-                });
-            }
-            else
-            {
-                CompareJsonElements(oldItems[i], newItems[i], itemPath, changes);
-            }
-        }
-    }
-
-    /// <summary>
-    /// 获取 JSON 元素的值
-    /// </summary>
-    private static object? GetJsonElementValue(JsonElement element)
-    {
-        return element.ValueKind switch
-        {
-            JsonValueKind.String => element.GetString(),
-            JsonValueKind.Number => element.TryGetInt32(out var intVal) ? intVal : element.GetDouble(),
-            JsonValueKind.True => true,
-            JsonValueKind.False => false,
-            JsonValueKind.Null => null,
-            JsonValueKind.Array => $"Array[{element.GetArrayLength()}]",
-            JsonValueKind.Object => "Object",
-            _ => element.ToString()
-        };
     }
 
     /// <summary>
@@ -772,38 +672,6 @@ public static class ConfigManager
     /// </summary>
     public static void Cleanup()
     {
-        try
-        {
-            XTrace.WriteLine("[INFO] 开始清理配置系统资源...");
-
-            // 取消队列处理
-            _cancellationTokenSource.Cancel();
-
-            // 等待队列处理器完成（最多等待5秒）
-            if (_queueProcessorTask != null && !_queueProcessorTask.IsCompleted)
-            {
-                _queueProcessorTask.Wait(TimeSpan.FromSeconds(5));
-            }
-
-            // 停止文件监控器
-            lock (_watcherLock)
-            {
-                _fileWatcher?.Stop();
-                _fileWatcher = null;
-            }
-
-            // 关闭 Channel
-            _channelWriter.Complete();
-
-            XTrace.WriteLine("[INFO] 配置系统资源清理完成");
-        }
-        catch (Exception ex)
-        {
-            XTrace.WriteException(ex);
-        }
-        finally
-        {
-            _cancellationTokenSource.Dispose();
-        }
+        _cleanupHelper.Dispose();
     }
 }
