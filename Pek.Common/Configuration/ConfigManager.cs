@@ -1,5 +1,7 @@
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Text.Json;
+
+using NewLife.Log;
 
 namespace Pek.Configuration;
 
@@ -63,6 +65,9 @@ public static class ConfigManager
         {
             var filePath = GetConfigFilePath(configType);
             var json = JsonSerializer.Serialize(config, configType, options);
+
+            XTrace.WriteLine($"获取到的路径和内容：{filePath},{json}");
+
             File.WriteAllText(filePath, json);
 
             // 更新缓存
