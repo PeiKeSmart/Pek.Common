@@ -5,7 +5,7 @@ namespace Pek.Configuration;
 /// <summary>
 /// 配置
 /// </summary>
-public class Settings : Config<Settings>
+public class TestSettings : Config<TestSettings>
 {
     /// <summary>
     /// 名称
@@ -30,16 +30,16 @@ public class Settings : Config<Settings>
     /// <summary>
     /// 静态构造函数，注册配置
     /// </summary>
-    static Settings()
+    static TestSettings()
     {
-        RegisterConfigForAot(SettingsJsonContext.Default, "Settings");
+        RegisterConfigForAot(TestSettingsJsonContext.Default, "Settings");
     }
 }
 
 /// <summary>
 /// AOT兼容的JSON序列化上下文
 /// </summary>
-[JsonSerializable(typeof(Settings))]
-public partial class SettingsJsonContext : ConfigJsonContext
+[JsonSerializable(typeof(TestSettings))]
+public partial class TestSettingsJsonContext : ConfigJsonContext
 {
 }
