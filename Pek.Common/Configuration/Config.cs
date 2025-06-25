@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Runtime.CompilerServices;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Pek.Configuration;
@@ -25,6 +26,10 @@ public abstract class Config
 /// <typeparam name="TConfig"></typeparam>
 public abstract class Config<TConfig> : Config where TConfig : Config<TConfig>, new()
 {
+    // 标记配置类是否已初始化
+    private static bool _initialized = false;
+    private static readonly object _initLock = new object();
+    
     private static TConfig? _current;
     private static readonly object _lock = new object();
 
@@ -35,6 +40,9 @@ public abstract class Config<TConfig> : Config where TConfig : Config<TConfig>, 
     {
         get
         {
+            // 确保配置类已初始化
+            EnsureInitialized();
+            
             if (_current == null)
             {
                 lock (_lock)
@@ -43,6 +51,25 @@ public abstract class Config<TConfig> : Config where TConfig : Config<TConfig>, 
                 }
             }
             return _current;
+        }
+    }
+    
+    /// <summary>
+    /// 确保配置类已初始化
+    /// </summary>
+    private static void EnsureInitialized()
+    {
+        if (!_initialized)
+        {
+            lock (_initLock)
+            {
+                if (!_initialized)
+                {
+                    // 执行初始化逻辑，触发静态构造函数
+                    RuntimeHelpers.RunClassConstructor(typeof(TConfig).TypeHandle);
+                    _initialized = true;
+                }
+            }
         }
     }
 
@@ -56,23 +83,24 @@ public abstract class Config<TConfig> : Config where TConfig : Config<TConfig>, 
             _current = ConfigManager.GetConfig<TConfig>(forceReload: true);
         }
     }
-
+    
     /// <summary>
-    /// 手动注册配置类型（AOT兼容）
+    /// 通用配置注册方法（AOT兼容）
     /// </summary>
-    /// <param name="typeInfoResolver">类型信息解析器</param>
+    /// <typeparam name="TJsonContext">JSON序列化上下文类型</typeparam>
+    /// <param name="jsonContext">JSON序列化上下文实例</param>
     /// <param name="fileName">配置文件名（可选）</param>
     /// <param name="writeIndented">是否格式化JSON（可选）</param>
     /// <param name="useCamelCase">是否使用驼峰命名（可选）</param>
-    public static void RegisterForAot(
-        JsonSerializerContext typeInfoResolver,
+    public static void RegisterConfigForAot<TJsonContext>(
+        TJsonContext jsonContext,
         string? fileName = null,
         bool writeIndented = true,
-        bool useCamelCase = true)
+        bool useCamelCase = true) where TJsonContext : JsonSerializerContext
     {
         var jsonOptions = new JsonSerializerOptions
         {
-            TypeInfoResolver = typeInfoResolver,
+            TypeInfoResolver = jsonContext,
             WriteIndented = writeIndented
         };
 

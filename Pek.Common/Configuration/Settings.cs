@@ -32,7 +32,7 @@ public class Settings : Config<Settings>
     /// </summary>
     static Settings()
     {
-        RegisterForAot(SettingsJsonContext.Default, "Settings");
+        RegisterConfigForAot(SettingsJsonContext.Default, "Settings");
     }
 }
 
@@ -40,9 +40,6 @@ public class Settings : Config<Settings>
 /// AOT兼容的JSON序列化上下文
 /// </summary>
 [JsonSerializable(typeof(Settings))]
-[JsonSerializable(typeof(string))]
-[JsonSerializable(typeof(bool))]
-[JsonSerializable(typeof(int))]
-public partial class SettingsJsonContext : JsonSerializerContext
+public partial class SettingsJsonContext : ConfigJsonContext
 {
 }

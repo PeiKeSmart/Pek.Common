@@ -45,18 +45,14 @@ public class Program
         // 这是AOT兼容的方式，不使用反射
         try
         {
-            // 预先初始化Settings类，确保其静态构造函数被调用
-            // 在AOT环境下，确保SettingsJsonContext已被初始化
-            Pek.Configuration.Settings.RegisterForAot(Pek.Configuration.SettingsJsonContext.Default,
-        "Settings");
-
-            // 访问Settings.Current触发初始化
-            var settings = Pek.Configuration.Settings.Current;
+            // 直接访问Settings.Current触发初始化
+            // 这会自动调用静态构造函数并注册配置
+            _ = Pek.Configuration.Settings.Current;
             Console.WriteLine("✅ Settings配置已预先初始化");
         }
         catch (Exception ex)
         {
-            // 在AOT环境中，可能会因为反射限制而无法初始化
+            // 在AOT环境中，可能会因为其他原因而无法初始化
             Console.WriteLine($"⚠️ Settings配置初始化失败: {ex.Message}");
         }
         
