@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -101,7 +102,8 @@ public abstract class Config<TConfig> : Config where TConfig : Config<TConfig>, 
         var jsonOptions = new JsonSerializerOptions
         {
             TypeInfoResolver = jsonContext,
-            WriteIndented = writeIndented
+            WriteIndented = writeIndented,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
         };
 
         if (useCamelCase)
