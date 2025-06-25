@@ -148,74 +148,6 @@ public static class ConfigManager
     }
 
     /// <summary>
-    /// 订阅特定类型的配置变更事件
-    /// </summary>
-    /// <typeparam name="TConfig">配置类型</typeparam>
-    /// <param name="handler">事件处理程序</param>
-    public static void SubscribeConfigChanged<TConfig>(Action<TConfig> handler) where TConfig : Config
-    {
-        AnyConfigChanged += (sender, e) =>
-        {
-            if (e.ConfigType == typeof(TConfig) && e.NewConfig is TConfig typedConfig)
-            {
-                handler(typedConfig);
-            }
-        };
-    }
-
-    /// <summary>
-    /// 订阅配置变更事件（带旧值和新值比较）
-    /// </summary>
-    /// <typeparam name="TConfig">配置类型</typeparam>
-    /// <param name="handler">事件处理程序</param>
-    public static void SubscribeConfigChanged<TConfig>(Action<TConfig, TConfig> handler) where TConfig : Config
-    {
-        AnyConfigChanged += (sender, e) =>
-        {
-            if (e.ConfigType == typeof(TConfig) && 
-                e.OldConfig is TConfig oldConfig && 
-                e.NewConfig is TConfig newConfig)
-            {
-                handler(oldConfig, newConfig);
-            }
-        };
-    }
-
-    /// <summary>
-    /// 订阅配置变更详情事件（自动检测所有属性变更）
-    /// </summary>
-    /// <typeparam name="TConfig">配置类型</typeparam>
-    /// <param name="handler">事件处理程序</param>
-    public static void SubscribeConfigChangeDetails<TConfig>(Action<ConfigChangeDetails> handler) where TConfig : Config
-    {
-        ConfigChangeDetails += (sender, details) =>
-        {
-            if (details.ConfigType == typeof(TConfig))
-            {
-                handler(details);
-            }
-        };
-    }
-
-    /// <summary>
-    /// 订阅所有配置变更事件
-    /// </summary>
-    /// <param name="handler">事件处理程序</param>
-    public static void SubscribeAllConfigChanged(Action<ConfigChangedEventArgs> handler)
-    {
-        AnyConfigChanged += (sender, e) => handler(e);
-    }
-
-    /// <summary>
-    /// 订阅所有配置变更详情事件
-    /// </summary>
-    /// <param name="handler">事件处理程序</param>
-    public static void SubscribeAllConfigChangeDetails(Action<ConfigChangeDetails> handler)
-    {
-        ConfigChangeDetails += (sender, details) => handler(details);
-    }
-
-    /// <summary>
     /// 默认配置变更日志记录器（始终启用）
     /// </summary>
     /// <param name="logLevel">日志级别（默认为Info）</param>
@@ -226,7 +158,8 @@ public static class ConfigManager
         bool includeValues = true, 
         bool onlyLogChanges = true)
     {
-        SubscribeAllConfigChangeDetails(details =>
+        // 直接订阅ConfigChangeDetails事件
+        ConfigChangeDetails += (sender, details) =>
         {
             if (onlyLogChanges && !details.HasChanges)
                 return;
@@ -251,7 +184,7 @@ public static class ConfigManager
                     XTrace.WriteLine(message);
                     break;
             }
-        });
+        };
 
         XTrace.WriteLine("[INFO] 配置系统默认变更日志记录已启用");
     }

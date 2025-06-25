@@ -84,65 +84,73 @@ namespace ConfigAutoReloadTestConsole
         /// </summary>
         private static void SetupCustomConfigEventHandlers()
         {
-            // 方式1：使用新的配置变更详情事件（推荐）
-            ConfigManager.SubscribeConfigChangeDetails<AppConfig>(details =>
+            // 方式1：订阅应用配置变更（类型安全）
+            ConfigManager.AnyConfigChanged += (sender, e) =>
             {
-                Console.WriteLine($"🔔 [自定义处理] AppConfig 配置变更详情:");
-                foreach (var change in details.PropertyChanges)
+                if (e.ConfigType == typeof(AppConfig) && e.NewConfig is AppConfig newConfig)
                 {
-                    Console.WriteLine($"  📝 {change.PropertyName}: {change.OldValue} → {change.NewValue}");
-                    
-                    // 根据具体属性变更执行相应逻辑
-                    switch (change.PropertyName)
-                    {
-                        case nameof(AppConfig.ApiUrl):
-                            Console.WriteLine("    🔄 检测到API地址变更，准备重新初始化HTTP客户端...");
-                            break;
-                        case nameof(AppConfig.MaxRetries):
-                            Console.WriteLine("    🔄 检测到重试次数变更，准备更新重试策略...");
-                            break;
-                        case nameof(AppConfig.EnableLogging):
-                            Console.WriteLine("    🔄 检测到日志开关变更，准备更新日志配置...");
-                            break;
-                    }
+                    Console.WriteLine($"🔔 [自定义处理] AppConfig 配置已变更:");
+                    Console.WriteLine($"  📝 ApiUrl: {newConfig.ApiUrl}");
+                    Console.WriteLine($"  📝 MaxRetries: {newConfig.MaxRetries}");
+                    Console.WriteLine($"  📝 EnableLogging: {newConfig.EnableLogging}");
+                    Console.WriteLine("    🔄 检测到应用配置变更，准备重新初始化相关组件...");
+                    Console.WriteLine();
                 }
-                Console.WriteLine();
-            });
+            };
 
-            // 方式2：订阅数据库配置的详细变更
-            ConfigManager.SubscribeConfigChangeDetails<DatabaseConfig>(details =>
+            // 方式2：订阅数据库配置变更（带新旧值比较）
+            ConfigManager.AnyConfigChanged += (sender, e) =>
             {
-                Console.WriteLine($"🔔 [自定义处理] DatabaseConfig 配置变更详情:");
-                foreach (var change in details.PropertyChanges)
+                if (e.ConfigType == typeof(DatabaseConfig) && 
+                    e.OldConfig is DatabaseConfig oldConfig && 
+                    e.NewConfig is DatabaseConfig newConfig)
                 {
-                    Console.WriteLine($"  📝 {change.PropertyName}: {change.OldValue} → {change.NewValue}");
+                    Console.WriteLine($"🔔 [自定义处理] DatabaseConfig 配置已变更:");
+                    
+                    if (oldConfig.ConnectionString != newConfig.ConnectionString)
+                    {
+                        Console.WriteLine($"  📝 ConnectionString: {oldConfig.ConnectionString} → {newConfig.ConnectionString}");
+                        Console.WriteLine("    🔄 连接字符串已变更，准备重新配置数据库连接池...");
+                    }
+                    
+                    if (oldConfig.MaxConnections != newConfig.MaxConnections)
+                    {
+                        Console.WriteLine($"  📝 MaxConnections: {oldConfig.MaxConnections} → {newConfig.MaxConnections}");
+                        Console.WriteLine("    🔄 最大连接数已变更，准备调整连接池大小...");
+                    }
+                    
+                    if (oldConfig.EnableSqlLogging != newConfig.EnableSqlLogging)
+                    {
+                        Console.WriteLine($"  📝 EnableSqlLogging: {oldConfig.EnableSqlLogging} → {newConfig.EnableSqlLogging}");
+                        Console.WriteLine("    🔄 SQL日志开关已变更，准备更新日志配置...");
+                    }
+                    
+                    Console.WriteLine();
                 }
-                
-                // 数据库配置变更的业务逻辑处理
-                if (details.PropertyChanges.Any(c => c.PropertyName == nameof(DatabaseConfig.ConnectionString)))
-                {
-                    Console.WriteLine("    🔄 连接字符串已变更，准备重新配置数据库连接池...");
-                }
-                Console.WriteLine();
-            });
+            };
 
             // 方式3：全局配置变更监控（所有配置类型）
-            ConfigManager.SubscribeAllConfigChangeDetails(details =>
+            ConfigManager.AnyConfigChanged += (sender, e) =>
             {
-                Console.WriteLine($"📊 [全局监控] 配置 {details.ConfigName} 发生了 {details.PropertyChanges.Count} 个属性变更");
-            });
+                Console.WriteLine($"📊 [全局监控] 配置 {e.ConfigName} 在 {DateTime.Now:HH:mm:ss} 发生变更");
+            };
 
-            // 方式4：传统的新旧值比较方式（用于特殊逻辑）
-            ConfigManager.SubscribeConfigChanged<AppConfig>((oldConfig, newConfig) =>
+            // 方式4：特定业务逻辑处理
+            ConfigManager.AnyConfigChanged += (sender, e) =>
             {
-                // 这里可以执行更复杂的业务逻辑
-                if (oldConfig.ApiUrl != newConfig.ApiUrl)
+                if (e.ConfigType == typeof(AppConfig) && 
+                    e.OldConfig is AppConfig oldAppConfig && 
+                    e.NewConfig is AppConfig newAppConfig)
                 {
-                    Console.WriteLine($"🔧 [业务逻辑] API基础地址变更，执行系统级重新配置...");
-                    // 这里可以调用实际的业务逻辑
-                    // HttpClientManager.ReconfigureBaseUrl(newConfig.ApiUrl);
+                    // API地址变更的特定处理
+                    if (oldAppConfig.ApiUrl != newAppConfig.ApiUrl)
+                    {
+                        Console.WriteLine($"🔧 [业务逻辑] API基础地址变更，执行系统级重新配置...");
+                        // 这里可以调用实际的业务逻辑
+                        // HttpClientManager.ReconfigureBaseUrl(newAppConfig.ApiUrl);
+                    }
                 }
-            });
+            };
         }
 
         private static async Task TestAppConfigSave()
