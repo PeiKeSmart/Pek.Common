@@ -212,7 +212,7 @@ public class FileWatcherEventArgs
     /// <summary>
     /// 旧的文件全路径
     /// </summary>
-    public String OldFullPath { get; }
+    public String? OldFullPath { get; }
 
     /// <summary>
     /// 旧的文件名称
@@ -227,7 +227,7 @@ public class FileWatcherEventArgs
     /// <param name="name">文件名称</param>
     /// <param name="oldFullPath">旧的文件全路径</param>
     /// <param name="oldName">旧的文件名称</param>
-    public FileWatcherEventArgs(WatcherChangeTypes type, String fullPath, String name, String oldFullPath,
+    public FileWatcherEventArgs(WatcherChangeTypes type, String fullPath, String name, String? oldFullPath,
         String? oldName)
     {
         ChangeTypes = type;
