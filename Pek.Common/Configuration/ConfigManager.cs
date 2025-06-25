@@ -82,7 +82,7 @@ internal class ConfigChangeQueueItem
 }
 
 /// <summary>
-/// 配置管理器（简化版本）
+/// 配置管理器（极简版本）
 /// </summary>
 public static class ConfigManager
 {
@@ -97,7 +97,7 @@ public static class ConfigManager
     private static FileWatcher? _fileWatcher;
     private static readonly object _watcherLock = new();
     
-    // 防抖机制（简化）
+    // 简化的防抖机制
     private static readonly ConcurrentDictionary<string, DateTime> _lastSaveTimes = new();
     private static readonly TimeSpan _saveIgnoreInterval = TimeSpan.FromMilliseconds(1000);
     
@@ -108,14 +108,10 @@ public static class ConfigManager
     private static readonly CancellationTokenSource _cancellationTokenSource = new();
     private static readonly Task _queueProcessorTask;
     
-    // 简化的处理配置
-    private static readonly int _maxRetryCount = 3;
-    private static readonly TimeSpan _processDelay = TimeSpan.FromMilliseconds(200); // 合并延迟时间
-    
-    // 唯一事件 - 简化设计
+    // 唯一事件
     public static event EventHandler<ConfigChangedEventArgs>? ConfigChanged;
 
-    // 静态构造函数 - 简化初始化
+    // 静态构造函数
     static ConfigManager()
     {
         // 初始化 Channel
@@ -127,10 +123,15 @@ public static class ConfigManager
         // 启动队列处理器
         _queueProcessorTask = Task.Run(ProcessChangeQueueAsync);
         
-        // 简化的默认日志记录
+        // 默认日志记录
         ConfigChanged += (sender, e) =>
         {
-            XTrace.WriteLine($"[INFO] 配置 {e.ConfigName} 已变更并重新加载");
+            if (e.HasChanges)
+            {
+                var changes = string.Join(", ", e.PropertyChanges.Take(3).Select(c => c.ToString()));
+                var moreInfo = e.PropertyChanges.Count > 3 ? $" 等{e.PropertyChanges.Count}个属性" : "";
+                XTrace.WriteLine($"[INFO] 配置 {e.ConfigName} 变更: {changes}{moreInfo}");
+            }
         };
         
         XTrace.WriteLine("[INFO] 配置系统已启动");
@@ -191,7 +192,7 @@ public static class ConfigManager
     }
 
     /// <summary>
-    /// 加载配置（增强异常处理和性能优化）
+    /// 加载配置（简化版本）
     /// </summary>
     private static TConfig LoadConfig<TConfig>() where TConfig : Config, new()
     {
@@ -207,10 +208,8 @@ public static class ConfigManager
             var filePath = GetConfigFilePath(configType);
             if (File.Exists(filePath))
             {
-                // 性能优化：使用异步文件读取避免阻塞
                 var json = File.ReadAllText(filePath);
                 
-                // 验证JSON不为空
                 if (string.IsNullOrWhiteSpace(json))
                 {
                     XTrace.WriteLine($"配置文件为空，使用默认配置: {filePath}");
@@ -220,19 +219,12 @@ public static class ConfigManager
                 try
                 {
                     var config = JsonSerializer.Deserialize<TConfig>(json, options);
-                    if (config == null)
-                    {
-                        XTrace.WriteLine($"配置反序列化失败，使用默认配置: {filePath}");
-                        return new TConfig();
-                    }
-                    return config;
+                    return config ?? new TConfig();
                 }
                 catch (JsonException jsonEx)
                 {
                     XTrace.WriteLine($"配置文件JSON格式错误: {filePath}, 错误: {jsonEx.Message}");
-                    // JSON格式错误时，备份损坏的文件
-                    BackupCorruptedConfigFile(filePath);
-                    return new TConfig();
+                    return new TConfig(); // 直接返回默认配置，不进行备份
                 }
             }
         }
@@ -242,24 +234,6 @@ public static class ConfigManager
         }
 
         return new TConfig();
-    }
-
-    /// <summary>
-    /// 备份损坏的配置文件
-    /// </summary>
-    /// <param name="filePath">损坏的文件路径</param>
-    private static void BackupCorruptedConfigFile(string filePath)
-    {
-        try
-        {
-            var backupPath = $"{filePath}.corrupted.{DateTime.Now:yyyyMMddHHmmss}";
-            File.Copy(filePath, backupPath, true);
-            XTrace.WriteLine($"已备份损坏的配置文件: {backupPath}");
-        }
-        catch (Exception ex)
-        {
-            XTrace.WriteException(ex);
-        }
     }
 
     /// <summary>
@@ -423,11 +397,10 @@ public static class ConfigManager
     }
 
     /// <summary>
-    /// Channel队列处理器 - 优化版本
+    /// Channel队列处理器 - 简化版本
     /// </summary>
     private static async Task ProcessChangeQueueAsync()
     {
-        var recentlyProcessed = new ConcurrentDictionary<string, DateTime>();
         var processedCount = 0;
 
         try
@@ -436,30 +409,20 @@ public static class ConfigManager
             {
                 try
                 {
-                    // 重复过滤：避免短时间内处理相同文件
-                    if (IsDuplicateItem(item, recentlyProcessed))
-                    {
-                        XTrace.WriteLine($"[Channel] 过滤重复变更: {item.ConfigType.Name}");
-                        continue;
-                    }
-
-                    // 处理配置变更
+                    // 简化处理：直接处理配置变更，不做复杂的重复过滤
                     if (await ProcessSingleConfigChangeAsync(item).ConfigureAwait(false))
                     {
                         processedCount++;
-                        recentlyProcessed[item.FilePath] = DateTime.Now;
                         XTrace.WriteLine($"[Channel] 成功处理配置变更: {item.ConfigType.Name}");
                     }
                     else
                     {
-                        // 重试机制
-                        await HandleRetryLogic(item).ConfigureAwait(false);
+                        XTrace.WriteLine($"[Channel] 配置变更处理失败: {item.ConfigType.Name}");
                     }
                 }
                 catch (Exception ex)
                 {
                     XTrace.WriteException(ex);
-                    XTrace.WriteLine($"[Channel] 处理配置变更异常: {item.ConfigType.Name}");
                 }
             }
         }
@@ -476,36 +439,7 @@ public static class ConfigManager
     }
 
     /// <summary>
-    /// 检查是否为重复项
-    /// </summary>
-    private static bool IsDuplicateItem(ConfigChangeQueueItem item, ConcurrentDictionary<string, DateTime> recentlyProcessed)
-    {
-        if (recentlyProcessed.TryGetValue(item.FilePath, out var lastProcessTime))
-        {
-            return DateTime.Now - lastProcessTime < _processDelay;
-        }
-        return false;
-    }
-
-    /// <summary>
-    /// 处理重试逻辑
-    /// </summary>
-    private static async Task HandleRetryLogic(ConfigChangeQueueItem item)
-    {
-        item.RetryCount++;
-        if (item.RetryCount <= _maxRetryCount)
-        {
-            await _channelWriter.WriteAsync(item, _cancellationTokenSource.Token).ConfigureAwait(false);
-            XTrace.WriteLine($"[Channel] 配置变更处理失败，重试第 {item.RetryCount} 次: {item.ConfigType.Name}");
-        }
-        else
-        {
-            XTrace.WriteLine($"[Channel] 配置变更处理失败，已达最大重试次数: {item.ConfigType.Name}");
-        }
-    }
-
-    /// <summary>
-    /// 处理单个配置变更 - 优化版本
+    /// 处理单个配置变更 - 简化版本
     /// </summary>
     private static async Task<bool> ProcessSingleConfigChangeAsync(ConfigChangeQueueItem item)
     {
@@ -514,12 +448,11 @@ public static class ConfigManager
             // 文件存在性检查
             if (!File.Exists(item.FilePath))
             {
-                XTrace.WriteLine($"[Channel] 配置文件不存在: {item.FilePath}");
                 return true; // 文件不存在视为成功处理
             }
 
-            // 等待文件写入完成
-            await Task.Delay(_processDelay, _cancellationTokenSource.Token).ConfigureAwait(false);
+            // 简单延迟，确保文件写入完成
+            await Task.Delay(200, _cancellationTokenSource.Token).ConfigureAwait(false);
 
             // 重新加载配置并触发事件
             return ReloadAndTriggerEvents(item);
@@ -857,7 +790,6 @@ public static class ConfigManager
             lock (_watcherLock)
             {
                 _fileWatcher?.Stop();
-                // FileWatcher没有Dispose方法，只需要Stop即可
                 _fileWatcher = null;
             }
 
@@ -874,39 +806,5 @@ public static class ConfigManager
         {
             _cancellationTokenSource.Dispose();
         }
-    }
-
-    /// <summary>
-    /// 获取配置系统状态信息（用于监控和调试）
-    /// </summary>
-    public static ConfigSystemStatus GetStatus()
-    {
-        return new ConfigSystemStatus
-        {
-            RegisteredConfigCount = _configs.Count,
-            FileWatcherActive = _fileWatcher != null,
-            QueueProcessorRunning = _queueProcessorTask?.Status == TaskStatus.Running,
-            PendingQueueItems = _changeChannel.Reader.Count,
-            LastSaveOperations = _lastSaveTimes.Count
-        };
-    }
-}
-
-/// <summary>
-/// 配置系统状态信息
-/// </summary>
-public class ConfigSystemStatus
-{
-    public int RegisteredConfigCount { get; set; }
-    public bool FileWatcherActive { get; set; }
-    public bool QueueProcessorRunning { get; set; }
-    public int PendingQueueItems { get; set; }
-    public int LastSaveOperations { get; set; }
-
-    public override string ToString()
-    {
-        return $"配置系统状态: 已注册配置={RegisteredConfigCount}, 文件监控={FileWatcherActive}, " +
-               $"队列处理器运行={QueueProcessorRunning}, 待处理项={PendingQueueItems}, " +
-               $"最近保存操作={LastSaveOperations}";
     }
 }
