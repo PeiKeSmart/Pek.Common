@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Pek.Configuration;
 
@@ -33,21 +32,7 @@ public class Settings : Config<Settings>
     /// </summary>
     static Settings()
     {
-        ConfigManager.RegisterConfig<Settings>(GetJsonSerializerOptions(), "Settings");
-    }
-
-    /// <summary>
-    /// 获取JSON序列化选项
-    /// </summary>
-    private static JsonSerializerOptions GetJsonSerializerOptions()
-    {
-        return new JsonSerializerOptions
-        {
-            TypeInfoResolver = SettingsJsonContext.Default,
-            WriteIndented = true,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-        };
+        RegisterForAot(SettingsJsonContext.Default, "Settings");
     }
 }
 
