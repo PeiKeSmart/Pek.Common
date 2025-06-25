@@ -202,22 +202,22 @@ public class FileWatcherEventArgs
     /// <summary>
     /// 文件全路径
     /// </summary>
-    public string FullPath { get; }
+    public String FullPath { get; }
 
     /// <summary>
     /// 文件名称
     /// </summary>
-    public string Name { get; }
+    public String Name { get; }
 
     /// <summary>
     /// 旧的文件全路径
     /// </summary>
-    public string OldFullPath { get; }
+    public String OldFullPath { get; }
 
     /// <summary>
     /// 旧的文件名称
     /// </summary>
-    public string OldName { get; }
+    public String? OldName { get; }
 
     /// <summary>
     /// 初始化一个<see cref="FileWatcherEventArgs"/>类型的实例
@@ -227,8 +227,8 @@ public class FileWatcherEventArgs
     /// <param name="name">文件名称</param>
     /// <param name="oldFullPath">旧的文件全路径</param>
     /// <param name="oldName">旧的文件名称</param>
-    public FileWatcherEventArgs(WatcherChangeTypes type, string fullPath, string name, string oldFullPath,
-        string oldName)
+    public FileWatcherEventArgs(WatcherChangeTypes type, String fullPath, String name, String oldFullPath,
+        String? oldName)
     {
         ChangeTypes = type;
         FullPath = fullPath;
