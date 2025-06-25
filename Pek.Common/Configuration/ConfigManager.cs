@@ -1,5 +1,6 @@
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Text.Json;
+using System.Threading.Channels;
 
 using NewLife.Log;
 using Pek.IO;
@@ -70,6 +71,17 @@ public class ConfigChangeDetails
 }
 
 /// <summary>
+/// 配置变更队列项
+/// </summary>
+internal class ConfigChangeQueueItem
+{
+    public string FilePath { get; set; } = string.Empty;
+    public Type ConfigType { get; set; } = typeof(object);
+    public DateTime QueueTime { get; set; } = DateTime.Now;
+    public int RetryCount { get; set; } = 0;
+}
+
+/// <summary>
 /// 配置管理器
 /// </summary>
 public static class ConfigManager
@@ -91,6 +103,18 @@ public static class ConfigManager
     private static readonly HashSet<string> _processingFiles = new();
     private static readonly object _processingFilesLock = new(); // 添加线程安全保护
     
+    // 配置变更处理 Channel
+    private static readonly Channel<ConfigChangeQueueItem> _changeChannel;
+    private static readonly ChannelWriter<ConfigChangeQueueItem> _channelWriter;
+    private static readonly ChannelReader<ConfigChangeQueueItem> _channelReader;
+    private static readonly CancellationTokenSource _cancellationTokenSource = new();
+    private static Task? _queueProcessorTask;
+    
+    // 队列处理配置
+    private static readonly TimeSpan _duplicateFilterWindow = TimeSpan.FromMilliseconds(100); // 重复过滤窗口
+    private static readonly int _maxRetryCount = 3; // 最大重试次数
+    private static readonly TimeSpan _batchProcessDelay = TimeSpan.FromMilliseconds(50); // 批量处理延迟
+    
     /// <summary>
     /// 配置文件变更事件（类型化）
     /// </summary>
@@ -109,8 +133,18 @@ public static class ConfigManager
     // 静态构造函数，自动启用默认配置变更日志记录
     static ConfigManager()
     {
+        // 初始化Channel
+        var channel = Channel.CreateUnbounded<ConfigChangeQueueItem>();
+        _changeChannel = channel;
+        _channelWriter = channel.Writer;
+        _channelReader = channel.Reader;
+        
         // 默认启用配置变更日志记录
         EnableDefaultChangeLogging();
+        
+        // 启动队列处理器
+        _queueProcessorTask = Task.Run(ProcessChangeQueueAsync);
+        XTrace.WriteLine("[INFO] 配置变更Channel处理器已启动");
     }
 
     /// <summary>
@@ -539,7 +573,7 @@ public static class ConfigManager
     }
 
     /// <summary>
-    /// 配置文件变更事件处理
+    /// 配置文件变更事件处理 - 使用队列机制
     /// </summary>
     /// <param name="sender">事件发送者</param>
     /// <param name="args">文件监控事件参数</param>
@@ -579,112 +613,187 @@ public static class ConfigManager
                 }
             }
             
-            // 防抖处理：检查是否在短时间内已经处理过同一个文件
-            if (_lastReloadTimes.TryGetValue(fileKey, out var lastReloadTime))
+            XTrace.WriteLine($"检测到外部配置文件变更，加入处理队列: {args.FullPath}");
+            
+            // 将配置变更加入处理队列
+            var queueItem = new ConfigChangeQueueItem
             {
-                if (now - lastReloadTime < _debounceInterval)
-                {
-                    // 在防抖间隔内，忽略此次变更
-                    return;
-                }
-            }
+                FilePath = args.FullPath,
+                ConfigType = configType,
+                QueueTime = now,
+                RetryCount = 0
+            };
             
-            // 更新最后重新加载时间
-            _lastReloadTimes[fileKey] = now;
-            
-            XTrace.WriteLine($"检测到外部配置文件变更: {args.FullPath}");
-            
-            // 延迟一小段时间，避免文件正在写入时读取
-            Task.Delay(100).ContinueWith(_ =>
+            _channelWriter.TryWrite(queueItem);
+            XTrace.WriteLine($"[队列] 配置变更已加入队列: {configType.Name}，当前队列长度: {_changeChannel.Reader.Count}");
+        }
+        catch (Exception ex)
+        {
+            XTrace.WriteException(ex);
+        }
+    }
+    
+    /// <summary>
+    /// Channel队列处理器 - 使用异步迭代器处理配置变更
+    /// </summary>
+    private static async Task ProcessChangeQueueAsync()
+    {
+        var processedItems = new List<ConfigChangeQueueItem>();
+        
+        try
+        {
+            // 使用异步迭代器处理Channel中的所有项目
+            await foreach (var item in _channelReader.ReadAllAsync(_cancellationTokenSource.Token).ConfigureAwait(false))
             {
                 try
                 {
-                    // 添加重入保护 - 防止死循环
-                    if (_processingFiles.Contains(fileKey))
-                    {
-                        XTrace.WriteLine($"文件 {fileKey} 正在处理中，跳过此次变更");
-                        return;
-                    }
+                    var currentTime = DateTime.Now;
                     
-                    lock (_processingFilesLock) // 添加锁
+                    // 检查是否需要过滤重复项（在很短时间内的相同文件变更）
+                    var shouldSkipDuplicate = processedItems.Any(p => 
+                        p.FilePath == item.FilePath && 
+                        currentTime - p.QueueTime < _duplicateFilterWindow);
+
+                    if (shouldSkipDuplicate)
                     {
-                        _processingFiles.Add(fileKey);
+                        XTrace.WriteLine($"[Channel] 过滤重复变更: {item.FilePath}");
+                        continue;
                     }
+
+                    // 处理配置变更
+                    var success = await ProcessSingleConfigChangeAsync(item).ConfigureAwait(false);
                     
-                    try
+                    if (success)
                     {
-                        // 获取旧配置（用于事件参数）
-                        var oldConfig = _configs.TryGetValue(configType, out var cached) ? cached : null;
-                        
-                        // 使用委托重新加载配置（完全消除反射）
-                        if (_configReloadDelegates.TryGetValue(configType, out var reloadDelegate))
+                        XTrace.WriteLine($"[Channel] 成功处理配置变更: {item.ConfigType.Name}");
+                        processedItems.Add(item);
+                    }
+                    else
+                    {
+                        // 处理失败，检查是否需要重试
+                        item.RetryCount++;
+                        if (item.RetryCount <= _maxRetryCount)
                         {
-                            var newConfig = reloadDelegate();
-                            
-                            if (newConfig != null)
-                            {
-                                XTrace.WriteLine($"配置 {configType.Name} 已自动重新加载");
-                                
-                                // 比较配置差异
-                                if (oldConfig != null)
-                                {
-                                    var changeDetails = CompareConfigurations(oldConfig, newConfig);
-                                    
-                                    // 在事件触发时添加异常保护
-                                    try
-                                    {
-                                        ConfigChangeDetails?.Invoke(null, changeDetails);
-                                    }
-                                    catch (Exception eventEx)
-                                    {
-                                        XTrace.WriteException(eventEx);
-                                    }
-                                }
-                                
-                                // 触发类型化配置变更事件（带异常保护）
-                                try
-                                {
-                                    ConfigChanged?.Invoke(configType, newConfig);
-                                }
-                                catch (Exception eventEx)
-                                {
-                                    XTrace.WriteException(eventEx);
-                                }
-                                
-                                // 触发通用配置变更事件（带异常保护）
-                                try
-                                {
-                                    var eventArgs = new ConfigChangedEventArgs(configType, oldConfig ?? newConfig, newConfig);
-                                    AnyConfigChanged?.Invoke(null, eventArgs);
-                                }
-                                catch (Exception eventEx)
-                                {
-                                    XTrace.WriteException(eventEx);
-                                }
-                            }
+                            // 重新入队等待重试
+                            await _channelWriter.WriteAsync(item, _cancellationTokenSource.Token).ConfigureAwait(false);
+                            XTrace.WriteLine($"[Channel] 配置变更处理失败，重试第 {item.RetryCount} 次: {item.ConfigType.Name}");
                         }
                         else
                         {
-                            XTrace.WriteLine($"未找到配置类型 {configType.Name} 的重载委托，请确保已正确注册配置");
-                        }
-                    }
-                    finally
-                    {
-                        lock (_processingFilesLock) // 添加锁
-                        {
-                            _processingFiles.Remove(fileKey);
+                            XTrace.WriteLine($"[Channel] 配置变更处理失败，已达最大重试次数，放弃处理: {item.ConfigType.Name}");
                         }
                     }
                 }
                 catch (Exception ex)
                 {
                     XTrace.WriteException(ex);
+                    XTrace.WriteLine($"[Channel] 处理配置变更时发生异常: {item.ConfigType.Name}");
                 }
-            });
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            XTrace.WriteLine("[Channel] 配置变更处理器已取消");
         }
         catch (Exception ex)
         {
             XTrace.WriteException(ex);
+        }
+        
+        XTrace.WriteLine($"[Channel] 配置变更处理器已停止，总共处理了 {processedItems.Count} 个配置变更");
+    }
+
+    /// <summary>
+    /// 异步处理单个配置变更
+    /// </summary>
+    /// <param name="item">队列项</param>
+    /// <returns>是否处理成功</returns>
+    private static async Task<bool> ProcessSingleConfigChangeAsync(ConfigChangeQueueItem item)
+    {
+        try
+        {
+            // 检查文件是否仍然存在
+            if (!File.Exists(item.FilePath))
+            {
+                XTrace.WriteLine($"[Channel] 配置文件不存在，跳过处理: {item.FilePath}");
+                return true; // 文件不存在认为是成功的（可能被删除了）
+            }
+
+            // 短暂延迟，确保文件写入完成
+            await Task.Delay(_batchProcessDelay, _cancellationTokenSource.Token).ConfigureAwait(false);
+
+            // 获取旧配置（用于事件参数）
+            var oldConfig = _configs.TryGetValue(item.ConfigType, out var cached) ? cached : null;
+
+            // 使用委托重新加载配置
+            if (_configReloadDelegates.TryGetValue(item.ConfigType, out var reloadDelegate))
+            {
+                var newConfig = reloadDelegate();
+
+                if (newConfig != null)
+                {
+                    XTrace.WriteLine($"[Channel] 配置 {item.ConfigType.Name} 重新加载成功");
+
+                    // 比较配置差异
+                    if (oldConfig != null)
+                    {
+                        var changeDetails = CompareConfigurations(oldConfig, newConfig);
+
+                        // 触发配置变更详情事件
+                        try
+                        {
+                            ConfigChangeDetails?.Invoke(null, changeDetails);
+                        }
+                        catch (Exception eventEx)
+                        {
+                            XTrace.WriteException(eventEx);
+                        }
+                    }
+
+                    // 触发类型化配置变更事件
+                    try
+                    {
+                        ConfigChanged?.Invoke(item.ConfigType, newConfig);
+                    }
+                    catch (Exception eventEx)
+                    {
+                        XTrace.WriteException(eventEx);
+                    }
+
+                    // 触发通用配置变更事件
+                    try
+                    {
+                        var eventArgs = new ConfigChangedEventArgs(item.ConfigType, oldConfig ?? newConfig, newConfig);
+                        AnyConfigChanged?.Invoke(null, eventArgs);
+                    }
+                    catch (Exception eventEx)
+                    {
+                        XTrace.WriteException(eventEx);
+                    }
+
+                    return true;
+                }
+                else
+                {
+                    XTrace.WriteLine($"[Channel] 配置 {item.ConfigType.Name} 重新加载返回null");
+                    return false;
+                }
+            }
+            else
+            {
+                XTrace.WriteLine($"[Channel] 未找到配置类型 {item.ConfigType.Name} 的重载委托");
+                return false;
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // 取消操作不视为错误
+            return false;
+        }
+        catch (Exception ex)
+        {
+            XTrace.WriteException(ex);
+            return false;
         }
     }
     
