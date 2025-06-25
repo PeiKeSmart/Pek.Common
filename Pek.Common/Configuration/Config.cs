@@ -186,4 +186,20 @@ public abstract class Config<TConfig> : Config where TConfig : Config<TConfig>, 
 
         ConfigManager.RegisterConfig<TConfig>(jsonOptions, fileName);
     }
+
+    /// <summary>
+    /// 简化配置注册方法（适用于包含TConfig类型的JsonSerializerContext）
+    /// </summary>
+    /// <typeparam name="TJsonContext">包含TConfig类型的JSON序列化上下文类型</typeparam>
+    /// <param name="fileName">配置文件名（可选）</param>
+    /// <param name="writeIndented">是否格式化JSON（可选）</param>
+    /// <param name="useCamelCase">是否使用驼峰命名（可选）</param>
+    public static void RegisterForAot<TJsonContext>(
+        string? fileName = null,
+        bool writeIndented = true,
+        bool useCamelCase = true) where TJsonContext : JsonSerializerContext, new()
+    {
+        var jsonContext = new TJsonContext();
+        RegisterConfigForAot(jsonContext, fileName, writeIndented, useCamelCase);
+    }
 }

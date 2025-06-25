@@ -89,7 +89,6 @@ public static class ConfigManager
     private static readonly ConcurrentDictionary<string, DateTime> _lastSaveTimes = new();
     private static readonly TimeSpan _debounceInterval = TimeSpan.FromMilliseconds(500);
     private static readonly TimeSpan _saveIgnoreInterval = TimeSpan.FromMilliseconds(1000);
-    private static bool _defaultLoggingEnabled = false;
     private static readonly HashSet<string> _processingFiles = new();
     private static readonly object _processingFilesLock = new(); // 添加线程安全保护
     
@@ -184,22 +183,16 @@ public static class ConfigManager
     }
 
     /// <summary>
-    /// 默认配置变更日志记录器
+    /// 默认配置变更日志记录器（始终启用）
     /// </summary>
     /// <param name="logLevel">日志级别（默认为Info）</param>
     /// <param name="includeValues">是否包含具体的变更值（默认为true）</param>
     /// <param name="onlyLogChanges">是否只记录有变更的配置（默认为true）</param>
-    public static void EnableDefaultChangeLogging(
+    private static void EnableDefaultChangeLogging(
         string logLevel = "Info", 
         bool includeValues = true, 
         bool onlyLogChanges = true)
     {
-        // 避免重复订阅
-        if (_defaultLoggingEnabled)
-        {
-            return;
-        }
-
         SubscribeAllConfigChangeDetails(details =>
         {
             if (onlyLogChanges && !details.HasChanges)
@@ -227,30 +220,8 @@ public static class ConfigManager
             }
         });
 
-        _defaultLoggingEnabled = true;
         XTrace.WriteLine("[INFO] 配置系统默认变更日志记录已启用");
     }
-
-    /// <summary>
-    /// 禁用默认配置变更日志记录
-    /// </summary>
-    public static void DisableDefaultChangeLogging()
-    {
-        if (!_defaultLoggingEnabled)
-        {
-            return;
-        }
-
-        // 注意：这里只是标记为禁用，实际的事件处理器仍然存在
-        // 如果需要完全移除，需要更复杂的事件管理机制
-        _defaultLoggingEnabled = false;
-        XTrace.WriteLine("[INFO] 配置系统默认变更日志记录已禁用");
-    }
-
-    /// <summary>
-    /// 检查默认日志记录是否已启用
-    /// </summary>
-    public static bool IsDefaultChangeLoggingEnabled => _defaultLoggingEnabled;
 
     /// <summary>
     /// 启用或禁用配置文件自动重新加载

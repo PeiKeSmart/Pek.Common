@@ -44,10 +44,8 @@ namespace ConfigAutoReloadTestConsole
             Console.WriteLine("1. 按 '1' - 代码修改应用配置");
             Console.WriteLine("2. 按 '2' - 代码修改数据库配置");
             Console.WriteLine("3. 按 '3' - 手动修改配置文件提示");
-            Console.WriteLine("4. 按 'd' - 禁用/启用默认日志记录");
-            Console.WriteLine("5. 按 's' - 查看日志记录状态");
-            Console.WriteLine("6. 按任意其他键 - 显示当前所有配置");
-            Console.WriteLine("7. 按 'q' - 退出程序");
+            Console.WriteLine("4. 按任意其他键 - 显示当前所有配置");
+            Console.WriteLine("5. 按 'q' - 退出程序");
             Console.WriteLine();
             Console.WriteLine("🔥 系统已自动启用配置变更日志，无需手动配置！");
             Console.WriteLine();
@@ -72,14 +70,6 @@ namespace ConfigAutoReloadTestConsole
                 {
                     ShowManualEditInstructions();
                 }
-                else if (key.KeyChar == 'd' || key.KeyChar == 'D')
-                {
-                    ToggleDefaultLogging();
-                }
-                else if (key.KeyChar == 's' || key.KeyChar == 'S')
-                {
-                    ShowLoggingStatus();
-                }
                 else
                 {
                     ShowCurrentConfigs();
@@ -87,32 +77,6 @@ namespace ConfigAutoReloadTestConsole
             }
 
             Console.WriteLine("程序已退出。");
-        }
-
-        /// <summary>
-        /// 切换默认日志记录开关
-        /// </summary>
-        private static void ToggleDefaultLogging()
-        {
-            if (ConfigManager.IsDefaultChangeLoggingEnabled)
-            {
-                ConfigManager.DisableDefaultChangeLogging();
-                Console.WriteLine("❌ 默认配置变更日志记录已禁用");
-            }
-            else
-            {
-                ConfigManager.EnableDefaultChangeLogging();
-                Console.WriteLine("✅ 默认配置变更日志记录已启用");
-            }
-        }
-
-        /// <summary>
-        /// 显示日志记录状态
-        /// </summary>
-        private static void ShowLoggingStatus()
-        {
-            var status = ConfigManager.IsDefaultChangeLoggingEnabled ? "已启用" : "已禁用";
-            Console.WriteLine($"📊 默认配置变更日志记录状态: {status}");
         }
 
         /// <summary>
