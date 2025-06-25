@@ -1,5 +1,5 @@
 using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 using Pek.Configuration;
 using System.IO;
 
@@ -8,26 +8,16 @@ namespace Pek.Common.Tests.Configuration
     /// <summary>
     /// 配置自动初始化测试类
     /// </summary>
-    [TestClass]
-    public class ConfigAutoInitTests
+    public class ConfigAutoInitTests : IDisposable
     {
-        /// <summary>
-        /// 测试初始化
-        /// </summary>
-        [TestInitialize]
-        public void TestInitialize()
+        // 构造函数用于测试初始化
+        public ConfigAutoInitTests()
         {
-            // 清理测试环境
             CleanupTestConfigs();
         }
-        
-        /// <summary>
-        /// 测试清理
-        /// </summary>
-        [TestCleanup]
-        public void TestCleanup()
+        // 实现IDisposable用于测试清理
+        public void Dispose()
         {
-            // 清理测试环境
             CleanupTestConfigs();
         }
         
@@ -56,22 +46,22 @@ namespace Pek.Common.Tests.Configuration
                 Console.WriteLine($"清理测试环境失败: {ex.Message}");
             }
         }
-        [TestMethod]
+        [Fact]
         public void Config_AutoInitialization_Works()
         {
             // 访问配置实例，应该触发自动初始化
             var settings = Settings.Current;
             
             // 验证配置实例不为空
-            Assert.IsNotNull(settings);
+            Assert.NotNull(settings);
             
             // 验证默认值已正确设置
-            Assert.AreEqual("1.0.0", settings.Version);
-            Assert.AreEqual(false, settings.Debug);
-            Assert.AreEqual(30, settings.TimeoutSeconds);
+            Assert.Equal("1.0.0", settings.Version);
+            Assert.Equal(false, settings.Debug);
+            Assert.Equal(30, settings.TimeoutSeconds);
         }
         
-        [TestMethod]
+        [Fact]
         public void ConfigInitializer_ExplicitInitialization_Works()
         {
             // 显式初始化特定配置类
@@ -79,10 +69,10 @@ namespace Pek.Common.Tests.Configuration
             
             // 验证配置实例不为空
             var settings = Settings.Current;
-            Assert.IsNotNull(settings);
+            Assert.NotNull(settings);
         }
         
-        [TestMethod]
+        [Fact]
         public void ConfigInitializer_InitializeMultipleConfigs_Works()
         {
             // 初始化多个特定配置类
@@ -92,31 +82,31 @@ namespace Pek.Common.Tests.Configuration
             // 验证配置实例不为空
             var settings = Settings.Current;
             var testConfig = TestConfig.Current;
-            Assert.IsNotNull(settings);
-            Assert.IsNotNull(testConfig);
+            Assert.NotNull(settings);
+            Assert.NotNull(testConfig);
         }
         
-        [TestMethod]
+        [Fact]
         public void TestConfig_AutoInitialization_Works()
         {
             // 访问TestConfig实例，应该触发自动初始化
             var config = TestConfig.Current;
             
             // 验证配置实例不为空
-            Assert.IsNotNull(config);
+            Assert.NotNull(config);
             
             // 验证默认值已正确设置
-            Assert.AreEqual("TestConfig", config.Name);
-            Assert.AreEqual(42, config.Value);
-            Assert.AreEqual(true, config.Enabled);
+            Assert.Equal("TestConfig", config.Name);
+            Assert.Equal(42, config.Value);
+            Assert.Equal(true, config.Enabled);
             
             // 验证嵌套配置
-            Assert.IsNotNull(config.Nested);
-            Assert.AreEqual("SubConfig", config.Nested.SubName);
-            Assert.AreEqual(100, config.Nested.SubValue);
+            Assert.NotNull(config.Nested);
+            Assert.Equal("SubConfig", config.Nested.SubName);
+            Assert.Equal(100, config.Nested.SubValue);
         }
         
-        [TestMethod]
+        [Fact]
         public void Config_SaveAndReload_Works()
         {
             // 获取配置实例
@@ -135,9 +125,9 @@ namespace Pek.Common.Tests.Configuration
             var reloadedConfig = TestConfig.Current;
             
             // 验证修改后的值已正确保存和加载
-            Assert.AreEqual("ModifiedName", reloadedConfig.Name);
-            Assert.AreEqual(99, reloadedConfig.Value);
-            Assert.AreEqual("ModifiedSubName", reloadedConfig.Nested.SubName);
+            Assert.Equal("ModifiedName", reloadedConfig.Name);
+            Assert.Equal(99, reloadedConfig.Value);
+            Assert.Equal("ModifiedSubName", reloadedConfig.Nested.SubName);
             
             // 清理：恢复默认值
             reloadedConfig.Name = "TestConfig";
@@ -146,7 +136,7 @@ namespace Pek.Common.Tests.Configuration
             reloadedConfig.Save();
         }
         
-        [TestMethod]
+        [Fact]
         public void Config_FileCreation_Works()
         {
             // 获取应用程序根目录下的Config文件夹
@@ -159,16 +149,16 @@ namespace Pek.Common.Tests.Configuration
             config.Save(); // 确保文件被创建
             
             // 验证配置文件已创建
-            Assert.IsTrue(File.Exists(configFilePath));
+            Assert.True(File.Exists(configFilePath));
             
             // 验证文件内容
             var fileContent = File.ReadAllText(configFilePath);
-            Assert.IsTrue(fileContent.Contains("TestConfig"));
-            Assert.IsTrue(fileContent.Contains("42"));
-            Assert.IsTrue(fileContent.Contains("SubConfig"));
+            Assert.True(fileContent.Contains("TestConfig"));
+            Assert.True(fileContent.Contains("42"));
+            Assert.True(fileContent.Contains("SubConfig"));
         }
         
-        [TestMethod]
+        [Fact]
         public void Config_AutoInitialization_Mechanism_Works()
         {
             // 创建一个新的配置类型的实例，但不通过Current属性访问
@@ -187,8 +177,8 @@ namespace Pek.Common.Tests.Configuration
             var currentInstance = TestConfig.Current;
             
             // 验证值已正确加载
-            Assert.AreEqual("DirectInstance", currentInstance.Name);
-            Assert.AreEqual(123, currentInstance.Value);
+            Assert.Equal("DirectInstance", currentInstance.Name);
+            Assert.Equal(123, currentInstance.Value);
             
             // 修改回默认值
             currentInstance.Name = "TestConfig";
@@ -196,7 +186,7 @@ namespace Pek.Common.Tests.Configuration
             currentInstance.Save();
         }
         
-        [TestMethod]
+        [Fact]
         public void Config_StaticConstructor_CalledOnlyOnce()
         {
             // 重置初始化计数器
@@ -208,7 +198,7 @@ namespace Pek.Common.Tests.Configuration
             var config3 = TestConfigWithCounter.Current;
             
             // 验证静态构造函数只被调用一次
-            Assert.AreEqual(1, TestConfigWithCounter.InitCount);
+            Assert.Equal(1, TestConfigWithCounter.InitCount);
         }
     }
 }
