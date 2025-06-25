@@ -14,7 +14,7 @@ namespace ConfigFileGenerationTestConsole
             // 显示当前工作目录
             var appDirectory = AppDomain.CurrentDomain.BaseDirectory;
             var configDir = Path.Combine(appDirectory, "Config");
-            var configFilePath = Path.Combine(configDir, "Settings.config");
+            var configFilePath = Path.Combine(configDir, "TestSettings.config");
 
             Console.WriteLine($"应用程序目录: {appDirectory}");
             Console.WriteLine($"配置文件目录: {configDir}");
@@ -61,8 +61,16 @@ namespace ConfigFileGenerationTestConsole
             Console.WriteLine($"超时时间: {config.TimeoutSeconds}秒");
 
             // 保存配置
-            config.Save();
-            Console.WriteLine("配置已保存!");
+            try
+            {
+                config.Save();
+                Console.WriteLine("配置已保存!");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"保存配置失败: {ex.Message}");
+                Console.WriteLine($"异常详情: {ex}");
+            }
             Console.WriteLine();
 
             // 验证保存后的文件内容
