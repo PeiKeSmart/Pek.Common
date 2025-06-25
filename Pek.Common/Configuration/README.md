@@ -65,55 +65,69 @@ config.Save();
 AppConfig.Reload();
 ```
 
-### 3. 通用配置变更事件（推荐方式）
+### 3. 配置变更事件处理
 
-配置系统提供了统一的事件管理机制，您无需为每个配置类单独设置事件订阅：
+配置系统提供了基于原生 C# 事件的配置变更通知机制：
 
 #### 3.1 订阅特定类型的配置变更
 
 ```csharp
 // 订阅应用配置变更
-ConfigManager.SubscribeConfigChanged<AppConfig>(newConfig =>
+ConfigManager.AnyConfigChanged += (sender, e) =>
 {
-    Console.WriteLine($"应用配置已更新: {newConfig.ApiUrl}");
-    // 重新初始化HTTP客户端
-    // 更新日志配置
-});
+    if (e.ConfigType == typeof(AppConfig) && e.NewConfig is AppConfig newConfig)
+    {
+        Console.WriteLine($"应用配置已更新: {newConfig.ApiUrl}");
+        // 重新初始化HTTP客户端
+        HttpClientManager.UpdateBaseUrl(newConfig.ApiUrl);
+        // 更新日志配置
+        LogManager.UpdateLogLevel(newConfig.EnableLogging);
+    }
+};
 
 // 订阅数据库配置变更  
-ConfigManager.SubscribeConfigChanged<DatabaseConfig>(newConfig =>
+ConfigManager.AnyConfigChanged += (sender, e) =>
 {
-    Console.WriteLine($"数据库配置已更新: {newConfig.ConnectionString}");
-    // 重新初始化数据库连接池
-});
+    if (e.ConfigType == typeof(DatabaseConfig) && e.NewConfig is DatabaseConfig newConfig)
+    {
+        Console.WriteLine($"数据库配置已更新: {newConfig.ConnectionString}");
+        // 重新初始化数据库连接池
+        DatabaseManager.ReconfigureConnectionPool(newConfig);
+    }
+};
 ```
 
 #### 3.2 订阅配置变更并比较新旧值
 
 ```csharp
-ConfigManager.SubscribeConfigChanged<AppConfig>((oldConfig, newConfig) =>
+ConfigManager.AnyConfigChanged += (sender, e) =>
 {
-    // 比较具体的属性变更
-    if (oldConfig.ApiUrl != newConfig.ApiUrl)
+    if (e.ConfigType == typeof(AppConfig) && 
+        e.OldConfig is AppConfig oldConfig && 
+        e.NewConfig is AppConfig newConfig)
     {
-        Console.WriteLine($"API地址变更: {oldConfig.ApiUrl} → {newConfig.ApiUrl}");
-        // 重新初始化HTTP客户端
-        HttpClientManager.Reinitialize(newConfig.ApiUrl);
+        // 比较具体的属性变更
+        if (oldConfig.ApiUrl != newConfig.ApiUrl)
+        {
+            Console.WriteLine($"API地址变更: {oldConfig.ApiUrl} → {newConfig.ApiUrl}");
+            // 重新初始化HTTP客户端
+            HttpClientManager.Reinitialize(newConfig.ApiUrl);
+        }
+        
+        if (oldConfig.MaxRetries != newConfig.MaxRetries)
+        {
+            Console.WriteLine($"重试次数变更: {oldConfig.MaxRetries} → {newConfig.MaxRetries}");
+            // 更新重试策略
+            RetryPolicy.UpdateMaxRetries(newConfig.MaxRetries);
+        }
     }
-    
-    if (oldConfig.MaxRetries != newConfig.MaxRetries)
-    {
-        Console.WriteLine($"重试次数变更: {oldConfig.MaxRetries} → {newConfig.MaxRetries}");
-        // 更新重试策略
-        RetryPolicy.UpdateMaxRetries(newConfig.MaxRetries);
-    }
-});
+};
 ```
 
 #### 3.3 订阅所有配置类型的变更
 
 ```csharp
-ConfigManager.SubscribeAllConfigChanged(e =>
+ConfigManager.AnyConfigChanged += (sender, e) =>
 {
     Console.WriteLine($"配置 {e.ConfigName} 在 {DateTime.Now:HH:mm:ss} 发生变更");
     
@@ -125,51 +139,80 @@ ConfigManager.SubscribeAllConfigChanged(e =>
     
     // 更新监控指标
     Metrics.IncrementConfigChangeCounter(e.ConfigName);
-});
+};
 ```
 
-#### 3.4 统一配置事件管理
+#### 3.4 订阅详细的配置变更信息
+
+```csharp
+// 订阅详细的配置变更信息
+ConfigManager.ConfigChangeDetails += (sender, details) =>
+{
+    Console.WriteLine($"配置 {details.ConfigName} 变更详情:");
+    foreach (var change in details.PropertyChanges)
+    {
+        Console.WriteLine($"  {change.PropertyName}: {change.OldValue} → {change.NewValue}");
+    }
+};
+```
+
+#### 3.5 统一配置事件管理
 
 ```csharp
 // 推荐的做法：在应用程序启动时统一设置
 public static void SetupConfigurationEventHandlers()
 {
     // 应用配置变更处理
-    ConfigManager.SubscribeConfigChanged<AppConfig>(config =>
+    ConfigManager.AnyConfigChanged += (sender, e) =>
     {
-        // 更新HTTP客户端配置
-        HttpClientFactory.UpdateConfiguration(config);
-        // 更新日志级别
-        LogManager.UpdateLogLevel(config.EnableLogging);
-        // 清除相关缓存
-        CacheManager.ClearCache("api-cache");
-    });
+        if (e.ConfigType == typeof(AppConfig) && e.NewConfig is AppConfig config)
+        {
+            // 更新HTTP客户端配置
+            HttpClientFactory.UpdateConfiguration(config);
+            // 更新日志级别
+            LogManager.UpdateLogLevel(config.EnableLogging);
+            // 清除相关缓存
+            CacheManager.ClearCache("api-cache");
+        }
+    };
 
     // 数据库配置变更处理
-    ConfigManager.SubscribeConfigChanged<DatabaseConfig>(config =>
+    ConfigManager.AnyConfigChanged += (sender, e) =>
     {
-        // 重新初始化数据库连接池
-        DatabaseManager.ReconfigureConnectionPool(config);
-        // 更新ORM配置
-        EntityFrameworkConfig.UpdateConfiguration(config);
-    });
-
-    // 缓存配置变更处理
-    ConfigManager.SubscribeConfigChanged<CacheConfig>(config =>
-    {
-        // 重新配置缓存
-        CacheManager.Reconfigure(config);
-    });
+        if (e.ConfigType == typeof(DatabaseConfig) && e.NewConfig is DatabaseConfig config)
+        {
+            // 重新初始化数据库连接池
+            DatabaseManager.ReconfigureConnectionPool(config);
+            // 更新ORM配置
+            EntityFrameworkConfig.UpdateConfiguration(config);
+        }
+    };
 
     // 全局配置变更监控
-    ConfigManager.SubscribeAllConfigChanged(e =>
+    ConfigManager.AnyConfigChanged += (sender, e) =>
     {
         // 记录变更审计日志
         AuditLogger.LogConfigurationChange(e.ConfigName, e.OldConfig, e.NewConfig);
         // 发送变更通知给管理员
         AdminNotifier.NotifyConfigurationChange(e);
-    });
+    };
 }
+```
+
+#### 3.6 取消事件订阅
+
+```csharp
+// 保存事件处理器引用以便取消订阅
+EventHandler<ConfigChangedEventArgs> handler = (sender, e) =>
+{
+    Console.WriteLine($"配置 {e.ConfigName} 已变更");
+};
+
+// 订阅事件
+ConfigManager.AnyConfigChanged += handler;
+
+// 取消订阅
+ConfigManager.AnyConfigChanged -= handler;
 ```
 
 ### 4. 智能自动重新加载功能
@@ -279,7 +322,7 @@ EventHandler<ConfigChangedEventArgs> handler = (sender, e) =>
 ConfigManager.AnyConfigChanged += handler;
 
 // 取消订阅
-ConfigManager.UnsubscribeConfigChanged(handler);
+ConfigManager.AnyConfigChanged -= handler;
 ```
 
 ## 完整示例
@@ -312,27 +355,30 @@ public class Program
     private static void SetupConfigurationEventHandlers()
     {
         // 订阅应用配置变更
-        ConfigManager.SubscribeConfigChanged<AppConfig>((oldConfig, newConfig) =>
+        ConfigManager.AnyConfigChanged += (sender, e) =>
         {
-            if (oldConfig.ApiUrl != newConfig.ApiUrl)
+            if (e.ConfigType == typeof(AppConfig) && e.NewConfig is AppConfig config)
             {
                 // 重新配置HTTP客户端
-                HttpClientManager.UpdateBaseUrl(newConfig.ApiUrl);
+                HttpClientManager.UpdateBaseUrl(config.ApiUrl);
             }
-        });
+        };
         
         // 订阅数据库配置变更
-        ConfigManager.SubscribeConfigChanged<DatabaseConfig>(newConfig =>
+        ConfigManager.AnyConfigChanged += (sender, e) =>
         {
-            // 重新配置数据库连接
-            DatabaseManager.UpdateConnectionString(newConfig.ConnectionString);
-        });
+            if (e.ConfigType == typeof(DatabaseConfig) && e.NewConfig is DatabaseConfig config)
+            {
+                // 重新配置数据库连接
+                DatabaseManager.UpdateConnectionString(config.ConnectionString);
+            }
+        };
         
         // 监控所有配置变更
-        ConfigManager.SubscribeAllConfigChanged(e =>
+        ConfigManager.AnyConfigChanged += (sender, e) =>
         {
             Logger.LogInformation($"Configuration {e.ConfigName} updated at {DateTime.Now}");
-        });
+        };
     }
 }
 
