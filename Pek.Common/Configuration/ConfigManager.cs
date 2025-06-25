@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Threading.Channels;
 
 using NewLife.Log;
+
 using Pek.IO;
 
 namespace Pek.Configuration;
@@ -102,7 +103,6 @@ public static class ConfigManager
     private static readonly TimeSpan _saveIgnoreInterval = TimeSpan.FromMilliseconds(1000);
     
     // Channel 配置变更处理
-    private static readonly Channel<ConfigChangeQueueItem> _changeChannel;
     private static readonly ChannelWriter<ConfigChangeQueueItem> _channelWriter;
     private static readonly ChannelReader<ConfigChangeQueueItem> _channelReader;
     private static readonly CancellationTokenSource _cancellationTokenSource = new();
@@ -116,7 +116,6 @@ public static class ConfigManager
     {
         // 初始化 Channel
         var channel = Channel.CreateUnbounded<ConfigChangeQueueItem>();
-        _changeChannel = channel;
         _channelWriter = channel.Writer;
         _channelReader = channel.Reader;
         
