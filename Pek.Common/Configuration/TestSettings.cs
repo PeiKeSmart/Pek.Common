@@ -32,7 +32,8 @@ public class TestSettings : Config<TestSettings>
     /// </summary>
     static TestSettings()
     {
-        RegisterConfigForAot(TestSettingsJsonContext.Default, "TestSettings");
+        //RegisterConfigForAot(TestSettingsJsonContext.Default, "TestSettings");
+        RegisterForAot<TestSettingsJsonContext>();
     }
 }
 
