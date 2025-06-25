@@ -1,11 +1,16 @@
 using System.Collections.Concurrent;
-using System.Reflection;
 using System.Text.Json;
 
 using NewLife.Log;
 using Pek.IO;
 
 namespace Pek.Configuration;
+
+/// <summary>
+/// 配置重新加载委托
+/// </summary>
+/// <returns>重新加载的配置对象</returns>
+public delegate object ConfigReloadDelegate();
 
 /// <summary>
 /// 配置变更事件参数
@@ -73,6 +78,10 @@ public static class ConfigManager
     private static readonly ConcurrentDictionary<Type, JsonSerializerOptions> _serializerOptions = new();
     private static readonly ConcurrentDictionary<Type, string> _configFileNames = new();
     private static readonly ConcurrentDictionary<string, Type> _filePathToConfigType = new();
+    
+    // 配置重载委托缓存（消除反射依赖）
+    private static readonly ConcurrentDictionary<Type, ConfigReloadDelegate> _configReloadDelegates = new();
+    
     private static FileWatcher? _fileWatcher;
     private static readonly object _watcherLock = new();
     private static bool _autoReloadEnabled = true;
@@ -272,6 +281,9 @@ public static class ConfigManager
         var configType = typeof(TConfig);
         _serializerOptions[configType] = serializerOptions;
         _configFileNames[configType] = fileName ?? configType.Name;
+        
+        // 注册配置重载委托（消除反射依赖）
+        _configReloadDelegates[configType] = () => ReloadConfigInternal<TConfig>();
         
         // 建立文件路径到配置类型的映射
         var filePath = GetConfigFilePath(configType);
@@ -670,53 +682,56 @@ public static class ConfigManager
                         // 获取旧配置（用于事件参数）
                         var oldConfig = _configs.TryGetValue(configType, out var cached) ? cached : null;
                         
-                        // 重新加载配置
-                        var reloadMethod = typeof(ConfigManager)
-                            .GetMethod(nameof(ReloadConfigInternal), BindingFlags.NonPublic | BindingFlags.Static)
-                            ?.MakeGenericMethod(configType);
-                        
-                        var newConfig = reloadMethod?.Invoke(null, null);
-                        
-                        if (newConfig != null)
+                        // 使用委托重新加载配置（完全消除反射）
+                        if (_configReloadDelegates.TryGetValue(configType, out var reloadDelegate))
                         {
-                            XTrace.WriteLine($"配置 {configType.Name} 已自动重新加载");
+                            var newConfig = reloadDelegate();
                             
-                            // 比较配置差异
-                            if (oldConfig != null)
+                            if (newConfig != null)
                             {
-                                var changeDetails = CompareConfigurations(oldConfig, newConfig);
+                                XTrace.WriteLine($"配置 {configType.Name} 已自动重新加载");
                                 
-                                // 在事件触发时添加异常保护
+                                // 比较配置差异
+                                if (oldConfig != null)
+                                {
+                                    var changeDetails = CompareConfigurations(oldConfig, newConfig);
+                                    
+                                    // 在事件触发时添加异常保护
+                                    try
+                                    {
+                                        ConfigChangeDetails?.Invoke(null, changeDetails);
+                                    }
+                                    catch (Exception eventEx)
+                                    {
+                                        XTrace.WriteException(eventEx);
+                                    }
+                                }
+                                
+                                // 触发类型化配置变更事件（带异常保护）
                                 try
                                 {
-                                    ConfigChangeDetails?.Invoke(null, changeDetails);
+                                    ConfigChanged?.Invoke(configType, newConfig);
+                                }
+                                catch (Exception eventEx)
+                                {
+                                    XTrace.WriteException(eventEx);
+                                }
+                                
+                                // 触发通用配置变更事件（带异常保护）
+                                try
+                                {
+                                    var eventArgs = new ConfigChangedEventArgs(configType, oldConfig ?? newConfig, newConfig);
+                                    AnyConfigChanged?.Invoke(null, eventArgs);
                                 }
                                 catch (Exception eventEx)
                                 {
                                     XTrace.WriteException(eventEx);
                                 }
                             }
-                            
-                            // 触发类型化配置变更事件（带异常保护）
-                            try
-                            {
-                                ConfigChanged?.Invoke(configType, newConfig);
-                            }
-                            catch (Exception eventEx)
-                            {
-                                XTrace.WriteException(eventEx);
-                            }
-                            
-                            // 触发通用配置变更事件（带异常保护）
-                            try
-                            {
-                                var eventArgs = new ConfigChangedEventArgs(configType, oldConfig ?? newConfig, newConfig);
-                                AnyConfigChanged?.Invoke(null, eventArgs);
-                            }
-                            catch (Exception eventEx)
-                            {
-                                XTrace.WriteException(eventEx);
-                            }
+                        }
+                        else
+                        {
+                            XTrace.WriteLine($"未找到配置类型 {configType.Name} 的重载委托，请确保已正确注册配置");
                         }
                     }
                     finally
