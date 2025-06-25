@@ -14,33 +14,13 @@ namespace Pek.Configuration;
 public delegate object ConfigReloadDelegate();
 
 /// <summary>
-/// 配置变更事件参数
-/// </summary>
-public class ConfigChangedEventArgs : EventArgs
-{
-    public Type ConfigType { get; }
-    public object OldConfig { get; }
-    public object NewConfig { get; }
-    public string ConfigName { get; }
-    
-    public ConfigChangedEventArgs(Type configType, object oldConfig, object newConfig)
-    {
-        ConfigType = configType;
-        OldConfig = oldConfig;
-        NewConfig = newConfig;
-        ConfigName = configType.Name;
-    }
-}
-
-/// <summary>
-/// 配置属性变更详情
+/// 配置属性变更信息
 /// </summary>
 public class ConfigPropertyChange
 {
     public string PropertyName { get; set; } = string.Empty;
     public object? OldValue { get; set; }
     public object? NewValue { get; set; }
-    public Type PropertyType { get; set; } = typeof(object);
     
     public override string ToString()
     {
@@ -49,25 +29,45 @@ public class ConfigPropertyChange
 }
 
 /// <summary>
-/// 配置变更详情
+/// 配置变更事件参数（增强版本）
 /// </summary>
-public class ConfigChangeDetails
+public class ConfigChangedEventArgs : EventArgs
 {
-    public string ConfigName { get; set; } = string.Empty;
-    public Type ConfigType { get; set; } = typeof(object);
-    public DateTime ChangeTime { get; set; } = DateTime.Now;
-    public List<ConfigPropertyChange> PropertyChanges { get; set; } = new();
+    public Type ConfigType { get; }
+    public object OldConfig { get; }
+    public object NewConfig { get; }
+    public string ConfigName { get; }
+    public List<ConfigPropertyChange> PropertyChanges { get; }
     
-    public bool HasChanges => PropertyChanges.Count > 0;
-    
-    public override string ToString()
+    public ConfigChangedEventArgs(Type configType, object oldConfig, object newConfig, List<ConfigPropertyChange> propertyChanges)
     {
-        if (!HasChanges)
-            return $"配置 {ConfigName} 无变更";
-            
-        var changes = string.Join(", ", PropertyChanges.Select(c => c.ToString()));
-        return $"配置 {ConfigName} 变更: {changes}";
+        ConfigType = configType;
+        OldConfig = oldConfig;
+        NewConfig = newConfig;
+        ConfigName = configType.Name;
+        PropertyChanges = propertyChanges;
     }
+    
+    /// <summary>
+    /// 检查指定属性是否发生变更
+    /// </summary>
+    public bool HasPropertyChanged(string propertyName)
+    {
+        return PropertyChanges.Any(c => c.PropertyName.Equals(propertyName, StringComparison.OrdinalIgnoreCase));
+    }
+    
+    /// <summary>
+    /// 获取指定属性的变更信息
+    /// </summary>
+    public ConfigPropertyChange? GetPropertyChange(string propertyName)
+    {
+        return PropertyChanges.FirstOrDefault(c => c.PropertyName.Equals(propertyName, StringComparison.OrdinalIgnoreCase));
+    }
+    
+    /// <summary>
+    /// 是否有任何属性变更
+    /// </summary>
+    public bool HasChanges => PropertyChanges.Count > 0;
 }
 
 /// <summary>
@@ -82,7 +82,7 @@ internal class ConfigChangeQueueItem
 }
 
 /// <summary>
-/// 配置管理器（优化版本）
+/// 配置管理器（简化版本）
 /// </summary>
 public static class ConfigManager
 {
@@ -97,7 +97,7 @@ public static class ConfigManager
     private static FileWatcher? _fileWatcher;
     private static readonly object _watcherLock = new();
     
-    // 防抖和过滤机制
+    // 防抖机制（简化）
     private static readonly ConcurrentDictionary<string, DateTime> _lastSaveTimes = new();
     private static readonly TimeSpan _saveIgnoreInterval = TimeSpan.FromMilliseconds(1000);
     
@@ -108,20 +108,17 @@ public static class ConfigManager
     private static readonly CancellationTokenSource _cancellationTokenSource = new();
     private static readonly Task _queueProcessorTask;
     
-    // 处理配置
-    private static readonly TimeSpan _duplicateFilterWindow = TimeSpan.FromMilliseconds(100);
+    // 简化的处理配置
     private static readonly int _maxRetryCount = 3;
-    private static readonly TimeSpan _batchProcessDelay = TimeSpan.FromMilliseconds(50);
+    private static readonly TimeSpan _processDelay = TimeSpan.FromMilliseconds(200); // 合并延迟时间
     
-    // 事件定义
-    public static event Action<Type, object>? ConfigChanged;
-    public static event EventHandler<ConfigChangedEventArgs>? AnyConfigChanged;
-    public static event EventHandler<ConfigChangeDetails>? ConfigChangeDetails;
+    // 唯一事件 - 简化设计
+    public static event EventHandler<ConfigChangedEventArgs>? ConfigChanged;
 
     // 静态构造函数 - 简化初始化
     static ConfigManager()
     {
-        // 初始化 Channel（无界队列，确保不会阻塞）
+        // 初始化 Channel
         var channel = Channel.CreateUnbounded<ConfigChangeQueueItem>();
         _changeChannel = channel;
         _channelWriter = channel.Writer;
@@ -130,54 +127,15 @@ public static class ConfigManager
         // 启动队列处理器
         _queueProcessorTask = Task.Run(ProcessChangeQueueAsync);
         
-        // 启用默认日志记录
-        EnableDefaultChangeLogging();
-        
-        XTrace.WriteLine("[INFO] 配置变更Channel处理器已启动");
-    }
-
-    /// <summary>
-    /// 默认配置变更日志记录器（始终启用）
-    /// </summary>
-    /// <param name="logLevel">日志级别（默认为Info）</param>
-    /// <param name="includeValues">是否包含具体的变更值（默认为true）</param>
-    /// <param name="onlyLogChanges">是否只记录有变更的配置（默认为true）</param>
-    private static void EnableDefaultChangeLogging(
-        string logLevel = "Info", 
-        bool includeValues = true, 
-        bool onlyLogChanges = true)
-    {
-        // 直接订阅ConfigChangeDetails事件
-        ConfigChangeDetails += (sender, details) =>
+        // 简化的默认日志记录
+        ConfigChanged += (sender, e) =>
         {
-            if (onlyLogChanges && !details.HasChanges)
-                return;
-
-            var message = includeValues 
-                ? details.ToString() 
-                : $"配置 {details.ConfigName} 已变更 ({details.PropertyChanges.Count} 个属性)";
-
-            switch (logLevel.ToLower())
-            {
-                case "debug":
-                    XTrace.WriteLine($"[DEBUG] {message}");
-                    break;
-                case "info":
-                    XTrace.WriteLine($"[INFO] {message}");
-                    break;
-                case "warn":
-                case "warning":
-                    XTrace.WriteLine($"[WARN] {message}");
-                    break;
-                default:
-                    XTrace.WriteLine(message);
-                    break;
-            }
+            XTrace.WriteLine($"[INFO] 配置 {e.ConfigName} 已变更并重新加载");
         };
-
-        XTrace.WriteLine("[INFO] 配置系统默认变更日志记录已启用");
+        
+        XTrace.WriteLine("[INFO] 配置系统已启动");
     }
-    
+
     /// <summary>
     /// 注册配置类型
     /// </summary>
@@ -414,87 +372,6 @@ public static class ConfigManager
     }
     
     /// <summary>
-    /// 比较两个配置对象的差异（AOT兼容统一方案）
-    /// </summary>
-    /// <param name="oldConfig">旧配置对象</param>
-    /// <param name="newConfig">新配置对象</param>
-    /// <returns>配置变更详情</returns>
-    private static ConfigChangeDetails CompareConfigurations(object oldConfig, object newConfig)
-    {
-        var configType = newConfig.GetType();
-        var details = new ConfigChangeDetails
-        {
-            ConfigName = configType.Name,
-            ConfigType = configType,
-            ChangeTime = DateTime.Now
-        };
-
-        try
-        {
-            // 统一使用JSON序列化比较方案（AOT友好，无反射）
-            if (_serializerOptions.TryGetValue(configType, out var options))
-            {
-                var oldJson = JsonSerializer.Serialize(oldConfig, configType, options);
-                var newJson = JsonSerializer.Serialize(newConfig, configType, options);
-                
-                if (oldJson != newJson)
-                {
-                    // JSON不同时，记录配置已变更
-                    details.PropertyChanges.Add(new ConfigPropertyChange
-                    {
-                        PropertyName = "Configuration",
-                        OldValue = "配置已变更",
-                        NewValue = "新配置已生效",
-                        PropertyType = configType
-                    });
-                    
-                    // 可选：如果需要更详细的信息，可以记录JSON差异的字符数
-                    var diffLength = Math.Abs(oldJson.Length - newJson.Length);
-                    if (diffLength > 0)
-                    {
-                        details.PropertyChanges.Add(new ConfigPropertyChange
-                        {
-                            PropertyName = "JsonSizeDiff",
-                            OldValue = oldJson.Length,
-                            NewValue = newJson.Length,
-                            PropertyType = typeof(int)
-                        });
-                    }
-                }
-            }
-            else
-            {
-                // 如果没有序列化选项，回退到简单比较
-                if (!ReferenceEquals(oldConfig, newConfig))
-                {
-                    details.PropertyChanges.Add(new ConfigPropertyChange
-                    {
-                        PropertyName = "Configuration",
-                        OldValue = "原始配置",
-                        NewValue = "已更新配置",
-                        PropertyType = configType
-                    });
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            XTrace.WriteException(ex);
-            
-            // 发生异常时的回退处理
-            details.PropertyChanges.Add(new ConfigPropertyChange
-            {
-                PropertyName = "Configuration",
-                OldValue = "比较过程出错",
-                NewValue = "配置已变更",
-                PropertyType = configType
-            });
-        }
-
-        return details;
-    }
-
-    /// <summary>
     /// 配置文件变更事件处理 - 简化版本
     /// </summary>
     private static void OnConfigFileChanged(object sender, FileWatcherEventArgs args)
@@ -605,7 +482,7 @@ public static class ConfigManager
     {
         if (recentlyProcessed.TryGetValue(item.FilePath, out var lastProcessTime))
         {
-            return DateTime.Now - lastProcessTime < _duplicateFilterWindow;
+            return DateTime.Now - lastProcessTime < _processDelay;
         }
         return false;
     }
@@ -642,7 +519,7 @@ public static class ConfigManager
             }
 
             // 等待文件写入完成
-            await Task.Delay(_batchProcessDelay, _cancellationTokenSource.Token).ConfigureAwait(false);
+            await Task.Delay(_processDelay, _cancellationTokenSource.Token).ConfigureAwait(false);
 
             // 重新加载配置并触发事件
             return ReloadAndTriggerEvents(item);
@@ -682,37 +559,267 @@ public static class ConfigManager
 
         XTrace.WriteLine($"[Channel] 配置重新加载成功: {item.ConfigType.Name}");
 
-        // 异步触发事件（避免阻塞处理队列）
-        _ = Task.Run(() => TriggerConfigChangedEvents(item.ConfigType, oldConfig, newConfig));
+        // 触发配置变更事件
+        ConfigChanged?.Invoke(null, new ConfigChangedEventArgs(item.ConfigType, oldConfig ?? newConfig, newConfig, GetPropertyChanges(oldConfig, newConfig)));
 
         return true;
     }
 
     /// <summary>
-    /// 触发配置变更事件
+    /// 比较两个配置对象并获取属性变更信息（AOT兼容）
     /// </summary>
-    private static void TriggerConfigChangedEvents(Type configType, object? oldConfig, object newConfig)
+    private static List<ConfigPropertyChange> GetPropertyChanges(object? oldConfig, object newConfig)
     {
+        var changes = new List<ConfigPropertyChange>();
+        
+        if (oldConfig == null)
+        {
+            changes.Add(new ConfigPropertyChange
+            {
+                PropertyName = "Configuration",
+                OldValue = "初始配置",
+                NewValue = "已加载配置"
+            });
+            return changes;
+        }
+
+        var configType = newConfig.GetType();
+        
         try
         {
-            // 触发详情事件
-            if (oldConfig != null)
+            // 使用 JSON 序列化比较（AOT 兼容）
+            if (_serializerOptions.TryGetValue(configType, out var options))
             {
-                var changeDetails = CompareConfigurations(oldConfig, newConfig);
-                ConfigChangeDetails?.Invoke(null, changeDetails);
+                var oldJson = JsonSerializer.Serialize(oldConfig, configType, options);
+                var newJson = JsonSerializer.Serialize(newConfig, configType, options);
+                
+                if (oldJson != newJson)
+                {
+                    // 使用 JsonDocument 进行属性级比较（AOT 兼容）
+                    var propertyChanges = CompareJsonProperties(oldJson, newJson);
+                    changes.AddRange(propertyChanges);
+                }
             }
-
-            // 触发类型化事件
-            ConfigChanged?.Invoke(configType, newConfig);
-
-            // 触发通用事件
-            var eventArgs = new ConfigChangedEventArgs(configType, oldConfig ?? newConfig, newConfig);
-            AnyConfigChanged?.Invoke(null, eventArgs);
+            else
+            {
+                // 回退到简单比较
+                if (!ReferenceEquals(oldConfig, newConfig))
+                {
+                    changes.Add(new ConfigPropertyChange
+                    {
+                        PropertyName = "Configuration",
+                        OldValue = "原始配置",
+                        NewValue = "已更新配置"
+                    });
+                }
+            }
         }
         catch (Exception ex)
         {
             XTrace.WriteException(ex);
+            changes.Add(new ConfigPropertyChange
+            {
+                PropertyName = "Configuration",
+                OldValue = "比较失败",
+                NewValue = "配置已变更"
+            });
         }
+
+        return changes;
+    }
+
+    /// <summary>
+    /// 比较两个 JSON 字符串的属性差异（AOT 兼容）
+    /// </summary>
+    private static List<ConfigPropertyChange> CompareJsonProperties(string oldJson, string newJson)
+    {
+        var changes = new List<ConfigPropertyChange>();
+
+        try
+        {
+            using var oldDoc = JsonDocument.Parse(oldJson);
+            using var newDoc = JsonDocument.Parse(newJson);
+
+            CompareJsonElements(oldDoc.RootElement, newDoc.RootElement, "", changes);
+        }
+        catch (Exception ex)
+        {
+            XTrace.WriteException(ex);
+            changes.Add(new ConfigPropertyChange
+            {
+                PropertyName = "JSON比较",
+                OldValue = "解析失败",
+                NewValue = "配置已变更"
+            });
+        }
+
+        return changes;
+    }
+
+    /// <summary>
+    /// 递归比较 JSON 元素（AOT 兼容）
+    /// </summary>
+    private static void CompareJsonElements(JsonElement oldElement, JsonElement newElement, string propertyPath, List<ConfigPropertyChange> changes)
+    {
+        if (oldElement.ValueKind != newElement.ValueKind)
+        {
+            changes.Add(new ConfigPropertyChange
+            {
+                PropertyName = propertyPath,
+                OldValue = GetJsonElementValue(oldElement),
+                NewValue = GetJsonElementValue(newElement)
+            });
+            return;
+        }
+
+        switch (oldElement.ValueKind)
+        {
+            case JsonValueKind.Object:
+                CompareJsonObjects(oldElement, newElement, propertyPath, changes);
+                break;
+            
+            case JsonValueKind.Array:
+                CompareJsonArrays(oldElement, newElement, propertyPath, changes);
+                break;
+            
+            case JsonValueKind.String:
+            case JsonValueKind.Number:
+            case JsonValueKind.True:
+            case JsonValueKind.False:
+            case JsonValueKind.Null:
+                var oldValue = GetJsonElementValue(oldElement);
+                var newValue = GetJsonElementValue(newElement);
+                if (!Equals(oldValue, newValue))
+                {
+                    changes.Add(new ConfigPropertyChange
+                    {
+                        PropertyName = propertyPath,
+                        OldValue = oldValue,
+                        NewValue = newValue
+                    });
+                }
+                break;
+        }
+    }
+
+    /// <summary>
+    /// 比较 JSON 对象
+    /// </summary>
+    private static void CompareJsonObjects(JsonElement oldObj, JsonElement newObj, string basePath, List<ConfigPropertyChange> changes)
+    {
+        var oldProperties = new Dictionary<string, JsonElement>();
+        var newProperties = new Dictionary<string, JsonElement>();
+
+        // 收集旧对象的属性
+        foreach (var prop in oldObj.EnumerateObject())
+        {
+            oldProperties[prop.Name] = prop.Value;
+        }
+
+        // 收集新对象的属性
+        foreach (var prop in newObj.EnumerateObject())
+        {
+            newProperties[prop.Name] = prop.Value;
+        }
+
+        // 检查所有属性
+        var allPropertyNames = oldProperties.Keys.Union(newProperties.Keys);
+        foreach (var propName in allPropertyNames)
+        {
+            var propertyPath = string.IsNullOrEmpty(basePath) ? propName : $"{basePath}.{propName}";
+
+            if (!oldProperties.TryGetValue(propName, out var oldProp))
+            {
+                // 新增属性
+                changes.Add(new ConfigPropertyChange
+                {
+                    PropertyName = propertyPath,
+                    OldValue = null,
+                    NewValue = GetJsonElementValue(newProperties[propName])
+                });
+            }
+            else if (!newProperties.TryGetValue(propName, out var newProp))
+            {
+                // 删除属性
+                changes.Add(new ConfigPropertyChange
+                {
+                    PropertyName = propertyPath,
+                    OldValue = GetJsonElementValue(oldProp),
+                    NewValue = null
+                });
+            }
+            else
+            {
+                // 比较属性值
+                CompareJsonElements(oldProp, newProp, propertyPath, changes);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 比较 JSON 数组
+    /// </summary>
+    private static void CompareJsonArrays(JsonElement oldArray, JsonElement newArray, string propertyPath, List<ConfigPropertyChange> changes)
+    {
+        var oldItems = oldArray.EnumerateArray().ToArray();
+        var newItems = newArray.EnumerateArray().ToArray();
+
+        if (oldItems.Length != newItems.Length)
+        {
+            changes.Add(new ConfigPropertyChange
+            {
+                PropertyName = $"{propertyPath}.Length",
+                OldValue = oldItems.Length,
+                NewValue = newItems.Length
+            });
+        }
+
+        var maxLength = Math.Max(oldItems.Length, newItems.Length);
+        for (int i = 0; i < maxLength; i++)
+        {
+            var itemPath = $"{propertyPath}[{i}]";
+            
+            if (i >= oldItems.Length)
+            {
+                changes.Add(new ConfigPropertyChange
+                {
+                    PropertyName = itemPath,
+                    OldValue = null,
+                    NewValue = GetJsonElementValue(newItems[i])
+                });
+            }
+            else if (i >= newItems.Length)
+            {
+                changes.Add(new ConfigPropertyChange
+                {
+                    PropertyName = itemPath,
+                    OldValue = GetJsonElementValue(oldItems[i]),
+                    NewValue = null
+                });
+            }
+            else
+            {
+                CompareJsonElements(oldItems[i], newItems[i], itemPath, changes);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 获取 JSON 元素的值
+    /// </summary>
+    private static object? GetJsonElementValue(JsonElement element)
+    {
+        return element.ValueKind switch
+        {
+            JsonValueKind.String => element.GetString(),
+            JsonValueKind.Number => element.TryGetInt32(out var intVal) ? intVal : element.GetDouble(),
+            JsonValueKind.True => true,
+            JsonValueKind.False => false,
+            JsonValueKind.Null => null,
+            JsonValueKind.Array => $"Array[{element.GetArrayLength()}]",
+            JsonValueKind.Object => "Object",
+            _ => element.ToString()
+        };
     }
 
     /// <summary>
