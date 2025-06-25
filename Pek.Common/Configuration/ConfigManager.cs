@@ -666,12 +666,4 @@ public static class ConfigManager
         _configs[configType] = config;
         return config;
     }
-
-    /// <summary>
-    /// 清理资源（用于应用程序关闭时）
-    /// </summary>
-    public static void Cleanup()
-    {
-        _cleanupHelper.Dispose();
-    }
 }
