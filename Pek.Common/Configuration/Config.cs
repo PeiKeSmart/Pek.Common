@@ -159,19 +159,6 @@ public abstract class Config<TConfig> : Config where TConfig : Config<TConfig>, 
     }
     
     /// <summary>
-    /// 启用或禁用此配置类型的自动重新加载功能
-    /// </summary>
-    /// <param name="enabled">是否启用自动重新加载</param>
-    /// <remarks>
-    /// 默认情况下，所有配置类型都启用自动重新加载。
-    /// 如果您希望某个特定的配置类型不自动重新加载，可以调用此方法禁用。
-    /// </remarks>
-    public static void SetAutoReload(bool enabled)
-    {
-        ConfigManager.SetAutoReload(enabled);
-    }
-    
-    /// <summary>
     /// 通用配置注册方法（AOT兼容）
     /// </summary>
     /// <typeparam name="TJsonContext">JSON序列化上下文类型</typeparam>
