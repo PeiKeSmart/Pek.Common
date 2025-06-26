@@ -34,7 +34,7 @@ namespace Pek.Common.Tests.Configuration
         static TestSettings()
         {
             // 方案1：简化的AOT注册（推荐）
-            RegisterForAot<TestSettingsJsonContext>("TestSettings");
+            RegisterForAot<TestSettingsJsonContext>();
         }
     }
 

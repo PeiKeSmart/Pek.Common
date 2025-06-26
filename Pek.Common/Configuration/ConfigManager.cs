@@ -321,6 +321,53 @@ public static class ConfigManager
     }
 
     /// <summary>
+    /// 获取配置实例（通过Type）
+    /// </summary>
+    /// <param name="configType">配置类型</param>
+    /// <param name="forceReload">是否强制重新加载</param>
+    /// <returns>配置实例</returns>
+    public static object GetConfig(Type configType, bool forceReload = false)
+    {
+        // 性能优化：先检查缓存，避免不必要的锁争用
+        if (!forceReload && _configs.TryGetValue(configType, out var cachedConfig))
+        {
+            return cachedConfig;
+        }
+
+        // 双重检查锁模式，避免重复加载
+        lock (_configs)
+        {
+            if (!forceReload && _configs.TryGetValue(configType, out cachedConfig))
+            {
+                return cachedConfig;
+            }
+
+            // 使用重载委托加载配置
+            if (_configReloadDelegates.TryGetValue(configType, out var reloadDelegate))
+            {
+                var config = reloadDelegate();
+                _configs[configType] = config;
+                return config;
+            }
+            else
+            {
+                throw new InvalidOperationException($"配置类型 {configType.Name} 未注册");
+            }
+        }
+    }
+
+    /// <summary>
+    /// 尝试获取序列化选项
+    /// </summary>
+    /// <param name="configType">配置类型</param>
+    /// <param name="options">序列化选项</param>
+    /// <returns>是否获取成功</returns>
+    public static bool TryGetSerializerOptions(Type configType, out JsonSerializerOptions options)
+    {
+        return _serializerOptions.TryGetValue(configType, out options!);
+    }
+
+    /// <summary>
     /// 加载配置（简化版本）
     /// </summary>
     private static TConfig LoadConfig<TConfig>() where TConfig : Config, new()
