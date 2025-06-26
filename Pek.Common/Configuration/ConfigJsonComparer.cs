@@ -140,8 +140,8 @@ internal static class ConfigJsonComparer
             changes.Add(new ConfigPropertyChange
             {
                 PropertyName = propertyPath,
-                OldValue = GetJsonElementValue(oldElement),
-                NewValue = GetJsonElementValue(newElement)
+                OldValue = GetJsonElementValueAsString(oldElement),
+                NewValue = GetJsonElementValueAsString(newElement)
             });
             return;
         }
@@ -161,8 +161,8 @@ internal static class ConfigJsonComparer
             case JsonValueKind.True:
             case JsonValueKind.False:
             case JsonValueKind.Null:
-                var oldValue = GetJsonElementValue(oldElement);
-                var newValue = GetJsonElementValue(newElement);
+                var oldValue = GetJsonElementValueAsString(oldElement);
+                var newValue = GetJsonElementValueAsString(newElement);
                 if (!Equals(oldValue, newValue))
                 {
                     changes.Add(new ConfigPropertyChange
@@ -212,8 +212,8 @@ internal static class ConfigJsonComparer
                 changes.Add(new ConfigPropertyChange
                 {
                     PropertyName = propertyPath,
-                    OldValue = null,
-                    NewValue = GetJsonElementValue(newProperties[propName])
+                    OldValue = "null",
+                    NewValue = GetJsonElementValueAsString(newProperties[propName])
                 });
             }
             else if (!newProperties.TryGetValue(propName, out var newProp))
@@ -222,8 +222,8 @@ internal static class ConfigJsonComparer
                 changes.Add(new ConfigPropertyChange
                 {
                     PropertyName = propertyPath,
-                    OldValue = GetJsonElementValue(oldProp),
-                    NewValue = null
+                    OldValue = GetJsonElementValueAsString(oldProp),
+                    NewValue = "null"
                 });
             }
             else
@@ -251,8 +251,8 @@ internal static class ConfigJsonComparer
             changes.Add(new ConfigPropertyChange
             {
                 PropertyName = $"{propertyPath}.Length",
-                OldValue = oldItems.Length,
-                NewValue = newItems.Length
+                OldValue = oldItems.Length.ToString(),
+                NewValue = newItems.Length.ToString()
             });
         }
 
@@ -266,8 +266,8 @@ internal static class ConfigJsonComparer
                 changes.Add(new ConfigPropertyChange
                 {
                     PropertyName = itemPath,
-                    OldValue = null,
-                    NewValue = GetJsonElementValue(newItems[i])
+                    OldValue = "null",
+                    NewValue = GetJsonElementValueAsString(newItems[i])
                 });
             }
             else if (i >= newItems.Length)
@@ -275,8 +275,8 @@ internal static class ConfigJsonComparer
                 changes.Add(new ConfigPropertyChange
                 {
                     PropertyName = itemPath,
-                    OldValue = GetJsonElementValue(oldItems[i]),
-                    NewValue = null
+                    OldValue = GetJsonElementValueAsString(oldItems[i]),
+                    NewValue = "null"
                 });
             }
             else
@@ -287,19 +287,19 @@ internal static class ConfigJsonComparer
     }
 
     /// <summary>
-    /// 获取 JSON 元素的值
+    /// 获取 JSON 元素的字符串值（统一返回string类型以避免类型二义性）
     /// </summary>
     /// <param name="element">JSON元素</param>
-    /// <returns>元素的值</returns>
-    private static object? GetJsonElementValue(JsonElement element)
+    /// <returns>元素的字符串值</returns>
+    private static string GetJsonElementValueAsString(JsonElement element)
     {
         return element.ValueKind switch
         {
-            JsonValueKind.String => element.GetString(),
-            JsonValueKind.Number => element.TryGetInt32(out var intVal) ? intVal : element.GetDouble(),
-            JsonValueKind.True => true,
-            JsonValueKind.False => false,
-            JsonValueKind.Null => null,
+            JsonValueKind.String => element.GetString() ?? "null",
+            JsonValueKind.Number => element.TryGetInt32(out var intVal) ? intVal.ToString() : element.GetDouble().ToString(),
+            JsonValueKind.True => "true",
+            JsonValueKind.False => "false",
+            JsonValueKind.Null => "null",
             JsonValueKind.Array => $"Array[{element.GetArrayLength()}]",
             JsonValueKind.Object => "Object",
             _ => element.ToString()

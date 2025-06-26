@@ -16,7 +16,7 @@ public abstract class Config
     /// <summary>
     /// 用于变更追踪的配置快照（深拷贝）
     /// </summary>
-    private string? _configSnapshot;
+    protected string? _configSnapshot;
 
     /// <summary>
     /// 创建当前配置的快照（用于变更追踪）
@@ -25,7 +25,7 @@ public abstract class Config
     {
         try
         {
-            var configType = this.GetType();
+            var configType = GetType();
             if (ConfigManager.TryGetSerializerOptions(configType, out var options))
             {
                 _configSnapshot = JsonSerializer.Serialize(this, configType, options);
@@ -49,7 +49,7 @@ public abstract class Config
         {
             if (!string.IsNullOrEmpty(_configSnapshot))
             {
-                var configType = this.GetType();
+                var configType = GetType();
                 if (ConfigManager.TryGetSerializerOptions(configType, out var options))
                 {
                     oldConfig = JsonSerializer.Deserialize(_configSnapshot, configType, options);
@@ -65,7 +65,7 @@ public abstract class Config
         ConfigManager.SaveConfig(this);
         
         // 记录变更日志
-        LogConfigChanges(this.GetType().Name, oldConfig, this);
+        LogConfigChanges(GetType().Name, oldConfig, this);
         
         // 更新快照为当前状态
         CreateSnapshot();
@@ -81,7 +81,7 @@ public abstract class Config
         if (oldConfig == null) return new List<ConfigPropertyChange>();
         
         // 使用JSON序列化进行对比（AOT兼容）
-        var configType = this.GetType();
+        var configType = GetType();
         var changes = new List<ConfigPropertyChange>();
         
         try
@@ -270,7 +270,7 @@ public abstract class Config
         
         // 简单比较前几个元素
         var maxCompare = Math.Min(oldItems.Length, 3);
-        for (int i = 0; i < maxCompare && changes.Count < 10; i++)
+        for (var i = 0; i < maxCompare && changes.Count < 10; i++)
         {
             CompareJsonElements(oldItems[i], newItems[i], $"{basePath}[{i}]", changes);
         }

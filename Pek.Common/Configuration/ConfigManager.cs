@@ -15,21 +15,6 @@ namespace Pek.Configuration;
 public delegate object ConfigReloadDelegate();
 
 /// <summary>
-/// 配置属性变更信息
-/// </summary>
-public class ConfigPropertyChange
-{
-    public string PropertyName { get; set; } = string.Empty;
-    public object? OldValue { get; set; }
-    public object? NewValue { get; set; }
-    
-    public override string ToString()
-    {
-        return $"{PropertyName}: {OldValue} → {NewValue}";
-    }
-}
-
-/// <summary>
 /// 配置变更事件参数（增强版本）
 /// </summary>
 public class ConfigChangedEventArgs : EventArgs
