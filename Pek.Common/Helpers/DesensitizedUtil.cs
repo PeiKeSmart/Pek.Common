@@ -138,14 +138,39 @@ public static partial class DesensitizedUtil
         }
 
         var atIndex = email.IndexOf('@');
-        if (atIndex <= 3)
+        var prefix = email[..atIndex];  // @符号前的用户名部分
+        var domain = email[atIndex..];     // @符号及域名部分
+
+        // 根据前缀长度采用不同的脱敏策略
+        String maskedPrefix;
+        switch (prefix.Length)
         {
-            return email;
+            case 1:
+                // 只有1个字符，用*替换
+                maskedPrefix = "*";
+                break;
+            case 2:
+                // 只有2个字符，保留第1个，第2个用*替换
+                maskedPrefix = prefix[0] + "*";
+                break;
+            case 3:
+                // 只有3个字符，保留第1个，中间用*替换
+                maskedPrefix = prefix[0] + "*" + prefix[2];
+                break;
+            case 4:
+                // 4个字符，保留前1个和后1个，中间用*替换
+                maskedPrefix = prefix[0] + "**" + prefix[3];
+                break;
+            default:
+                // 5个或更多字符，保留前3个和后2个，中间用*替换
+                var prefixStart = prefix[..3];
+                var prefixEnd = prefix.Substring(prefix.Length - 2, 2);
+                var starCount = prefix.Length - 5;
+                maskedPrefix = prefixStart + new String('*', starCount) + prefixEnd;
+                break;
         }
 
-        var prefix = email[..3];
-        var suffix = email.Substring(atIndex - 2, 2);
-        return prefix + new String('*', atIndex - 5) + suffix + email[atIndex..];
+        return maskedPrefix + domain;
     }
 
     /// <summary>
