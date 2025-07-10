@@ -10,6 +10,11 @@ namespace Pek.Security;
 public class JsonWebToken
 {
     /// <summary>
+    /// 用户Id
+    /// </summary>
+    public Int32 UId { get; set; }
+
+    /// <summary>
     /// 访问令牌。用于业务身份认证的令牌
     /// </summary>
     public String AccessToken { get; set; } = String.Empty;
