@@ -8,6 +8,7 @@ using NewLife.Caching;
 using NewLife.Model;
 
 using Pek.Infrastructure;
+using Pek.Configs;
 
 namespace Pek.Ids;
 
@@ -127,10 +128,45 @@ public class ShortUniqueCode
         if (provider != null && provider.Cache != provider.InnerCache && provider.Cache is not MemoryCache)
         {
             var redis = provider.Cache;
+            var config = PekSysSetting.Current;
+            var localBackupCounter = config.ShortCodeCounter;
+
+            Int64 endCounter;
+
+            var currentCounter = redis.Get<Int64>("shortcode:counter");
             
-            // 按需从Redis获取计数器（累加操作）
-            var endCounter = redis.Increment("shortcode:counter", count);
-            
+            if (currentCounter < localBackupCounter)
+            {
+                // 检测到异常，需要恢复计数器，使用分布式锁保护
+                var recoveryLockKey = "shortcode:recovery_lock";
+                var lockTimeoutMs = 3000; // 3秒超时
+                
+                // 使用 AcquireLock 方式，支持阻塞等待
+                using var distributedLock = provider.Cache.AcquireLock(recoveryLockKey, lockTimeoutMs);
+                
+                // 在锁保护下重新检查并恢复
+                currentCounter = redis.Get<Int64>("shortcode:counter");
+                if (currentCounter < localBackupCounter)
+                {
+                    var safeCounter = localBackupCounter + config.ShortCodeBackupInterval;
+                    redis.Set("shortcode:counter", safeCounter);
+                }
+                
+                // 恢复完成后，在锁内安全获取计数器
+                endCounter = redis.Increment("shortcode:counter", count);
+            }
+            else
+            {
+                // 正常情况：计数器状态正常，直接获取（高性能路径）
+                endCounter = redis.Increment("shortcode:counter", count);
+            }
+
+            // 异步备份配置（不阻塞主流程）
+            if (ShouldBackup(endCounter, localBackupCounter, config))
+            {
+                Task.Run(() => BackupCounterAsync(redis, config, endCounter));
+            }
+
             // 生成短码列表（从1位开始，充分利用短码空间）
             var result = new List<String>(count);
             for (var i = 0; i < count; i++)
@@ -138,13 +174,52 @@ public class ShortUniqueCode
                 var currentId = endCounter - count + 1 + i;
                 result.Add(Base62Helper.Encode(currentId));
             }
-            
+
             return result;
         }
         else
         {
             var lang = ObjectContainer.Provider?.GetPekService<IPekLanguage>();
             throw new XException(lang?.Translate("需要Redis支持")!);
+        }
+    }
+
+    /// <summary>
+    /// 判断是否需要备份计数器
+    /// </summary>
+    private static Boolean ShouldBackup(Int64 endCounter, Int64 localBackupCounter, PekSysSetting config)
+    {
+        if (config.ShortCodeBackupInterval <= 0)
+            return true; // 每次都备份
+            
+        return endCounter - localBackupCounter >= config.ShortCodeBackupInterval;
+    }
+
+    /// <summary>
+    /// 异步备份计数器（避免阻塞主流程）
+    /// </summary>
+    private static void BackupCounterAsync(ICache redis, PekSysSetting config, Int64 endCounter)
+    {
+        try
+        {
+            var backupLockKey = "shortcode:backup_lock";
+            var lockTimeoutMs = 5000; // 备份锁超时时间更短
+            
+            // 使用 AcquireLock 方式
+            using var distributedLock = redis.AcquireLock(backupLockKey, lockTimeoutMs);
+            
+            // 重新检查是否仍需要备份
+            var currentConfig = PekSysSetting.Current;
+            if (endCounter - currentConfig.ShortCodeCounter >= currentConfig.ShortCodeBackupInterval)
+            {
+                currentConfig.ShortCodeCounter = endCounter;
+                currentConfig.ShortCodeCounterLastUpdate = DateTime.Now;
+                currentConfig.Save();
+            }
+        }
+        catch
+        {
+            // 备份失败不影响主流程，静默处理
         }
     }
 

@@ -84,4 +84,23 @@ public class PekSysSetting : Config<PekSysSetting>
     [Description("在维护模式生效前多少分钟开始显示警告信息，0表示不显示警告")]
     [Category("系统维护")]
     public Int32 MaintenanceWarningMinutes { get; set; } = 5;
+
+    #region 短码生成配置
+
+    /// <summary>短码计数器当前值</summary>
+    [Description("短码生成器的当前计数器值，用于Redis故障时的恢复")]
+    [Category("短码生成")]
+    public Int64 ShortCodeCounter { get; set; } = 0;
+
+    /// <summary>短码计数器最后更新时间</summary>
+    [Description("短码计数器最后一次更新的时间")]
+    [Category("短码生成")]
+    public DateTime ShortCodeCounterLastUpdate { get; set; } = DateTime.MinValue;
+
+    /// <summary>短码计数器备份间隔（个数）</summary>
+    [Description("每生成多少个短码后备份一次计数器到配置，0表示每次都备份")]
+    [Category("短码生成")]
+    public Int32 ShortCodeBackupInterval { get; set; } = 100;
+
+    #endregion
 }
