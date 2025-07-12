@@ -90,7 +90,7 @@ public class PekSysSetting : Config<PekSysSetting>
     /// <summary>短码计数器当前值</summary>
     [Description("短码生成器的当前计数器值，用于Redis故障时的恢复")]
     [Category("短码生成")]
-    public Int64 ShortCodeCounter { get; set; } = 0;
+    public Int64 ShortCodeCounter { get; set; } = 238328;
 
     /// <summary>短码计数器最后更新时间</summary>
     [Description("短码计数器最后一次更新的时间")]
