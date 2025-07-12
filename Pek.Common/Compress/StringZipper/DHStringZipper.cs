@@ -307,12 +307,12 @@ public static class DHStringZipper
 
         public byte[] Decode(string value)
         {
-            return Util.Base62.FromBase62(value, false);
+            return Ids.Base62Helper.Decode(value, false);
         }
 
         public string Encode(byte[] data)
         {
-            return Util.Base62.ToBase62(data, false);
+            return Ids.Base62Helper.Encode(data, false);
         }
     }
 

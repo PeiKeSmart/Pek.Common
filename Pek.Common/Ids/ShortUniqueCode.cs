@@ -81,14 +81,12 @@ public class ShortUniqueCode
         return resUrl;
     }
 
-    private static readonly String chars = "aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ0123456789";
-
     /// <summary>
     /// 转为62进制
     /// </summary>
     /// <param name="bytes">字节数组</param>
     /// <returns></returns>
-    public static String ConvertTo62(Byte[] bytes) => Base62Helper.Encode(bytes);
+    public static String ConvertTo62(Byte[] bytes) => Base62Helper.Encode(bytes, false);
 
     /// <summary>
     /// 计算指定字符串的哈希值
