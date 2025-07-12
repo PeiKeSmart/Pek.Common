@@ -44,4 +44,23 @@ public static class IdHelper
     /// </summary>
     /// <returns></returns>
     public static Int64 GetSId() => snowflake.NewId();
+
+    /// <summary>
+    /// 配置雪花算法的WorkerId
+    /// </summary>
+    /// <param name="workerId">工作节点ID，范围0-1023</param>
+    public static void ConfigureWorkerId(Int32 workerId)
+    {
+        if (workerId < 0 || workerId > 1023)
+            throw new ArgumentOutOfRangeException(nameof(workerId), "WorkerId must be between 0 and 1023");
+        
+        snowflake.WorkerId = workerId;
+    }
+
+    /// <summary>
+    /// 使用Redis等缓存系统加入集群，自动分配WorkerId
+    /// </summary>
+    /// <param name="cache">缓存实例</param>
+    /// <param name="key">分配WorkerId的键名</param>
+    public static void JoinCluster(NewLife.Caching.ICache cache, String key = "SnowflakeWorkerId") => snowflake.JoinCluster(cache, key);
 }

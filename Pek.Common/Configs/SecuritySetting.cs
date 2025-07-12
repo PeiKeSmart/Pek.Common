@@ -12,23 +12,23 @@ public class SecuritySetting : Config<SecuritySetting>
 {
     /// <summary>过滤违禁词</summary>
     [Description("词过滤")]
-    public String FilterWord { get; set; }
+    public String? FilterWord { get; set; }
 
     /// <summary>电话黑名单</summary>
     [Description("电话黑名单")]
-    public String PhoneBlacklist { get; set; }
+    public String? PhoneBlacklist { get; set; }
 
     /// <summary>邮箱域名白名单</summary>
     [Description("邮箱域名白名单")]
-    public String EmailDomainWhiteList { get; set; }
+    public String? EmailDomainWhiteList { get; set; }
 
     /// <summary>邮箱域名黑名单</summary>
     [Description("邮箱域名黑名单")]
-    public String EmailDomainBlockList { get; set; }
+    public String? EmailDomainBlockList { get; set; }
 
     /// <summary>百度密钥</summary>
     [Description("百度密钥")]
-    public String BaiduAK { get; set; }
+    public String? BaiduAK { get; set; }
 
     /// <summary>真实客户端IP转发标头</summary>
     [Description("真实客户端IP转发标头")]
