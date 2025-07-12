@@ -45,8 +45,8 @@ public class PekSysSetting : Config<PekSysSetting>
     public Boolean AllowFormDataSanitize { get; set; }
 
     /// <summary>
-    /// 雪花ID机器ID，-1表示不配置，使用默认的WorkerId
+    /// 雪花ID机器ID，-1表示不配置，使用默认的WorkerId。一般用于分布式集群，每个节点配置不同的WorkerId，主要用于没有使用Redis也没有使用星尘的场景。
     /// </summary>
-    [Description("雪花ID机器ID，-1表示不配置，使用默认的WorkerId")]
+    [Description("雪花ID机器ID，-1表示不配置，使用默认的WorkerId。一般用于分布式集群，每个节点配置不同的WorkerId，主要用于没有使用Redis也没有使用星尘的场景。")]
     public Int32 SnowflakeWorkerId { get; set; } = -1;
 }
