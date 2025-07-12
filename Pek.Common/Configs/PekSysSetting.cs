@@ -49,4 +49,19 @@ public class PekSysSetting : Config<PekSysSetting>
     /// </summary>
     [Description("雪花ID机器ID，-1表示不配置，使用默认的WorkerId。一般用于分布式集群，每个节点配置不同的WorkerId，主要用于没有使用Redis也没有使用星尘的场景。")]
     public Int32 SnowflakeWorkerId { get; set; } = -1;
+
+    /// <summary>是否启用维护模式</summary>
+    [Description("维护模式。启用后系统将拒绝所有访问并显示维护页面")]
+    [Category("系统维护")]
+    public Boolean MaintenanceMode { get; set; } = false;
+
+    /// <summary>维护模式提示信息</summary>
+    [Description("维护模式页面显示的提示信息")]
+    [Category("系统维护")]
+    public String MaintenanceMessage { get; set; } = "系统正在进行维护升级，请稍后访问。给您带来不便，敬请谅解！";
+
+    /// <summary>维护模式允许访问的IP地址</summary>
+    [Description("维护模式下允许访问的IP地址列表，多个IP用逗号分隔")]
+    [Category("系统维护")]
+    public String MaintenanceAllowedIPs { get; set; } = "";
 }
