@@ -1,8 +1,13 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 
 using Murmur;
 
 using NewLife;
+using NewLife.Caching;
+using NewLife.Model;
+
+using Pek.Infrastructure;
 
 namespace Pek.Ids;
 
@@ -115,6 +120,34 @@ public class ShortUniqueCode
         return code;
     }
 
+    public static IList<String> GetShortUrl(Int32 count = 1)
+    {
+        // 从容器中获取缓存提供者
+        var provider = ObjectContainer.Provider?.GetService<ICacheProvider>();
+        if (provider != null && provider.Cache != provider.InnerCache && provider.Cache is not MemoryCache)
+        {
+            var redis = provider.Cache;
+            
+            // 按需从Redis获取计数器（累加操作）
+            var endCounter = redis.Increment("shortcode:counter", count);
+            
+            // 生成短码列表（从1位开始，充分利用短码空间）
+            var result = new List<String>(count);
+            for (var i = 0; i < count; i++)
+            {
+                var currentId = endCounter - count + 1 + i;
+                result.Add(Base62Helper.Encode(currentId));
+            }
+            
+            return result;
+        }
+        else
+        {
+            var lang = ObjectContainer.Provider?.GetPekService<IPekLanguage>();
+            throw new XException(lang?.Translate("需要Redis支持")!);
+        }
+    }
+
     /// <summary>
     /// 将雪花ID转换为固定11位的Base62编码
     /// </summary>
@@ -131,21 +164,21 @@ public class ShortUniqueCode
     public static String GetFixedLengthCode(Int64 snowflakeId, Int32 fixedLength = 11)
     {
         var base62 = Base62Helper.Encode(snowflakeId);
-        
-        if (base62.Length >= fixedLength) 
+
+        if (base62.Length >= fixedLength)
             return base62.Substring(0, fixedLength); // 如果超过指定长度就截取
-            
+
         // 不足指定长度则基于雪花ID确定性补位
         var needLength = fixedLength - base62.Length;
         var random = new Random((int)(snowflakeId & 0xFFFFFFFF)); // 用雪花ID的低32位做种子
-        
+
         var base62Chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
         var suffix = "";
         for (var i = 0; i < needLength; i++)
         {
             suffix += base62Chars[random.Next(62)];
         }
-        
+
         return base62 + suffix;
     }
 }
