@@ -88,19 +88,7 @@ public class ShortUniqueCode
     /// </summary>
     /// <param name="bytes">字节数组</param>
     /// <returns></returns>
-    public static String ConvertTo62(Byte[] bytes)
-    {
-        var id = BitConverter.ToUInt32(bytes, 0);
-        var list = new List<Char>();
-        while (id > 0)
-        {
-            var item = (Int32)(id % 62);
-            list.Add(chars[item]);
-            id /= 62;
-        }
-        list.Reverse();
-        return new String([.. list]);
-    }
+    public static String ConvertTo62(Byte[] bytes) => Base62Helper.Encode(bytes);
 
     /// <summary>
     /// 计算指定字符串的哈希值
@@ -128,5 +116,4 @@ public class ShortUniqueCode
         var code = ConvertTo62(bytes);
         return code;
     }
-
 }

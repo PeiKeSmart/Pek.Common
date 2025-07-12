@@ -44,4 +44,24 @@ public static class IdHelper
     /// </summary>
     /// <returns></returns>
     public static Int64 GetSId() => snowflake.NewId();
+
+    /// <summary>
+    /// 获取雪花算法生成的Base62格式的短ID
+    /// </summary>
+    /// <returns>Base62编码的短ID字符串，通常为10-11位</returns>
+    public static String GetShortId() => Base62Helper.Encode(snowflake.NewId());
+
+    /// <summary>
+    /// 将雪花算法生成的Int64 ID转换为Base62字符串
+    /// </summary>
+    /// <param name="snowflakeId">雪花算法生成的ID</param>
+    /// <returns>Base62编码的字符串</returns>
+    public static String ConvertSnowflakeToBase62(Int64 snowflakeId) => Base62Helper.Encode(snowflakeId);
+
+    /// <summary>
+    /// 将Base62字符串转换回雪花算法的Int64 ID
+    /// </summary>
+    /// <param name="base62String">Base62编码的字符串</param>
+    /// <returns>原始的雪花算法ID</returns>
+    public static Int64 ConvertBase62ToSnowflake(String base62String) => Base62Helper.DecodeToInt64(base62String);
 }
