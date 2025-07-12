@@ -64,4 +64,24 @@ public class PekSysSetting : Config<PekSysSetting>
     [Description("维护模式下允许访问的IP地址列表，多个IP用逗号分隔")]
     [Category("系统维护")]
     public String MaintenanceAllowedIPs { get; set; } = "";
+
+    /// <summary>维护模式开始时间</summary>
+    [Description("维护模式开始的时间，用于计算用户剩余操作时间")]
+    [Category("系统维护")]
+    public DateTime MaintenanceStartTime { get; set; }
+
+    /// <summary>已存在会话的冗余时间（分钟）</summary>
+    [Description("启用维护模式时，给予已存在会话的用户继续操作的时间（分钟），0表示立即生效")]
+    [Category("系统维护")]
+    public Int32 MaintenanceGracePeriodMinutes { get; set; } = 15;
+
+    /// <summary>维护模式下是否允许新会话</summary>
+    [Description("维护模式下是否允许创建新会话，false表示拒绝所有新访问")]
+    [Category("系统维护")]
+    public Boolean MaintenanceAllowNewSessions { get; set; } = false;
+
+    /// <summary>维护模式警告提前时间（分钟）</summary>
+    [Description("在维护模式生效前多少分钟开始显示警告信息，0表示不显示警告")]
+    [Category("系统维护")]
+    public Int32 MaintenanceWarningMinutes { get; set; } = 5;
 }
