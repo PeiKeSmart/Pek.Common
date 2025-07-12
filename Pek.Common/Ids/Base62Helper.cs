@@ -229,34 +229,30 @@ public static class Base62Helper
     }
 
     /// <summary>
-    /// 进制转换核心算法
+    /// 进制转换核心算法 (完全兼容原始实现)
     /// </summary>
     private static Int32[] BaseConvert(Int32[] source, Int32 sourceBase, Int32 targetBase)
     {
         var result = new List<Int32>();
         var leadingZeroCount = Math.Min(source.TakeWhile(x => x == 0).Count(), source.Length - 1);
-        
-        while (source.Length > 0)
+        Int32 count;
+        while ((count = source.Length) > 0)
         {
             var quotient = new List<Int32>();
             var remainder = 0;
-            
-            for (var i = 0; i < source.Length; i++)
+            for (var i = 0; i != count; i++)
             {
                 var num = source[i] + remainder * sourceBase;
                 var digit = num / targetBase;
                 remainder = num % targetBase;
-                
                 if (quotient.Count > 0 || digit > 0)
                 {
                     quotient.Add(digit);
                 }
             }
-            
             result.Insert(0, remainder);
-            source = [.. quotient];
+            source = quotient.ToArray();
         }
-        
         result.InsertRange(0, Enumerable.Repeat(0, leadingZeroCount));
         return [.. result];
     }
@@ -291,6 +287,51 @@ public static class Base62Helper
 
         var chars = inverted ? invertedChars : standardChars;
         return input.All(c => chars.Contains(c));
+    }
+
+    #endregion
+
+    #region 兼容原始Util.Base62的方法
+
+    /// <summary>
+    /// 将字节数组编码为Base62字符串 (兼容原始Util.Base62.ToBase62方法)
+    /// </summary>
+    /// <param name="original">字节数组</param>
+    /// <param name="inverted">是否使用反转字符集</param>
+    /// <returns>Base62字符串</returns>
+    public static String ToBase62(Byte[] original, Boolean inverted = false)
+    {
+        var characterSet = inverted ? invertedChars : standardChars;
+        var array = BaseConvert(Array.ConvertAll<Byte, Int32>(original, t => (Int32)t), 256, 62);
+        var builder = new StringBuilder();
+        foreach (var t2 in array)
+        {
+            builder.Append(characterSet[t2]);
+        }
+        return builder.ToString();
+    }
+
+    /// <summary>
+    /// 将Base62字符串解码为字节数组 (兼容原始Util.Base62.FromBase62方法)
+    /// </summary>
+    /// <param name="base62">Base62字符串</param>
+    /// <param name="inverted">是否使用反转字符集</param>
+    /// <returns>字节数组</returns>
+    public static Byte[] FromBase62(String base62, Boolean inverted = false)
+    {
+        if (String.IsNullOrWhiteSpace(base62))
+        {
+            throw new ArgumentNullException(nameof(base62));
+        }
+        var characterSet = inverted ? invertedChars : standardChars;
+        return Array.ConvertAll<Int32, Byte>(
+            BaseConvert(
+                Array.ConvertAll<Char, Int32>(base62.ToCharArray(), new Converter<Char, Int32>(characterSet.IndexOf)), 
+                62, 
+                256
+            ), 
+            new Converter<Int32, Byte>(Convert.ToByte)
+        );
     }
 
     #endregion
