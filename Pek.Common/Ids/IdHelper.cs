@@ -15,7 +15,8 @@ public static class IdHelper
     {
         if (PekSysSetting.Current.SnowflakeWorkerId >= 0 && PekSysSetting.Current.SnowflakeWorkerId < 1024)
         {
-            snowflake.WorkerId = PekSysSetting.Current.SnowflakeWorkerId;
+            // 使用配置的WorkerId，确保分布式环境下的唯一性
+            Snowflake.GlobalWorkerId = PekSysSetting.Current.SnowflakeWorkerId;
         }
     }
 
@@ -64,6 +65,7 @@ public static class IdHelper
         if (workerId < 0 || workerId > 1023)
             throw new ArgumentOutOfRangeException(nameof(workerId), "WorkerId must be between 0 and 1023");
         
-        snowflake.WorkerId = workerId;
+        // 设置全局WorkerId，影响所有Snowflake实例
+        Snowflake.GlobalWorkerId = workerId;
     }
 }
