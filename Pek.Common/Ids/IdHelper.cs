@@ -52,16 +52,16 @@ public static class IdHelper
     public static String GetShortId() => Base62Helper.Encode(snowflake.NewId());
 
     /// <summary>
-    /// 获取雪花算法生成的固定长度Base62格式的短ID
-    /// </summary>
-    /// <param name="fixedLength">固定长度，默认11位</param>
-    /// <returns>固定长度的Base62编码字符串</returns>
-    public static String GetFixedLengthId(Int32 fixedLength = 11) => ShortUniqueCode.GetFixedLengthCode(snowflake.NewId(), fixedLength);
-
-    /// <summary>
     /// 将Base62字符串转换回雪花算法的Int64 ID
     /// </summary>
     /// <param name="base62String">Base62编码的字符串</param>
     /// <returns>原始的雪花算法ID</returns>
     public static Int64 ConvertBase62ToSnowflake(String base62String) => Base62Helper.DecodeToInt64(base62String);
+
+    /// <summary>
+    /// 获取雪花算法生成的固定长度Base62格式的短ID。不能逆向转换为原始的雪花算法Id
+    /// </summary>
+    /// <param name="fixedLength">固定长度，默认11位</param>
+    /// <returns>固定长度的Base62编码字符串</returns>
+    public static String GetFixedLengthId(Int32 fixedLength = 11) => ShortUniqueCode.GetFixedLengthCode(snowflake.NewId(), fixedLength);
 }
