@@ -1,5 +1,7 @@
 ﻿using NewLife.Data;
 
+using Pek.Configs;
+
 namespace Pek.Ids;
 
 /// <summary>
@@ -8,6 +10,14 @@ namespace Pek.Ids;
 public static class IdHelper
 {
     public static readonly Snowflake snowflake = new();
+
+    static IdHelper()
+    {
+        if (PekSysSetting.Current.SnowflakeWorkerId >= 0 && PekSysSetting.Current.SnowflakeWorkerId < 1024)
+        {
+            snowflake.WorkerId = PekSysSetting.Current.SnowflakeWorkerId;
+        }
+    }
 
 #if NETSTANDARD2_1_OR_GREATER || NET8_0_OR_GREATER
     /// <summary>
@@ -56,11 +66,4 @@ public static class IdHelper
         
         snowflake.WorkerId = workerId;
     }
-
-    /// <summary>
-    /// 使用Redis等缓存系统加入集群，自动分配WorkerId
-    /// </summary>
-    /// <param name="cache">缓存实例</param>
-    /// <param name="key">分配WorkerId的键名</param>
-    public static void JoinCluster(NewLife.Caching.ICache cache, String key = "SnowflakeWorkerId") => snowflake.JoinCluster(cache, key);
 }
