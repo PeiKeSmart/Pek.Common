@@ -9,6 +9,7 @@ using NewLife.Model;
 
 using Pek.Infrastructure;
 using Pek.Configs;
+using NewLife.Log;
 
 namespace Pek.Ids;
 
@@ -238,6 +239,8 @@ public class ShortUniqueCode
     /// <returns>固定长度的Base62字符串</returns>
     public static String GetFixedLengthCode(Int64 snowflakeId, Int32 fixedLength = 11)
     {
+        XTrace.WriteLine($"获取到的雪花Id：{snowflakeId}");
+
         var base62 = Base62Helper.Encode(snowflakeId);
 
         if (base62.Length >= fixedLength)
