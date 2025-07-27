@@ -241,7 +241,7 @@ public class ShortUniqueCode
     {
         var base62 = Base62Helper.Encode(snowflakeId);
 
-        XTrace.WriteLine($"获取到的雪花Id：{snowflakeId}：{base62}");
+        //XTrace.WriteLine($"获取到的雪花Id：{snowflakeId}：{base62}");
 
         if (base62.Length >= fixedLength)
             return base62.Substring(0, fixedLength); // 如果超过指定长度就截取
