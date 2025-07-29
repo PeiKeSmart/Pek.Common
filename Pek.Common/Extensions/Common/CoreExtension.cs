@@ -2105,21 +2105,6 @@ public static class CoreExtension
     public static Boolean IsNull(this String @this) => @this == null;
 
     /// <summary>
-    ///     A string extension method that query if '@this' is not null and not empty.
-    /// </summary>
-    /// <param name="this">The @this to act on.</param>
-    /// <returns>false if null or empty, true if not.</returns>
-    public static Boolean IsNotNullOrEmpty(this String @this)
-        => !String.IsNullOrEmpty(@this);
-
-    /// <summary>
-    ///     A string extension method that query if '@this' is not null and not whiteSpace.
-    /// </summary>
-    /// <param name="this">The @this to act on.</param>
-    /// <returns>false if null or whiteSpace, true if not.</returns>
-    public static Boolean IsNotNullOrWhiteSpace(this String @this) => !String.IsNullOrWhiteSpace(@this);
-
-    /// <summary>
     ///     Creates a new instance of  with the same value as a specified .
     /// </summary>
     /// <param name="str">The string to copy.</param>
