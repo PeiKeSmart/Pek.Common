@@ -9,6 +9,7 @@ using NewLife.Model;
 
 using Pek.Infrastructure;
 using Pek.Configs;
+using NewLife.Log;
 
 namespace Pek.Ids;
 
@@ -240,12 +241,14 @@ public class ShortUniqueCode
     {
         var base62 = Base62Helper.Encode(snowflakeId);
 
+        //XTrace.WriteLine($"获取到的雪花Id：{snowflakeId}：{base62}");
+
         if (base62.Length >= fixedLength)
             return base62.Substring(0, fixedLength); // 如果超过指定长度就截取
 
         // 不足指定长度则基于雪花ID确定性补位
         var needLength = fixedLength - base62.Length;
-        var random = new Random((int)(snowflakeId & 0xFFFFFFFF)); // 用雪花ID的低32位做种子
+        var random = new Random((Int32)(snowflakeId & 0xFFFFFFFF)); // 用雪花ID的低32位做种子
 
         var base62Chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
         var suffix = "";
