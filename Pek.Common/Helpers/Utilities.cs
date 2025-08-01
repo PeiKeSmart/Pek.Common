@@ -95,18 +95,6 @@ public static class ConvertUtilities
         return new Guid(hash);
     }
 
-    public static Int32 IndexOf<T>(this IEnumerable<T> items, T findingItem)
-    {
-        var index = -1;
-        foreach (var item in items)
-        {
-            ++index;
-            if (Equals(item, findingItem))
-                return index;
-        }
-        return index;
-    }
-
     public static String To1CString(this Double d) => d.ToString("N1");
 
     public static String To1CString(this Single f) => f.ToString("N1");
