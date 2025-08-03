@@ -57,8 +57,5 @@ public static class ApplicationHelper
                 }
             }
         }
-
-        var processId = Process.GetCurrentProcess().Id;
-        XTrace.WriteLine($"[ApplicationHelper.SetEnvironment]获取PID：{processId}");
     }
 }
