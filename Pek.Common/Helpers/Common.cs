@@ -33,17 +33,25 @@ public static partial class Common
 
         var dic = new Dictionary<String, Object?>();
 
-        if (result is List<object> jsonArray)
+        if (result is List<Object> jsonArray)
         {
             foreach (var item in jsonArray)
             {
-                if (item is Dictionary<string, object> dictItem)
+                if (item is Dictionary<String, Object> dictItem)
                 {
                     foreach (var kvp in dictItem)
                     {
                         dic[kvp.Key] = kvp.Value;
                     }
                 }
+            }
+        }
+        else if (result is Dictionary<String, Object> jsonObject)
+        {
+            // 处理单个JSON对象 - 直接添加所有键值对到字典中
+            foreach (var kvp in jsonObject)
+            {
+                dic[kvp.Key] = kvp.Value;
             }
         }
 
