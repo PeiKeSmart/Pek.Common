@@ -142,8 +142,6 @@ public static partial class DHExtensions
         return false;
     }
 
-    public static Boolean IsNotNullAndWhiteSpace(this String instance) => !String.IsNullOrWhiteSpace(instance);
-
     /// <summary>
     /// 判断对象是否为空
     /// </summary>
