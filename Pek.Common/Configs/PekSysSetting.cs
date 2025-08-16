@@ -103,4 +103,12 @@ public class PekSysSetting : Config<PekSysSetting>
     public Int32 ShortCodeBackupInterval { get; set; } = 100;
 
     #endregion
+
+    /// <summary>本地调试代理地址。主要用于访问线上服务器内部服务</summary>
+    [Description("本地调试代理地址。主要用于访问线上服务器内部服务")]
+    public String LocalProxyUrl { get; set; } = "";
+
+    /// <summary>本地调试l连接代理地址时需要的码</summary>
+    [Description("本地调试l连接代理地址时需要的码")]
+    public String LocalProxyCode { get; set; } = "";
 }
