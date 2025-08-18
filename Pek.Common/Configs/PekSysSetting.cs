@@ -111,4 +111,8 @@ public class PekSysSetting : Config<PekSysSetting>
     /// <summary>本地调试l连接代理地址时需要的码</summary>
     [Description("本地调试l连接代理地址时需要的码")]
     public String LocalProxyCode { get; set; } = "";
+
+    /// <summary>临时允许跨设备使用Token</summary>
+    [Description("临时允许跨设备使用Token")]
+    public Boolean AllowJwtCrossDevice { get; set; } = false;
 }
