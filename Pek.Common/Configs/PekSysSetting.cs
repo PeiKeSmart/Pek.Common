@@ -109,7 +109,7 @@ public class PekSysSetting : Config<PekSysSetting>
     public String LocalProxyUrl { get; set; } = "https://proxy.0ht.cn";
 
     /// <summary>本地调试l连接代理地址时需要的码</summary>
-    [Description("本地调试l连接代理地址时需要的码")]
+    [Description("本地调试连接代理地址时需要的码")]
     public String LocalProxyCode { get; set; } = "";
 
     /// <summary>临时允许跨设备使用Token</summary>
