@@ -9,6 +9,12 @@ namespace Pek.Configs;
 [Config("PekSys")]
 public class PekSysSetting : Config<PekSysSetting>
 {
+    /// <summary>
+    /// 系统初始化控制参数
+    /// </summary>
+    [Description("系统初始化控制参数,系统是否安装,true：已安装，false：未安装")]
+    public Boolean IsInstalled { get; set; }
+
     /// <summary>机器人错误码。设置后拦截各种爬虫并返回相应错误，如404/500，默认0不拦截</summary>
     [Description("机器人错误码。设置后拦截各种爬虫并返回相应错误，如404/500，默认0不拦截")]
     [Category("通用")]
