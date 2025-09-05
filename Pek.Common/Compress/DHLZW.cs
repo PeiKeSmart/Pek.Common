@@ -13,27 +13,68 @@ public class DHLZW
     /// <returns></returns>
     public static List<Int32> Compress(String uncompressed, Int32 key)
     {
-        var dictionary = new Dictionary<String, Int32>();
+        // 预分配字典容量以减少扩容
+        var estimatedCapacity = Math.Max(256, uncompressed.Length / 4);
+        var dictionary = new Dictionary<String, Int32>(estimatedCapacity);
+        
         for (var i = 0; i < 256; i++)
         {
             dictionary.Add(((Char)i).ToString(), i);
         }
 
         var w = String.Empty;
-        var result = new List<Int32>();
+        // 预分配结果列表容量
+        var result = new List<Int32>(uncompressed.Length / 2);
+        
+        // 使用栈分配的字符缓冲区，避免堆分配
+        Span<char> charBuffer = stackalloc char[256];
+        
+        // 使用 ReadOnlySpan 遍历输入字符串，减少字符串枚举开销
+        var textSpan = uncompressed.AsSpan();
 
-        foreach (var c in uncompressed)
+        for (var i = 0; i < textSpan.Length; i++)
         {
-            var wc = w + c;
-            if (dictionary.ContainsKey(wc))
+            var c = textSpan[i];
+            
+            // 构建 wc 字符串，使用 Span 避免不必要的分配
+            var wLength = w.Length;
+            var wcLength = wLength + 1;
+            
+            if (wcLength <= charBuffer.Length)
             {
-                w = wc;
+                // 将 w 复制到缓冲区
+                w.AsSpan().CopyTo(charBuffer);
+                // 添加当前字符
+                charBuffer[wLength] = c;
+                
+                // 创建 wc 字符串（只在必要时分配）
+                var wc = new string(charBuffer[..wcLength]);
+                
+                if (dictionary.ContainsKey(wc))
+                {
+                    w = wc;
+                }
+                else
+                {
+                    result.Add(dictionary[w] ^ key); // 加密
+                    dictionary[wc] = dictionary.Count;
+                    w = c.ToString();
+                }
             }
             else
             {
-                result.Add(dictionary[w] ^ key); // 加密
-                dictionary[wc] = dictionary.Count;
-                w = c.ToString();
+                // 回退到原始方式处理超长字符串
+                var wc = w + c;
+                if (dictionary.ContainsKey(wc))
+                {
+                    w = wc;
+                }
+                else
+                {
+                    result.Add(dictionary[w] ^ key); // 加密
+                    dictionary[wc] = dictionary.Count;
+                    w = c.ToString();
+                }
             }
         }
 
@@ -54,7 +95,8 @@ public class DHLZW
     /// <exception cref="ArgumentException"></exception>
     public static String Decompress(List<Int32> compressed, Int32 key)
     {
-        var dictionary = new Dictionary<Int32, String>();
+        // 预分配字典容量
+        var dictionary = new Dictionary<Int32, String>(compressed.Count + 256);
         for (var i = 0; i < 256; i++)
         {
             dictionary.Add(i, ((Char)i).ToString());
@@ -63,8 +105,13 @@ public class DHLZW
         var firstCode = compressed[0] ^ key; // 解密
         var w = dictionary[firstCode];
         compressed.RemoveAt(0);
-        var result = new StringWriter();
-        result.Write(w);
+        
+        // 使用 StringBuilder 代替 StringWriter，预分配容量
+        var result = new System.Text.StringBuilder(compressed.Count * 2);
+        result.Append(w);
+
+        // 使用栈分配的字符缓冲区用于字符串拼接
+        Span<char> tempBuffer = stackalloc char[512];
 
         foreach (var k in compressed)
         {
@@ -76,15 +123,45 @@ public class DHLZW
             }
             else if (decryptedK == dictionary.Count)
             {
-                entry = w + w[0];
+                // 使用 Span 优化字符串拼接
+                var wSpan = w.AsSpan();
+                var entryLength = wSpan.Length + 1;
+                
+                if (entryLength <= tempBuffer.Length)
+                {
+                    wSpan.CopyTo(tempBuffer);
+                    tempBuffer[wSpan.Length] = w[0];
+                    entry = new string(tempBuffer[..entryLength]);
+                }
+                else
+                {
+                    // 回退到原始方式处理超长字符串
+                    entry = w + w[0];
+                }
             }
             else
             {
                 throw new ArgumentException("Compressed k is invalid.");
             }
 
-            result.Write(entry);
-            dictionary[dictionary.Count] = w + entry[0];
+            result.Append(entry);
+            
+            // 使用 Span 优化字典条目创建
+            var wSpanForDict = w.AsSpan();
+            var dictEntryLength = wSpanForDict.Length + 1;
+            
+            if (dictEntryLength <= tempBuffer.Length)
+            {
+                wSpanForDict.CopyTo(tempBuffer);
+                tempBuffer[wSpanForDict.Length] = entry[0];
+                dictionary[dictionary.Count] = new string(tempBuffer[..dictEntryLength]);
+            }
+            else
+            {
+                // 回退到原始方式处理超长字符串
+                dictionary[dictionary.Count] = w + entry[0];
+            }
+            
             w = entry;
         }
 
@@ -98,7 +175,8 @@ public class DHLZW
     /// <returns></returns>
     public static Byte[] BitCompress(List<Int32> compressed)
     {
-        using var ms = new MemoryStream();
+        // 预分配内存流容量
+        using var ms = new MemoryStream(compressed.Count * 2);
         using var bw = new BinaryWriter(ms);
         foreach (var code in compressed)
         {
@@ -114,7 +192,8 @@ public class DHLZW
     /// <returns></returns>
     public static List<Int32> BitDecompress(Byte[] compressed)
     {
-        var result = new List<Int32>();
+        // 预分配结果列表容量
+        var result = new List<Int32>(compressed.Length / 2);
         using (var ms = new MemoryStream(compressed))
         using (var br = new BinaryReader(ms))
         {
@@ -133,10 +212,14 @@ public class DHLZW
     /// <returns></returns>
     public static Int32 GetKeyFromText(String text)
     {
-        var frequency = new Dictionary<Char, Int32>();
+        // 预分配字典容量，减少哈希表扩容
+        var frequency = new Dictionary<Char, Int32>(Math.Min(text.Length, 256));
 
-        foreach (var c in text)
+        // 使用 ReadOnlySpan 减少字符串枚举的开销
+        var textSpan = text.AsSpan();
+        for (var i = 0; i < textSpan.Length; i++)
         {
+            var c = textSpan[i];
             if (frequency.TryGetValue(c, out var value))
                 frequency[c] = ++value;
             else
