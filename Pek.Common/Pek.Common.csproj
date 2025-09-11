@@ -43,7 +43,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DH.NCore" Version="4.14.2025.902-beta1127" />
+    <PackageReference Include="DH.NCore" Version="4.14.2025.910-beta0613" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
@@ -57,15 +57,15 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'!='net10.0'">
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Composite" Version="9.0.8" />
-    <PackageReference Include="System.Text.Json" Version="9.0.8" />
-    <PackageReference Include="System.Threading.Channels" Version="9.0.8" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Composite" Version="9.0.9" />
+    <PackageReference Include="System.Text.Json" Version="9.0.9" />
+    <PackageReference Include="System.Threading.Channels" Version="9.0.9" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='net10.0'">
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Composite" Version="10.0.0-preview.7.25380.108" />
-    <PackageReference Include="System.Text.Json" Version="10.0.0-preview.7.25380.108" />
-    <PackageReference Include="System.Threading.Channels" Version="10.0.0-preview.7.25380.108" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Composite" Version="10.0.0-rc.1.25451.107" />
+    <PackageReference Include="System.Text.Json" Version="10.0.0-rc.1.25451.107" />
+    <PackageReference Include="System.Threading.Channels" Version="10.0.0-rc.1.25451.107" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='net462' or '$(TargetFramework)'=='net472'">
