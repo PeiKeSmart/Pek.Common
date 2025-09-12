@@ -1,4 +1,6 @@
-﻿namespace Pek.Compress;
+﻿using System.Text;
+
+namespace Pek.Compress;
 
 /// <summary>
 /// 海凌科物联网数据压缩算法
@@ -26,55 +28,25 @@ public class DHLZW
         // 预分配结果列表容量
         var result = new List<Int32>(uncompressed.Length / 2);
         
-        // 使用栈分配的字符缓冲区，避免堆分配
-        Span<char> charBuffer = stackalloc char[256];
-        
-        // 使用 ReadOnlySpan 遍历输入字符串，减少字符串枚举开销
-        var textSpan = uncompressed.AsSpan();
+        // 使用 StringBuilder 进行字符串拼接优化
+        var stringBuilder = new StringBuilder(256);
 
-        for (var i = 0; i < textSpan.Length; i++)
+        foreach (var c in uncompressed)
         {
-            var c = textSpan[i];
-            
-            // 构建 wc 字符串，使用 Span 避免不必要的分配
-            var wLength = w.Length;
-            var wcLength = wLength + 1;
-            
-            if (wcLength <= charBuffer.Length)
+            // 使用 StringBuilder 构建 wc 字符串
+            stringBuilder.Clear();
+            stringBuilder.Append(w).Append(c);
+            var wc = stringBuilder.ToString();
+                
+            if (dictionary.ContainsKey(wc))
             {
-                // 将 w 复制到缓冲区
-                w.AsSpan().CopyTo(charBuffer);
-                // 添加当前字符
-                charBuffer[wLength] = c;
-                
-                // 创建 wc 字符串（只在必要时分配）
-                var wc = new string(charBuffer[..wcLength]);
-                
-                if (dictionary.ContainsKey(wc))
-                {
-                    w = wc;
-                }
-                else
-                {
-                    result.Add(dictionary[w] ^ key); // 加密
-                    dictionary[wc] = dictionary.Count;
-                    w = c.ToString();
-                }
+                w = wc;
             }
             else
             {
-                // 回退到原始方式处理超长字符串
-                var wc = w + c;
-                if (dictionary.ContainsKey(wc))
-                {
-                    w = wc;
-                }
-                else
-                {
-                    result.Add(dictionary[w] ^ key); // 加密
-                    dictionary[wc] = dictionary.Count;
-                    w = c.ToString();
-                }
+                result.Add(dictionary[w] ^ key); // 加密
+                dictionary[wc] = dictionary.Count;
+                w = c.ToString();
             }
         }
 
@@ -110,8 +82,8 @@ public class DHLZW
         var result = new System.Text.StringBuilder(compressed.Count * 2);
         result.Append(w);
 
-        // 使用栈分配的字符缓冲区用于字符串拼接
-        Span<char> tempBuffer = stackalloc char[512];
+        // 使用 StringBuilder 进行字符串拼接优化
+        var stringBuilder = new StringBuilder(512);
 
         foreach (var k in compressed)
         {
@@ -123,21 +95,10 @@ public class DHLZW
             }
             else if (decryptedK == dictionary.Count)
             {
-                // 使用 Span 优化字符串拼接
-                var wSpan = w.AsSpan();
-                var entryLength = wSpan.Length + 1;
-                
-                if (entryLength <= tempBuffer.Length)
-                {
-                    wSpan.CopyTo(tempBuffer);
-                    tempBuffer[wSpan.Length] = w[0];
-                    entry = new string(tempBuffer[..entryLength]);
-                }
-                else
-                {
-                    // 回退到原始方式处理超长字符串
-                    entry = w + w[0];
-                }
+                // 使用 StringBuilder 优化字符串拼接
+                stringBuilder.Clear();
+                stringBuilder.Append(w).Append(w[0]);
+                entry = stringBuilder.ToString();
             }
             else
             {
@@ -146,21 +107,10 @@ public class DHLZW
 
             result.Append(entry);
             
-            // 使用 Span 优化字典条目创建
-            var wSpanForDict = w.AsSpan();
-            var dictEntryLength = wSpanForDict.Length + 1;
-            
-            if (dictEntryLength <= tempBuffer.Length)
-            {
-                wSpanForDict.CopyTo(tempBuffer);
-                tempBuffer[wSpanForDict.Length] = entry[0];
-                dictionary[dictionary.Count] = new string(tempBuffer[..dictEntryLength]);
-            }
-            else
-            {
-                // 回退到原始方式处理超长字符串
-                dictionary[dictionary.Count] = w + entry[0];
-            }
+            // 使用 StringBuilder 优化字典条目创建
+            stringBuilder.Clear();
+            stringBuilder.Append(w).Append(entry[0]);
+            dictionary[dictionary.Count] = stringBuilder.ToString();
             
             w = entry;
         }
