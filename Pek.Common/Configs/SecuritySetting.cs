@@ -37,4 +37,8 @@ public class SecuritySetting : Config<SecuritySetting>
     /// <summary>是否允许IP直接访问</summary>
     [Description("是否允许IP直接访问")]
     public Boolean EnableIPDirect { get; set; } = true;
+
+    /// <summary>允许跨设备使用Token</summary>
+    [Description("允许跨设备使用Token")]
+    public Boolean AllowCrossDevice { get; set; } = false;
 }
