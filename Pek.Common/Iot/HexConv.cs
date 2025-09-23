@@ -2,6 +2,7 @@
 using NewLife.Model;
 
 using Pek.Infrastructure;
+using System.Linq; // 引入LINQ以使用可枚举的 Reverse 返回 IEnumerable<T>
 
 namespace Pek.Iot;
 
@@ -200,14 +201,33 @@ public static class HexConv
     /// </summary>
     /// <param name="bytes"></param>
     /// <returns></returns>
-    public static Byte[] ConvertLitterToBig(this Byte[] bytes) => [.. bytes.Reverse()];
+    public static Byte[] ConvertLitterToBig(this Byte[] bytes)
+    {
+        if (bytes == null) throw new ArgumentNullException(nameof(bytes));
+        // 创建副本并反转（小端->大端）
+        var result = new Byte[bytes.Length];
+        for (int i = 0, j = bytes.Length - 1; i < bytes.Length; i++, j--)
+        {
+            result[i] = bytes[j];
+        }
+        return result;
+    }
 
     /// <summary>
     /// 大端转为小端。C#数据格式默认为小端  高位在前，低位在后为大端模式
     /// </summary>
     /// <param name="bytes"></param>
     /// <returns></returns>
-    public static Byte[] ConvertBigToLitter(this Byte[] bytes) => [.. bytes.Reverse()];
+    public static Byte[] ConvertBigToLitter(this Byte[] bytes)
+    {
+        if (bytes == null) throw new ArgumentNullException(nameof(bytes));
+        var result = new Byte[bytes.Length];
+        for (int i = 0, j = bytes.Length - 1; i < bytes.Length; i++, j--)
+        {
+            result[i] = bytes[j];
+        }
+        return result;
+    }
 
     /// <summary>
     /// 十六进制转换为带符号的short类型
