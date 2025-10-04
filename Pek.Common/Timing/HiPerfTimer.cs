@@ -1,78 +1,75 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace Pek.Timing;
 
 /// <summary>
-/// 纳秒级计时器
+/// 纳秒级计时器（跨平台兼容）
 /// </summary>
 public class HiPerfTimer
 {
-    [DllImport("Kernel32.dll")]
-    private static extern bool QueryPerformanceCounter(out long lpPerformanceCount);
+    private Int64 _startTime;
+    private Int64 _stopTime;
+    private readonly Int64 _freq;
+    private Stopwatch? _sw;
+    private static readonly Boolean IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
     [DllImport("Kernel32.dll")]
-    private static extern bool QueryPerformanceFrequency(out long lpFrequency);
+    private static extern Boolean QueryPerformanceCounter(out Int64 lpPerformanceCount);
 
-    private long _startTime;
-    private long _stopTime;
-    private readonly long _freq;
+    [DllImport("Kernel32.dll")]
+    private static extern Boolean QueryPerformanceFrequency(out Int64 lpFrequency);
 
-    /// <summary>
-    /// 纳秒计数器
-    /// </summary>
     public HiPerfTimer()
     {
-        _startTime = 0;
-        _stopTime = 0;
-
-        if (QueryPerformanceFrequency(out _freq) == false)
+        if (IsWindows)
         {
-            // 不支持高性能计数器 
-            throw new Win32Exception();
+            if (!QueryPerformanceFrequency(out _freq))
+                throw new Win32Exception();
+        }
+        else
+        {
+            _sw = new Stopwatch();
         }
     }
 
-    /// <summary>
-    /// 开始计时器
-    /// </summary>
     public void Start()
     {
-        // 来让等待线程工作 
         Thread.Sleep(0);
-        QueryPerformanceCounter(out _startTime);
+        if (IsWindows)
+            QueryPerformanceCounter(out _startTime);
+        else
+            _sw?.Start();
     }
 
-    /// <summary>
-    /// 启动一个新的计时器
-    /// </summary>
-    /// <returns></returns>
     public static HiPerfTimer StartNew()
     {
-        HiPerfTimer timer = new HiPerfTimer();
+        var timer = new HiPerfTimer();
         timer.Start();
         return timer;
     }
 
-    /// <summary>
-    /// 停止计时器
-    /// </summary>
     public void Stop()
     {
-        QueryPerformanceCounter(out _stopTime);
+        if (IsWindows)
+            QueryPerformanceCounter(out _stopTime);
+        else
+            _sw?.Stop();
     }
 
-    /// <summary>
-    /// 时器经过时间(单位：秒)
-    /// </summary>
-    public double Duration => (_stopTime - _startTime) / (double)_freq;
+    public Double Duration
+    {
+        get
+        {
+            if (IsWindows)
+                return (_stopTime - _startTime) / (Double)_freq;
+            else
+                return _sw?.Elapsed.TotalSeconds ?? 0;
+        }
+    }
 
-    /// <summary>
-    /// 执行一个方法并测试执行时间
-    /// </summary>
-    /// <param name="action"></param>
-    /// <returns></returns>
-    public static double Execute(Action action)
+    public static Double Execute(Action action)
     {
         var timer = new HiPerfTimer();
         timer.Start();
