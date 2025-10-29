@@ -137,6 +137,38 @@ public static class SendByteUtil2
         return cmd;
     }
 
+    /// <summary>
+    /// 累加校验和
+    /// </summary>
+    /// <param name="memorySpage">需要计算校验和的byte数组</param>
+    /// <param name="Length">校验和位数</param>
+    /// <returns>计算出的校验和数组</returns>
+    public static Byte[] CheckSum(Byte[] memorySpage, Int32 Length)
+    {
+        var mSum = 0L;
+        var mByte = new Byte[Length];
+
+        // 逐Byte添加位数和
+        foreach (var byteMsg in memorySpage)
+        {
+            Int64 mNum = byteMsg >= 0 ? byteMsg : byteMsg + 256;
+            mSum += mNum;
+        }
+
+        // 位数和转化为Byte数组
+        for (var liv_Count = 0; liv_Count < Length; liv_Count++)
+        {
+            mByte[Length - liv_Count - 1] = (Byte)(mSum >> (liv_Count * 8) & 0xff);
+        }
+
+        return mByte;
+    }
+
+    /// <summary>
+    /// CRC16检验
+    /// </summary>
+    /// <param name="bytes"></param>
+    /// <returns></returns>
     public static ushort CRC16(byte[] bytes)
     {
         ushort value;
