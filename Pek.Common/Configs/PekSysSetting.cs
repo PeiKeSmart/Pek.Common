@@ -127,4 +127,12 @@ public class PekSysSetting : Config<PekSysSetting>
     /// <summary>临时允许跨设备使用Token</summary>
     [Description("临时允许跨设备使用Token")]
     public Boolean AllowJwtCrossDevice { get; set; } = false;
+
+    /// <summary>允许前台封装的控制器同时支持PC和H5的视图，用逗号分隔。如Login</summary>
+    [Description("允许前台封装的控制器同时支持PC和H5的视图，用逗号分隔。如Login")]
+    public String EnableFrontMobile { get; set; } = String.Empty;
+
+    /// <summary>允许后台封装的控制器同时支持PC和H5的视图，用逗号分隔。如Login</summary>
+    [Description("允许后台封装的控制器同时支持PC和H5的视图，用逗号分隔。如Login")]
+    public String EnableBackendMobile { get; set; } = String.Empty;
 }
