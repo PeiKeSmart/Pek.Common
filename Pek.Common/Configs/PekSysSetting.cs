@@ -135,4 +135,8 @@ public class PekSysSetting : Config<PekSysSetting>
     /// <summary>允许后台封装的控制器同时支持PC和H5的视图，用逗号分隔。如Login</summary>
     [Description("允许后台封装的控制器同时支持PC和H5的视图，用逗号分隔。如Login")]
     public String EnableBackendMobile { get; set; } = String.Empty;
+
+    /// <summary>是否启用IP速率监控。用于WAF中</summary>
+    [Description("是否启用IP速率监控。用于WAF中")]
+    public Boolean EnableIpRateMonitor { get; set; } = true;
 }
