@@ -1,125 +1,205 @@
 using Pek.Webs.Clients;
+using System.Net;
 
 namespace Pek.Common.Examples;
 
-/// <summary>WebClient 使用 HttpResponse 包装器示例</summary>
+/// <summary>WebClient 使用示例</summary>
 public class HttpResponseUsageExample
 {
     /// <summary>
-    /// 使用 GetResponseAsync 获取包含状态码的完整响应
+    /// 基础用法：字符串响应 + 状态码
     /// </summary>
-    public static async Task ExampleGetResponseAsync()
+    public static async Task BasicStringResponse()
     {
         var client = new WebClient();
+        var response = await client.Get("https://api.example.com/text").GetResponseAsync();
         
-        // 发起请求并获取完整响应（包含状态码）
-        var response = await client.Get("https://api.example.com/data")
-            .GetResponseAsync();
-        
-        // 检查状态码
         if (response.IsSuccess)
-        {
             Console.WriteLine($"成功: {response.Data}");
-        }
-        else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
-        {
-            Console.WriteLine($"请求错误 (400): {response.Data}");
-        }
-        else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
-        {
-            Console.WriteLine($"未授权 (401): {response.Data}");
-        }
         else
-        {
-            Console.WriteLine($"失败 ({(Int32)response.StatusCode}): {response.Data}");
-        }
+            Console.WriteLine($"失败 ({response.StatusCode}): {response.Data}");
     }
 
     /// <summary>
-    /// 泛型版本：获取反序列化后的对象及状态码
+    /// JSON 对象响应（自动反序列化）
     /// </summary>
-    public static async Task ExampleGetResponseAsyncTyped()
+    public static async Task JsonObjectResponse()
     {
-        var client = new WebClient<ApiResult>();
+        var client = new WebClient<User>();
+        var response = await client.Get("https://api.example.com/user/1").GetResponseAsync();
         
-        var response = await client.Post("https://api.example.com/submit")
-            .JsonContent(new { name = "测试" })
-            .GetResponseAsync();
-        
-        // 使用 IsSuccess 判断是否为 2xx 状态码
         if (response.IsSuccess)
         {
-            Console.WriteLine($"成功: {response.Data?.Message}");
+            Console.WriteLine($"用户: {response.Data?.Name}");
         }
-        else
+        else if (response.StatusCode == HttpStatusCode.NotFound)
         {
-            // 即使是 4xx/5xx 也能拿到响应体数据
-            Console.WriteLine($"状态码: {response.StatusCode}");
-            Console.WriteLine($"错误信息: {response.Data?.Message}");
+            Console.WriteLine("用户不存在");
         }
     }
 
     /// <summary>
-    /// 对比旧方式：ResultStringAsync 仍然可用（向后兼容）
+    /// 精细化状态码处理
     /// </summary>
-    public static async Task ExampleResultStringAsync()
+    public static async Task DetailedStatusCodeHandling()
+    {
+        var client = new WebClient();
+        var response = await client.Post("https://api.example.com/submit")
+            .JsonContent(new { value = 123 })
+            .GetResponseAsync();
+        
+        switch (response.StatusCode)
+        {
+            case HttpStatusCode.OK:
+            case HttpStatusCode.Created:
+                Console.WriteLine($"成功: {response.Data}");
+                break;
+            
+            case HttpStatusCode.BadRequest:
+                Console.WriteLine($"参数错误: {response.Data}");
+                break;
+            
+            case HttpStatusCode.Unauthorized:
+                Console.WriteLine("需要登录");
+                break;
+            
+            case HttpStatusCode.Forbidden:
+                Console.WriteLine("无权限");
+                break;
+            
+            case HttpStatusCode.TooManyRequests:
+                Console.WriteLine("请求过于频繁，请稍后重试");
+                break;
+            
+            case HttpStatusCode.InternalServerError:
+                Console.WriteLine($"服务器错误: {response.Data}");
+                break;
+            
+            default:
+                Console.WriteLine($"未知状态 {(Int32)response.StatusCode}: {response.Data}");
+                break;
+        }
+    }
+
+    /// <summary>
+    /// 异常处理：网络异常 vs HTTP 状态码
+    /// </summary>
+    public static async Task ExceptionHandling()
     {
         var client = new WebClient();
         
         try
         {
-            // 旧方式：只拿字符串内容，异常情况通过 WhenCatch 处理
-            var result = await client.Get("https://api.example.com/data")
-                .WhenCatch<Exception>(ex => "发生错误")
-                .ResultStringAsync();
+            var response = await client.Get("https://api.example.com/data")
+                .Retry(3)  // 重试 3 次
+                .GetResponseAsync();
             
-            Console.WriteLine(result);
+            // HTTP 4xx/5xx 不会抛异常，正常返回
+            if (response.StatusCode == HttpStatusCode.BadRequest)
+                Console.WriteLine($"参数错误: {response.Data}");
+            else if (response.IsSuccess)
+                Console.WriteLine(response.Data);
         }
-        catch (Exception ex)
+        catch (HttpRequestException ex)
         {
-            Console.WriteLine($"异常: {ex.Message}");
+            // 网络异常：DNS 失败、连接被拒绝等
+            Console.WriteLine($"网络错误: {ex.Message}");
+        }
+        catch (TaskCanceledException ex)
+        {
+            // 超时
+            Console.WriteLine($"请求超时: {ex.Message}");
         }
     }
 
     /// <summary>
-    /// 新方式的优势：无需 WhenCatch，直接通过状态码判断
+    /// 使用便捷方法
     /// </summary>
-    public static async Task ExampleNewApproachAdvantage()
+    public static async Task UsingHelperMethods()
     {
         var client = new WebClient();
+        var response = await client.Get("https://api.example.com/data").GetResponseAsync();
         
-        // 不再需要 WhenCatch，所有响应（包括错误状态码）都能正常拿到数据
-        var response = await client.Post("https://api.example.com/process")
-            .JsonContent(new { value = 123 })
-            .Retry(3) // 仍然支持重试
+        // 方法 1: EnsureSuccess（类似 HttpClient.EnsureSuccessStatusCode）
+        try
+        {
+            response.EnsureSuccess();
+            Console.WriteLine(response.Data);
+        }
+        catch (HttpRequestException)
+        {
+            Console.WriteLine("请求失败");
+        }
+        
+        // 方法 2: GetDataOrDefault
+        var data = response.GetDataOrDefault("默认值");
+        
+        // 方法 3: 链式回调
+        response
+            .OnSuccess(d => Console.WriteLine($"成功: {d}"))
+            .OnFailure((code, d) => Console.WriteLine($"失败 {code}: {d}"));
+        
+        // 方法 4: Match 模式匹配
+        response.Match(
+            onSuccess: d => Console.WriteLine($"成功: {d}"),
+            onFailure: (code, d) => Console.WriteLine($"失败 {code}: {d}")
+        );
+    }
+
+    /// <summary>
+    /// 字符串转 JSON（手动转换）
+    /// </summary>
+    public static async Task StringToJson()
+    {
+        var client = new WebClient();
+        var response = await client.Get("https://api.example.com/user").GetResponseAsync();
+        
+        // 使用扩展方法转 JSON
+        var userResponse = response.AsJson<User>();
+        
+        if (userResponse.IsSuccess)
+            Console.WriteLine($"用户: {userResponse.Data?.Name}");
+    }
+
+    /// <summary>
+    /// 复杂业务场景：下单流程
+    /// </summary>
+    public static async Task ComplexBusinessScenario()
+    {
+        var client = new WebClient<OrderResult>();
+        
+        var response = await client.Post("https://api.example.com/orders")
+            .JsonContent(new { productId = 123, quantity = 2 })
+            .Retry(2)
             .GetResponseAsync();
         
-        // 根据状态码灵活处理
-        switch (response.StatusCode)
+        var result = response.StatusCode switch
         {
-            case System.Net.HttpStatusCode.OK:
-                Console.WriteLine($"处理成功: {response.Data}");
-                break;
-            
-            case System.Net.HttpStatusCode.BadRequest:
-                Console.WriteLine($"参数错误: {response.Data}");
-                break;
-            
-            case System.Net.HttpStatusCode.InternalServerError:
-                Console.WriteLine($"服务器错误: {response.Data}");
-                break;
-            
-            default:
-                Console.WriteLine($"其他状态 ({response.StatusCode}): {response.Data}");
-                break;
-        }
+            HttpStatusCode.Created => $"订单创建成功: {response.Data?.OrderId}",
+            HttpStatusCode.BadRequest => $"参数错误: {response.Data?.Message}",
+            HttpStatusCode.PaymentRequired => "余额不足",
+            HttpStatusCode.Conflict => "库存不足",
+            HttpStatusCode.TooManyRequests => "下单过于频繁",
+            _ => response.IsSuccess 
+                ? $"成功: {response.Data?.OrderId}"
+                : $"失败 {response.StatusCode}: {response.Data?.Message}"
+        };
+        
+        Console.WriteLine(result);
     }
 }
 
-/// <summary>示例 API 返回类型</summary>
-public class ApiResult
+/// <summary>示例用户类</summary>
+public class User
 {
-    public Int32 Code { get; set; }
+    public Int32 Id { get; set; }
+    public String? Name { get; set; }
+    public String? Email { get; set; }
+}
+
+/// <summary>订单结果</summary>
+public class OrderResult
+{
+    public String? OrderId { get; set; }
     public String? Message { get; set; }
-    public Object? Data { get; set; }
 }

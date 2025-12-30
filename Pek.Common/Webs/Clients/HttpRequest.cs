@@ -24,11 +24,6 @@ public class HttpRequest : HttpRequestBase<IHttpRequest>, IHttpRequest
     private Action<String, HttpStatusCode>? _successStatusCodeAction;
 
     /// <summary>
-    /// 异常处理函数
-    /// </summary>
-    protected Func<Exception, String>? _exceptionHandler;
-
-    /// <summary>
     /// 初始化一个<see cref="HttpRequest"/>类型的实例
     /// </summary>
     /// <param name="httpMethod">Http请求方法</param>
@@ -58,17 +53,6 @@ public class HttpRequest : HttpRequestBase<IHttpRequest>, IHttpRequest
     }
 
     /// <summary>
-    /// 设置异常处理函数
-    /// </summary>
-    /// <typeparam name="TException">异常类型</typeparam>
-    /// <param name="func">异常处理函数</param>
-    public IHttpRequest WhenCatch<TException>(Func<TException, String> func) where TException : Exception
-    {
-        _exceptionHandler = ex => func((TException)ex);
-        return this;
-    }
-
-    /// <summary>
     /// 成功处理操作
     /// </summary>
     /// <param name="result">结果</param>
@@ -83,32 +67,9 @@ public class HttpRequest : HttpRequestBase<IHttpRequest>, IHttpRequest
     /// <summary>
     /// 获取完整 HTTP 响应（包含状态码与内容）
     /// </summary>
-    public async Task<HttpResponse<String>> GetResponseAsync()
+    public Task<HttpResponse<String>> GetResponseAsync()
     {
-        var attempt = 0;
-        while (true)
-        {
-            try
-            {
-                var response = await ResultWithResponseAsync().ConfigureAwait(false);
-                return response;
-            }
-            catch (Exception ex)
-            {
-                if (++attempt > _retryCount)
-                {
-                    XTrace.Log.Error("请求链接失败：{0} {1}", Url, ex);
-
-                    if (_exceptionHandler != null)
-                    {
-                        XTrace.Log.Error($"请求在重试 {_retryCount} 次后失败", ex);
-                        var errorData = _exceptionHandler.Invoke(ex);
-                        return new HttpResponse<String>(System.Net.HttpStatusCode.InternalServerError, errorData);
-                    }
-                    throw;
-                }
-            }
-        }
+        return ExecuteWithRetryAsync(ResultWithResponseAsync);
     }
 }
 
@@ -133,11 +94,6 @@ public class HttpRequest<TResult> : HttpRequestBase<IHttpRequest<TResult>>, IHtt
     /// 执行成功的转换函数
     /// </summary>
     private Func<String, TResult>? _convertAction;
-
-    /// <summary>
-    /// 异常处理函数
-    /// </summary>
-    protected Func<Exception, TResult>? _exceptionHandler;
 
     /// <summary>
     /// 初始化一个<see cref="HttpRequest{TResult}"/>类型的实例
@@ -173,17 +129,6 @@ public class HttpRequest<TResult> : HttpRequestBase<IHttpRequest<TResult>>, IHtt
     }
 
     /// <summary>
-    /// 设置异常处理函数
-    /// </summary>
-    /// <typeparam name="TException">异常类型</typeparam>
-    /// <param name="func">异常处理函数</param>
-    public IHttpRequest<TResult> WhenCatch<TException>(Func<TException, TResult> func) where TException : Exception
-    {
-        _exceptionHandler = ex => func((TException)ex);
-        return this;
-    }
-
-    /// <summary>
     /// 成功处理操作
     /// </summary>
     /// <param name="result">结果</param>
@@ -207,7 +152,7 @@ public class HttpRequest<TResult> : HttpRequestBase<IHttpRequest<TResult>>, IHtt
             return Conv.CTo<TResult>(result);
         if (_convertAction != null)
             return _convertAction(result);
-        if (contentType.SafeString().Equals("application/json", StringComparison.CurrentCultureIgnoreCase))
+        if (contentType.SafeString().Equals("application/json", StringComparison.OrdinalIgnoreCase))
             return JsonHelper.ToJsonEntity<TResult>(result);
         return null;
     }
@@ -215,32 +160,33 @@ public class HttpRequest<TResult> : HttpRequestBase<IHttpRequest<TResult>>, IHtt
     /// <summary>
     /// 获取完整 HTTP 响应（包含状态码与内容）
     /// </summary>
-    public async Task<HttpResponse<TResult>> GetResponseAsync()
+    public Task<HttpResponse<TResult>> GetResponseAsync()
     {
-        var attempt = 0;
-        while (true)
+        return ExecuteWithRetryAsync(async () =>
         {
-            try
+            var (response, contentType) = await GetRawResponseAsync().ConfigureAwait(false);
+            
+            // 性能优化：JSON 直接从 Stream 反序列化，避免中间字符串分配
+            if (contentType.SafeString().Equals("application/json", StringComparison.OrdinalIgnoreCase))
             {
-                var rawResponse = await ResultWithResponseAsync().ConfigureAwait(false);
-                var convertedData = ConvertTo(rawResponse.Data!, rawResponse.ContentType);
-                return new HttpResponse<TResult>(rawResponse.StatusCode, convertedData, rawResponse.RawResponse!);
+#if NETCOREAPP
+                var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+#else
+                var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+#endif
+                var data = await JsonSerializer.DeserializeAsync<TResult>(stream).ConfigureAwait(false);
+                
+                // 注意：Stream 已被读取，无法再次读取用于 SendAfter
+                // 为了保持回调兼容性，传递空字符串
+                SendAfter(String.Empty, response);
+                
+                return new HttpResponse<TResult>(response.StatusCode, data, response);
             }
-            catch (Exception ex)
-            {
-                if (++attempt > _retryCount)
-                {
-                    XTrace.Log.Error("请求链接失败：{0} {1}", Url, ex);
-
-                    if (_exceptionHandler != null)
-                    {
-                        XTrace.Log.Error($"请求在重试 {_retryCount} 次后失败", ex);
-                        var errorData = _exceptionHandler.Invoke(ex);
-                        return new HttpResponse<TResult>(System.Net.HttpStatusCode.InternalServerError, errorData);
-                    }
-                    throw;
-                }
-            }
-        }
+            
+            // 非 JSON 或需要自定义转换：回退到字符串方式
+            var rawResponse = await ResultWithResponseAsync().ConfigureAwait(false);
+            var convertedData = ConvertTo(rawResponse.Data!, rawResponse.ContentType);
+            return new HttpResponse<TResult>(rawResponse.StatusCode, convertedData, rawResponse.RawResponse!);
+        });
     }
 }

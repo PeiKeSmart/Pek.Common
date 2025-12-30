@@ -404,6 +404,41 @@ public abstract class HttpRequestBase<TRequest> where TRequest : IRequest<TReque
         return new HttpResponse<String>(response.StatusCode, result, response);
     }
 
+    /// <summary>
+    /// 获取完整 HTTP 响应（流式处理，用于高性能场景）
+    /// </summary>
+    protected async Task<(HttpResponseMessage Response, String? ContentType)> GetRawResponseAsync()
+    {
+        SendBefore();
+        var response = await SendAsync().ConfigureAwait(false);
+        var contentType = GetContentType(response);
+        // 注意：不读取内容，留给调用者处理
+        return (response, contentType);
+    }
+
+    /// <summary>
+    /// 带重试的执行器，避免子类重复重试逻辑
+    /// </summary>
+    protected async Task<T> ExecuteWithRetryAsync<T>(Func<Task<T>> action)
+    {
+        var attempt = 0;
+        while (true)
+        {
+            try
+            {
+                return await action().ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                if (++attempt > _retryCount)
+                {
+                    XTrace.Log.Error("请求链接失败：{0} {1}", Url, ex);
+                    throw;
+                }
+            }
+        }
+    }
+
     #endregion
 
     #region DownloadDataAsync(下载)

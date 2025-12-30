@@ -13,8 +13,22 @@ public class HttpResponse<T>
     /// <summary>响应内容</summary>
     public T? Data { get; set; }
 
-    /// <summary>是否为成功状态码（2xx）</summary>
-    public Boolean IsSuccess => (Int32)StatusCode >= 200 && (Int32)StatusCode < 300;
+    /// <summary>是否为成功状态码（2xx 或 3xx 重定向）</summary>
+    /// <remarks>
+    /// - 2xx: 成功
+    /// - 3xx: 重定向（HttpClient 默认自动跟随，正常情况不会看到）
+    /// - 4xx/5xx: 错误（IsSuccess = false）
+    /// </remarks>
+    public Boolean IsSuccess => (Int32)StatusCode >= 200 && (Int32)StatusCode < 400;
+
+    /// <summary>是否为重定向状态码（3xx）</summary>
+    public Boolean IsRedirect => (Int32)StatusCode >= 300 && (Int32)StatusCode < 400;
+
+    /// <summary>是否为客户端错误（4xx）</summary>
+    public Boolean IsClientError => (Int32)StatusCode >= 400 && (Int32)StatusCode < 500;
+
+    /// <summary>是否为服务器错误（5xx）</summary>
+    public Boolean IsServerError => (Int32)StatusCode >= 500 && (Int32)StatusCode < 600;
 
     /// <summary>内容类型</summary>
     public String? ContentType { get; set; }
@@ -83,10 +97,8 @@ public static class HttpResponseExtensions
     /// <typeparam name="TResult">目标类型</typeparam>
     public static HttpResponse<TResult?> AsJson<TResult>(this HttpResponse<String> response)
     {
-        if (String.IsNullOrWhiteSpace(response.Data))
-            return new HttpResponse<TResult?>(response.StatusCode, default, response.ContentType);
-
-        var data = JsonSerializer.Deserialize<TResult>(response.Data);
+        // JsonSerializer.Deserialize 已处理 null/空字符串情况
+        var data = JsonSerializer.Deserialize<TResult>(response.Data ?? String.Empty);
         return new HttpResponse<TResult?>(response.StatusCode, data, response.ContentType)
         {
             RawResponse = response.RawResponse
