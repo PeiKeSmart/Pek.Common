@@ -20,15 +20,9 @@ public interface IHttpRequest : IRequest<IHttpRequest>
     IHttpRequest OnSuccess(Action<String, HttpStatusCode> action);
 
     /// <summary>
-    /// 获取结果
+    /// 获取完整 HTTP 响应（包含状态码与内容）
     /// </summary>
-    Task<String> ResultStringAsync();
-
-    /// <summary>
-    /// 获取Json结果
-    /// </summary>
-    /// <typeparam name="TResult">返回结果类型</typeparam>
-    Task<TResult> ResultFromJsonAsync<TResult>();
+    Task<HttpResponse<String>> GetResponseAsync();
 
     /// <summary>
     /// 设置重试次数
@@ -65,9 +59,9 @@ public interface IHttpRequest<TResult> : IRequest<IHttpRequest<TResult>> where T
     IHttpRequest<TResult> OnSuccess(Action<TResult?, HttpStatusCode> action, Func<String, TResult>? convertAction = null);
 
     /// <summary>
-    /// 获取Json结果
+    /// 获取完整 HTTP 响应（包含状态码与内容）
     /// </summary>
-    Task<TResult> ResultFromJsonAsync();
+    Task<HttpResponse<TResult>> GetResponseAsync();
 
     /// <summary>
     /// 设置重试次数

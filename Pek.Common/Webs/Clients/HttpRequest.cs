@@ -81,61 +81,31 @@ public class HttpRequest : HttpRequestBase<IHttpRequest>, IHttpRequest
     }
 
     /// <summary>
-    /// 获取结果
+    /// 获取完整 HTTP 响应（包含状态码与内容）
     /// </summary>
-    public async Task<String> ResultStringAsync()
+    public async Task<HttpResponse<String>> GetResponseAsync()
     {
         var attempt = 0;
         while (true)
         {
             try
             {
-                var result = await ResultAsync().ConfigureAwait(false);
-                return result;
+                var response = await ResultWithResponseAsync().ConfigureAwait(false);
+                return response;
             }
             catch (Exception ex)
             {
                 if (++attempt > _retryCount)
                 {
-                    //DTrace.WriteLine($"错误委托是否为空：{_exceptionHandler == null}");
                     XTrace.Log.Error("请求链接失败：{0} {1}", Url, ex);
 
                     if (_exceptionHandler != null)
                     {
                         XTrace.Log.Error($"请求在重试 {_retryCount} 次后失败", ex);
-                        return _exceptionHandler.Invoke(ex);
+                        var errorData = _exceptionHandler.Invoke(ex);
+                        return new HttpResponse<String>(System.Net.HttpStatusCode.InternalServerError, errorData);
                     }
-                }
-            }
-        }
-    }
-
-    /// <summary>
-    /// 获取Json结果
-    /// </summary>
-    /// <typeparam name="TResult">返回结果类型</typeparam>
-    public async Task<TResult> ResultFromJsonAsync<TResult>()
-    {
-        var attempt = 0;
-        while (true)
-        {
-            try
-            {
-                var result = await ResultAsync().ConfigureAwait(false);
-                return JsonSerializer.Deserialize<TResult>(result) ?? throw new InvalidOperationException("JsonHelper returned null");
-            }
-            catch (Exception ex)
-            {
-                if (++attempt > _retryCount)
-                {
-                    //DTrace.WriteLine($"错误委托是否为空：{_exceptionHandler == null}");
-                    XTrace.Log.Error("请求链接失败：{0} {1}", Url, ex);
-
-                    if (_exceptionHandler != null)
-                    {
-                        XTrace.Log.Error($"请求在重试 {_retryCount} 次后失败", ex);
-                        return _exceptionHandler.Invoke(ex).ToJsonEntity<TResult>() ?? throw new InvalidOperationException("JsonHelper returned null");
-                    }
+                    throw;
                 }
             }
         }
@@ -243,62 +213,34 @@ public class HttpRequest<TResult> : HttpRequestBase<IHttpRequest<TResult>>, IHtt
     }
 
     /// <summary>
-    /// 获取结果
+    /// 获取完整 HTTP 响应（包含状态码与内容）
     /// </summary>
-    public async Task<String> ResultStringAsync()
+    public async Task<HttpResponse<TResult>> GetResponseAsync()
     {
         var attempt = 0;
         while (true)
         {
             try
             {
-                var result = await ResultAsync().ConfigureAwait(false);
-                return result;
+                var rawResponse = await ResultWithResponseAsync().ConfigureAwait(false);
+                var convertedData = ConvertTo(rawResponse.Data!, rawResponse.ContentType);
+                return new HttpResponse<TResult>(rawResponse.StatusCode, convertedData, rawResponse.RawResponse!);
             }
             catch (Exception ex)
             {
                 if (++attempt > _retryCount)
                 {
-                    //DTrace.WriteLine($"错误委托是否为空：{_exceptionHandler == null}");
                     XTrace.Log.Error("请求链接失败：{0} {1}", Url, ex);
 
                     if (_exceptionHandler != null)
                     {
                         XTrace.Log.Error($"请求在重试 {_retryCount} 次后失败", ex);
-                        return _exceptionHandler.Invoke(ex).ToJson();
+                        var errorData = _exceptionHandler.Invoke(ex);
+                        return new HttpResponse<TResult>(System.Net.HttpStatusCode.InternalServerError, errorData);
                     }
+                    throw;
                 }
             }
         }
-    }
-
-    /// <summary>
-    /// 获取Json结果
-    /// </summary>
-    public async Task<TResult> ResultFromJsonAsync()
-    {
-        var attempt = 0;
-        while (true)
-        {
-            try
-            {
-                var result = await ResultAsync().ConfigureAwait(false);
-                return JsonSerializer.Deserialize<TResult>(result) ?? throw new InvalidOperationException("JsonHelper returned null");
-            }
-            catch (Exception ex)
-            {
-                if (++attempt > _retryCount)
-                {
-                    //DTrace.WriteLine($"错误委托是否为空：{_exceptionHandler == null}");
-                    XTrace.Log.Error("请求链接失败：{0} {1}", Url, ex);
-
-                    if (_exceptionHandler != null)
-                    {
-                        XTrace.Log.Error($"请求在重试 {_retryCount} 次后失败", ex);
-                        return _exceptionHandler.Invoke(ex);
-                    }
-                }
-            }
-        }        
     }
 }

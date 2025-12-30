@@ -392,6 +392,18 @@ public abstract class HttpRequestBase<TRequest> where TRequest : IRequest<TReque
         return result;
     }
 
+    /// <summary>
+    /// 获取完整 HTTP 响应（包含状态码）
+    /// </summary>
+    protected async Task<HttpResponse<String>> ResultWithResponseAsync()
+    {
+        SendBefore();
+        var response = await SendAsync().ConfigureAwait(false);
+        var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        SendAfter(result, response);
+        return new HttpResponse<String>(response.StatusCode, result, response);
+    }
+
     #endregion
 
     #region DownloadDataAsync(下载)
