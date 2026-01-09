@@ -23,6 +23,21 @@ internal static class HttpClientBuilderFactory {
         new(@"(http|https)://(?<domain>[^(:|/]*)", RegexOptions.IgnoreCase);
 
     /// <summary>
+    /// 连接池生命周期（默认 2 分钟）
+    /// </summary>
+    private static readonly TimeSpan _pooledConnectionLifetime = TimeSpan.FromMinutes(2);
+
+    /// <summary>
+    /// 连接池空闲超时（默认 1 分钟）
+    /// </summary>
+    private static readonly TimeSpan _pooledConnectionIdleTimeout = TimeSpan.FromMinutes(1);
+
+    /// <summary>
+    /// 每服务器最大连接数（高并发优化）
+    /// </summary>
+    private static readonly Int32 _maxConnectionsPerServer = 100;
+
+    /// <summary>
     /// 创建Http客户端
     /// </summary>
     /// <param name="url">请求地址</param>
@@ -65,10 +80,26 @@ internal static class HttpClientBuilderFactory {
     /// </summary>
     private static HttpClient Create(TimeSpan timeout)
     {
-        var httpClient = new HttpClient(new HttpClientHandler()
+#if NET6_0_OR_GREATER
+        var handler = new SocketsHttpHandler
+        {
+            PooledConnectionLifetime = _pooledConnectionLifetime,
+            PooledConnectionIdleTimeout = _pooledConnectionIdleTimeout,
+            MaxConnectionsPerServer = _maxConnectionsPerServer,
+            UseProxy = false,
+            EnableMultipleHttp2Connections = true,  // HTTP/2 多路复用
+        };
+#else
+        var handler = new HttpClientHandler
         {
             UseProxy = false,
-        })
+#if !NET462 && !NET472
+            MaxConnectionsPerServer = _maxConnectionsPerServer,
+#endif
+        };
+#endif
+        
+        var httpClient = new HttpClient(handler)
         {
             Timeout = timeout
         };
@@ -97,10 +128,28 @@ internal static class HttpClientBuilderFactory {
                 (sender, certificate, chain, sslPolicyErrors) => 
                     serverCertificateCustomValidationCallback(null, certificate as X509Certificate2, chain, sslPolicyErrors);
         }
+#elif NET6_0_OR_GREATER
+        var handler = new SocketsHttpHandler
+        {
+            PooledConnectionLifetime = _pooledConnectionLifetime,
+            PooledConnectionIdleTimeout = _pooledConnectionIdleTimeout,
+            MaxConnectionsPerServer = _maxConnectionsPerServer,
+            UseProxy = false,
+            EnableMultipleHttp2Connections = true,
+        };
+        
+        // SocketsHttpHandler 使用 SslOptions 设置证书验证
+        if (serverCertificateCustomValidationCallback != null)
+        {
+            handler.SslOptions.RemoteCertificateValidationCallback = 
+                (sender, certificate, chain, sslPolicyErrors) => 
+                    serverCertificateCustomValidationCallback(null, certificate as X509Certificate2, chain, sslPolicyErrors);
+        }
 #else
         var handler = new HttpClientHandler()
         {
             UseProxy = false,
+            MaxConnectionsPerServer = _maxConnectionsPerServer,
             ServerCertificateCustomValidationCallback = serverCertificateCustomValidationCallback,
         };
 #endif

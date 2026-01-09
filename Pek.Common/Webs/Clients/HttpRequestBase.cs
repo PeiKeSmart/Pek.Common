@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Buffers;
+using System.Globalization;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Security;
@@ -96,6 +97,11 @@ public abstract class HttpRequestBase<TRequest> where TRequest : IRequest<TReque
     /// 重试次数
     /// </summary>
     protected Int32 _retryCount;
+
+    /// <summary>
+    /// 静态边界字符串（避免每次分配）
+    /// </summary>
+    private static readonly String _multipartBoundary = $"----WebClientBoundary{Guid.NewGuid():N}";
 
     protected String? Url => _url;
 
@@ -435,6 +441,11 @@ public abstract class HttpRequestBase<TRequest> where TRequest : IRequest<TReque
                     XTrace.Log.Error("请求链接失败：{0} {1}", Url, ex);
                     throw;
                 }
+                
+                // 指数退避策略：100ms → 200ms → 400ms → 800ms
+                var delayMs = 100 * Math.Pow(2, attempt - 1);
+                var delay = TimeSpan.FromMilliseconds(Math.Min(delayMs, 5000));  // 最大 5 秒
+                await Task.Delay(delay).ConfigureAwait(false);
             }
         }
     }
@@ -444,7 +455,7 @@ public abstract class HttpRequestBase<TRequest> where TRequest : IRequest<TReque
     #region DownloadDataAsync(下载)
 
     /// <summary>
-    /// 下载
+    /// 下载到字节数组
     /// </summary>
     public async Task<Byte[]?> DownloadDataAsync(CancellationToken cancellationToken = default)
     {
@@ -462,6 +473,34 @@ public abstract class HttpRequestBase<TRequest> where TRequest : IRequest<TReque
         //SendAfter(result, response);
 
         return await result.GetAllBytesAsync(cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// 下载到文件（流式处理，适合大文件）
+    /// </summary>
+    /// <param name="filePath">保存文件路径</param>
+    /// <param name="cancellationToken">取消令牌</param>
+    public async Task DownloadToFileAsync(String filePath, CancellationToken cancellationToken = default)
+    {
+        SendBefore();
+        var response = await SendAsync().ConfigureAwait(false);
+
+#if NETCOREAPP
+        var stream = await response.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+#else
+        var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+#endif
+
+        // 使用 80KB 缓冲区进行流式写入
+        using var fileStream = new FileStream(filePath, FileMode.Create, 
+            FileAccess.Write, FileShare.None, 
+            bufferSize: 81920, useAsync: true);
+        
+#if NET6_0_OR_GREATER
+        await stream.CopyToAsync(fileStream, cancellationToken).ConfigureAwait(false);
+#else
+        await stream.CopyToAsync(fileStream, 81920, cancellationToken).ConfigureAwait(false);
+#endif
     }
 
 #endregion
@@ -574,8 +613,8 @@ public abstract class HttpRequestBase<TRequest> where TRequest : IRequest<TReque
     /// </summary>
     private MultipartFormDataContent CreateMultipartFormDataContent()
     {
-        var content =
-            new MultipartFormDataContent("Upload----" + DateTime.Now.ToString(CultureInfo.InvariantCulture));
+        // 使用静态边界字符串，避免每次分配
+        var content = new MultipartFormDataContent(_multipartBoundary);
         foreach (var file in _files)
             content.Add(new StreamContent(file.GetFileStream()), file.GetName(), file.GetFileName());
         foreach (var item in _params)
