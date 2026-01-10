@@ -95,7 +95,7 @@ public interface IRequest<out TRequest> where TRequest : IRequest<TRequest>
     /// 添加参数字典
     /// </summary>
     /// <param name="parameters">参数字典</param>
-    TRequest Data(IDictionary<String, Object> parameters);
+    TRequest Data(IDictionary<String, Object?> parameters);
 
     /// <summary>
     /// 添加参数
