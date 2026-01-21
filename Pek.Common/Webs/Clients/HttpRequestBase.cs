@@ -577,7 +577,8 @@ public abstract class HttpRequestBase<TRequest> where TRequest : IRequest<TReque
         switch (contentType)
         {
             case "application/x-www-form-urlencoded":
-                return new FormUrlEncodedContent(_params.ToDictionary(t => t.Key, t => t.Value.SafeString()));
+                // 避免 ToDictionary 分配，直接投影为 KeyValuePair 序列
+                return new FormUrlEncodedContent(_params.Select(p => new KeyValuePair<String, String>(p.Key, SerializeFormValue(p.Value))));
 
             case "application/json":
                 return CreateJsonContent();
@@ -591,6 +592,24 @@ public abstract class HttpRequestBase<TRequest> where TRequest : IRequest<TReque
                 break;
         }
         throw new NotImplementedException($"未实现该 '{contentType}' ContentType");
+    }
+
+    /// <summary>
+    /// 序列化表单值：基础类型直接转换，复杂类型自动 JSON 序列化
+    /// </summary>
+    /// <param name="value">待序列化的值</param>
+    private static String SerializeFormValue(Object? value)
+    {
+        if (value == null) return String.Empty;
+
+        var type = value.GetType();
+
+        // 基础类型：直接 ToString（无需 Trim，基础类型 ToString 无前后空格）
+        if (type.IsPrimitive || type.IsEnum || value is String or Decimal or DateTime or DateTimeOffset or Guid or TimeSpan)
+            return value.ToString() ?? String.Empty;
+
+        // 复杂类型（Dictionary、Array、自定义对象）：JSON 序列化
+        return JsonHelper.ToJson(value);
     }
 
     /// <summary>
