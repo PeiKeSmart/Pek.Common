@@ -43,7 +43,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DH.NCore" Version="4.17.2026.122-beta0953" />
+    <PackageReference Include="DH.NCore" Version="4.17.2026.129-beta0640" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.102">
       <PrivateAssets>all</PrivateAssets>
