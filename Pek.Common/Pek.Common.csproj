@@ -45,7 +45,7 @@
   <ItemGroup>
     <PackageReference Include="DH.NCore" Version="4.22.2026.412-beta0524" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.202">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.201">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -57,9 +57,9 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'!='net10.0'">
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Composite" Version="10.0.6" />
-    <PackageReference Include="System.Text.Json" Version="10.0.6" />
-    <PackageReference Include="System.Threading.Channels" Version="10.0.6" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Composite" Version="10.0.5" />
+    <PackageReference Include="System.Text.Json" Version="10.0.5" />
+    <PackageReference Include="System.Threading.Channels" Version="10.0.5" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='net10.0'">
