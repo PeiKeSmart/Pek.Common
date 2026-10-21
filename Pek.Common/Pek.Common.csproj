@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;netstandard2.1;net462;net472;net8.0;net9.0;net10.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;net462;net472;net8.0;net9.0;net10.0;net11.0</TargetFrameworks>
     <RootNamespace>Pek</RootNamespace>
     <AssemblyTitle>基类核心库</AssemblyTitle>
     <Description>DH框架基类核心库</Description>
@@ -56,16 +56,22 @@
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(TargetFramework)'=='net11.0'">
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Composite" Version="11.0.0-rc.2.26504.105" />
+    <PackageReference Include="System.Text.Json" Version="11.0.0-rc.2.26504.105" />
+    <PackageReference Include="System.Threading.Channels" Version="11.0.0-rc.2.26504.105" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'=='net10.0'">
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Composite" Version="10.0.13" />
+    <PackageReference Include="System.Text.Json" Version="10.0.13" />
+    <PackageReference Include="System.Threading.Channels" Version="10.0.13" />
+  </ItemGroup>
+  
   <ItemGroup Condition="'$(TargetFramework)'!='net10.0'">
     <PackageReference Include="Microsoft.Extensions.FileProviders.Composite" Version="9.0.21" />
     <PackageReference Include="System.Text.Json" Version="9.0.21" />
     <PackageReference Include="System.Threading.Channels" Version="9.0.21" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)'=='net10.0'">
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Composite" Version="10.0.12" />
-    <PackageReference Include="System.Text.Json" Version="10.0.13" />
-    <PackageReference Include="System.Threading.Channels" Version="10.0.13" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='net462' or '$(TargetFramework)'=='net472'">
